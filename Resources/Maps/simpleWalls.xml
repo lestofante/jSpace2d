@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+<!-- west wall -->
+	<rectangle>
+		<position>
+			<x>-5.0</x>
+			<y>0.0</y>
+		</position>
+		<dimension>
+			<x>1.0</x>
+			<y>5.0</y>
+		</dimension>
+	</rectangle>
+<!-- north wall -->
+	<rectangle>
+		<position>
+			<x>0.0</x>
+			<y>5.0</y>
+		</position>
+		<dimension>
+			<x>5.0</x>
+			<y>1.0</y>
+		</dimension>
+	</rectangle>
+<!-- east wall -->
+	<rectangle>
+		<position>
+			<x>5.0</x>
+			<y>0.0</y>
+		</position>
+		<dimension>
+			<x>1.0</x>
+			<y>5.0</y>
+		</dimension>
+	</rectangle>
+<!-- south wall -->
+	<rectangle>
+		<position>
+			<x>0.0</x>
+			<y>-5.0</y>
+		</position>
+		<dimension>
+			<x>5.0</x>
+			<y>1.0</y>
+		</dimension>
+	</rectangle>
+</map>
