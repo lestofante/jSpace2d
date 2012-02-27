@@ -8,13 +8,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
+import server.entity.RadarEntity;
+
 import base.common.InfoBodyContainer;
 import base.game.entity.physics.common.BodyBlueprint;
-
+import base.worker.*;
 /**
  * 
  * @author mauro
@@ -48,21 +51,17 @@ public class PhysicsHandler {
 		this.step = step;
 	}
 
-	public ArrayList<InfoBodyContainer> addBody(BodyBlueprint t) {		
-		ArrayList<InfoBodyContainer> out = new ArrayList<>();
-		
-		
-		
+	public InfoBodyContainer addBody(BodyBlueprint t) {		
+		InfoBodyContainer out = null;
 		Body body = physicWorld.createBody(t.getBodyDef());
 		
 		if (body != null) {
 			body.createFixture(t.getFixtureDef());
-			InfoBodyContainer infoBodyContainer = new InfoBodyContainer(body);
-			out.add(infoBodyContainer);
-			infoBodyContainer.updateSharedPosition();
+			out = new InfoBodyContainer(body);
+			out.updateSharedPosition();
 			
 			int ID = getNewID();
-			sortedOggetto2D.put(ID, infoBodyContainer);
+			sortedOggetto2D.put(ID, out);
 			System.out.println("New element in world! ID:" + ID);
 			System.out.println("elements in world:" + physicWorld.getBodyCount());
 			return out;
@@ -99,7 +98,7 @@ public class PhysicsHandler {
 		running.set(false);
 	}
 
-	public void update() {
+	public void update(ArrayList<Worker> w) {
 		if(running.get()){
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
@@ -191,6 +190,10 @@ public class PhysicsHandler {
 	
 	public void addTorque(float torque, Integer objectID) {
 		torquesToApply.put(objectID, torque);
+	}
+
+	public void queryAABB(RadarEntity radar, AABB aabb) {
+		physicWorld.queryAABB(radar, aabb);
 	}
 	
 }

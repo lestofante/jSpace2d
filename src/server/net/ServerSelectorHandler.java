@@ -1,4 +1,4 @@
-package base.game.player.network;
+package server.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,16 +11,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import base.game.network.Login;
+import base.game.network.SelectorHandler;
+import base.game.network.WaitingInfo;
 import base.worker.NetworkWorker;
 import base.worker.Worker;
 
-public class SelectorHandler {
+public class ServerSelectorHandler implements SelectorHandler{
 
 	Selector connected = null;
 	ServerSocketChannel listener;
 	private int MTU;
 
-	public SelectorHandler(int MTU) {
+	public ServerSelectorHandler(int MTU) {
 		this.MTU = MTU;
 	}
 
@@ -34,8 +37,7 @@ public class SelectorHandler {
 		return lookForInput();
 	}
 	
-	public boolean startServer() throws IOException {
-
+	public boolean start() throws IOException {
 			// Create the selectors
 			connected = Selector.open();
 

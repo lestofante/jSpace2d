@@ -9,8 +9,8 @@ public class Entity {
 	
 	public final int entityID;
 	public final Player owner;
-	public final ArrayList<InfoBodyContainer> bodyList = new ArrayList<>();
-
+	public InfoBodyContainer infoBody;
+	
 	public Entity(int id, Player player) {
 		this.entityID = id;
 		this.owner = player;

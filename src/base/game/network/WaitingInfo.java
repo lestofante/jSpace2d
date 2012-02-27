@@ -1,4 +1,4 @@
-package base.game.player.network;
+package base.game.network;
 
 public class WaitingInfo {
 

@@ -5,15 +5,12 @@ import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import base.game.player.network.NetworkHandler;
 import base.worker.Worker;
 
 public class PlayerHandler {
-	public NetworkHandler networkHandler;
 	private HashMap<String, Player> players = new HashMap<>();
 	
 	public PlayerHandler() throws IOException{
-		this.networkHandler = new NetworkHandler();
 	}
 	
 	public void createPlayer(String name, SelectionKey key){
@@ -24,14 +21,12 @@ public class PlayerHandler {
 		return players.get(playerName);
 	}
 
-	public ArrayList<Worker> update() throws IOException {
-		ArrayList<Worker> w;
-		w = networkHandler.update();
-		for (Player p: players.values()){
-			p.update();
+	public void update(ArrayList<Worker> w) throws IOException {
+		
+		for (Player p: players.values()){			
+			p.update(w);
 		}
 		
-		return w;
 	}
 
 }

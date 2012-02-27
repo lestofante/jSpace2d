@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import base.common.AsyncActionBus;
 import base.game.entity.EntityHandler;
+import base.game.network.NetworkHandler;
 import base.game.player.PlayerHandler;
 import base.game.worker.CreateScene;
 import base.worker.Worker;
@@ -16,35 +17,30 @@ public class GameHandler{
 	public PlayerHandler playerHandler;
 	public final AtomicBoolean run = new AtomicBoolean();
 	public final AtomicInteger step=new AtomicInteger();
+	protected NetworkHandler networkHandler;
+	public ArrayList<Worker> wOUT = new ArrayList<>();
 	
-	public GameHandler(AsyncActionBus asyncActionBus) {
-		this.entityHandler = new EntityHandler(asyncActionBus, step);
-		try {
-			this.playerHandler = new PlayerHandler();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
-		}
-		
-		createScene("simpleWalls.xml");
-		
-	}
-
-	private void createScene(String mapName) {
-		new CreateScene(mapName).update(this);
-	}
 
 	public void update() {
-		ArrayList<Worker> w = new ArrayList<>();
+		ArrayList<Worker> wIN = new ArrayList<>();
+		
 		try {
-	
-			w.addAll( playerHandler.update() );
-			w.addAll( entityHandler.update() );
+			networkHandler.read(wIN);
 			
-			for (Worker wTmp:w){
+			for (Worker wTmp:wIN){
 				wTmp.update(this);
 			}
+			wIN.clear();
+			playerHandler.update(wIN);
+			entityHandler.update(wIN);
+			
+			for (Worker wTmp:wIN){
+				wTmp.update(this);
+			}
+			
+			networkHandler.write(wOUT);
+			wOUT.clear();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,4 +1,4 @@
-package base.game.player.network;
+package base.game.network;
 
 import java.io.IOException;
 import java.net.NetworkInterface;
@@ -13,12 +13,10 @@ import base.worker.Worker;
 public class NetworkHandler {
 
 	private final SelectorHandler sh;
-	private int MTU;
 
-	public NetworkHandler() throws IOException{
-		this.MTU = getNetworkMTU();
-		this.sh = new SelectorHandler(MTU);
-		sh.startServer();
+	public NetworkHandler(SelectorHandler s) throws IOException{
+		this.sh = s;
+		sh.start();
 	}
 
 	public static int getNetworkMTU(){		
@@ -46,6 +44,15 @@ public class NetworkHandler {
 
 	public ArrayList<Worker> update() throws IOException {
 		return sh.update();
+	}
+
+	public void read(ArrayList<Worker> w) {
+		
+	}
+
+	public void write(ArrayList<Worker> wOUT) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

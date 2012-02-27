@@ -1,7 +1,6 @@
 package base.game.entity;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +23,7 @@ public class EntityHandler {
 	private final HashMap<Integer, Entity> entityMap = new HashMap<>();
 	
 	/*for physic*/
-	private final PhysicsHandler phisic;
+	protected final PhysicsHandler phisic;
 	
 	/*for graphics*/
 	private final AsyncActionBus bus;
@@ -35,9 +34,8 @@ public class EntityHandler {
 		phisic.start();
 	}
 
-	public Collection<Worker> update(){
-		phisic.update();
-		return new ArrayList<>();
+	public void update(ArrayList<Worker> w){
+		phisic.update(w);
 	}
 
 	private int getFreeID(){
@@ -59,44 +57,43 @@ public class EntityHandler {
 		Entity e = new Entity(id, player);
 		entityMap.put(id, e);
 
-		ArrayList<InfoBodyContainer> bodys = createPhisic(bodyBlueprint); 
-		if ( bodys != null ){
-			e.bodyList.addAll(bodys);
-			createGraphics(id, bodys, graphicModelName);
+		InfoBodyContainer infoBody = createPhisic(bodyBlueprint); 
+		
+		infoBody.body.setUserData(e);
+		
+		if ( infoBody != null ){
+			e.infoBody = infoBody;
+			createGraphics(id, infoBody, graphicModelName);
 			return id;
 		}else
 			return -3; //phisic error
 	}
 	
 	public void moveEntity(float newX, float newY, int entity){
-		entityMap.get(entity).bodyList.get(0).body.setTransform(new Vec2(newX, newY), entityMap.get(entity).bodyList.get(0).body.getAngle());
+		entityMap.get(entity).infoBody.body.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.body.getAngle());
 	}
 
 	public void removeEntity(int id){
 		removeID(id);
 		Entity e = entityMap.remove(id);
-		destroyBody( e.bodyList );
+		destroyBody( e.infoBody );
 		destroyGraphic( e.entityID );
 	}
 
-	private void createGraphics(int ID, ArrayList<InfoBodyContainer> bodies, String graphicModelName) {
-		for (InfoBodyContainer info:bodies){
-			G_CreateGameRenderableAction a = new G_CreateGameRenderableAction(ID, graphicModelName, info.transform);
+	private void createGraphics(int ID, InfoBodyContainer infoBody, String graphicModelName) {
+			G_CreateGameRenderableAction a = new G_CreateGameRenderableAction(ID, graphicModelName, infoBody.transform);
 			bus.addGraphicsAction(a);
-		}
 	}
 
-	private void destroyBody(ArrayList<InfoBodyContainer> bodyList) {
-		for (InfoBodyContainer b:bodyList){
-			phisic.removeBody(b.body);
-		}
+	private void destroyBody(InfoBodyContainer infoBody) {
+			phisic.removeBody(infoBody.body);
 	}
 
 	private void destroyGraphic(int ID) {
 		bus.addGraphicsAction(new G_RemoveGameRenderable(ID));
 	}
 
-	private ArrayList<InfoBodyContainer> createPhisic(BodyBlueprint bodyBlueprint){
+	private InfoBodyContainer createPhisic(BodyBlueprint bodyBlueprint){
 		return phisic.addBody(bodyBlueprint);
 	}
 
