@@ -6,7 +6,6 @@ package base.common;
 
 import org.jbox2d.dynamics.Body;
 
-
 /**
  * 
  * @author mauro

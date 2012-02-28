@@ -19,7 +19,7 @@ public class VBORenderable extends GameRenderable {
 
 	@Override
 	public void render() {
-		
+
 		GL11.glPushMatrix();
 
 		GL11.glTranslatef(transform[0], transform[1], 0.0f);

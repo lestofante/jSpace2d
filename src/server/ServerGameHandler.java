@@ -7,11 +7,10 @@ import server.net.ServerNetworkHandler;
 import server.player.ServerPlayerHandler;
 import base.common.AsyncActionBus;
 import base.game.GameHandler;
-import base.game.worker.CreateScene;
 import base.worker.Worker;
 
-public class ServerGameHandler extends GameHandler{
-	
+public class ServerGameHandler extends GameHandler {
+
 	public ServerGameHandler(AsyncActionBus asyncActionBus) {
 		this.entityHandler = new ServerEntityHandler(asyncActionBus, step);
 
@@ -29,20 +28,20 @@ public class ServerGameHandler extends GameHandler{
 	public void update() {
 		wIN.clear();
 		wOUT.clear();
-		
+
 		try {
 			networkHandler.read(wIN);
 
-			for (Worker wTmp:wIN){
+			for (Worker wTmp : wIN) {
 				System.out.println("Worker found");
 				wTmp.update(this);
-				
+
 			}
 			wIN.clear();
 			playerHandler.update(wIN);
 			entityHandler.update(wIN);
 
-			for (Worker wTmp:wIN){
+			for (Worker wTmp : wIN) {
 				wTmp.update(this);
 			}
 

@@ -23,6 +23,23 @@ import base.game.entity.graphics.object.GameRenderable;
 
 public class GraphicsManager implements Runnable {
 
+	private static void loadNatives() {
+		try {
+			String osName = System.getProperty("os.name");
+
+			System.out.println("Operating system name => " + osName);
+
+			File path = new File("Libraries" + File.separator + "lwjgl-2.8.3" + File.separator + "native" + File.separator + osName.toLowerCase());
+
+			System.out.println("Operating system name => " + osName + " " + path.getAbsolutePath());
+
+			System.setProperty("org.lwjgl.librarypath", path.getAbsolutePath());
+
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println("Native code library failed to load.\n" + e);
+			e.printStackTrace();
+		}
+	}
 	private int fps;
 	private boolean fullScreen;
 	private long lastFPS;
@@ -32,9 +49,10 @@ public class GraphicsManager implements Runnable {
 	private HashMap<Integer, GameRenderable> toDraw = new HashMap<Integer, GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
 	private boolean vSync;
-	private Camera camera;
 
+	private Camera camera;
 	private ObjectHandler oHandler;
+
 	private AsyncActionBus asyncActionBus;
 
 	/**
@@ -48,30 +66,12 @@ public class GraphicsManager implements Runnable {
 	 *            true to enable, false not to
 	 */
 
-	public GraphicsManager(DisplayMode mode, boolean fullScreen, boolean vSync, AsyncActionBus asyncActionBus) {		
+	public GraphicsManager(DisplayMode mode, boolean fullScreen, boolean vSync, AsyncActionBus asyncActionBus) {
 		loadNatives();
 		this.asyncActionBus = asyncActionBus;
 		this.mode = mode;
 		this.fullScreen = fullScreen;
 		this.vSync = vSync;
-	}
-
-	private static void loadNatives() {
-		try {
-			String osName= System.getProperty("os.name");
-			
-			System.out.println("Operating system name => "+ osName);
-			
-			File path = new File("Libraries"+File.separator+"lwjgl-2.8.3"+File.separator+"native"+File.separator+osName.toLowerCase());
-			
-			System.out.println("Operating system name => "+ osName+" "+path.getAbsolutePath());
-			
-			System.setProperty("org.lwjgl.librarypath", path.getAbsolutePath());
-	        
-	    } catch (UnsatisfiedLinkError e) {
-	      System.err.println("Native code library failed to load.\n" + e);
-	      e.printStackTrace();
-	    }	
 	}
 
 	public int getDelta() {
@@ -122,16 +122,15 @@ public class GraphicsManager implements Runnable {
 		}
 
 		this.camera = new Camera();
-		
+
 		int width = Display.getDisplayMode().getWidth();
 		int height = Display.getDisplayMode().getHeight();
 
 		camera.perspective(25.0f, (float) width / (float) height, 1, 1000);
-		
+
 		lastFPS = getTime(); // call before loop to initialise fps timer
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
 
 		float mat_specular[] = { 1.0f, 1.0f, 1.0f, 0.1f };
 		float light_position[] = { 0.0f, 1.0f, 1.0f, 0.0f };
@@ -142,7 +141,7 @@ public class GraphicsManager implements Runnable {
 		spec.flip();
 		pos = BufferUtils.createFloatBuffer(4).put(light_position);
 		pos.rewind();
-		
+
 		camera.position = new Vector3f(0, 0, 130);
 
 		camera.lookAt(0, 0, 0);
@@ -193,12 +192,10 @@ public class GraphicsManager implements Runnable {
 					}
 				}
 				break;
-				
+
 			case FOLLOW_OBJECT:
 				camera.sharedTransform = toDraw.get(((G_FollowObjectWithCamera) action).ID).transform;
 			}
-
-
 
 		}
 	}
@@ -207,18 +204,17 @@ public class GraphicsManager implements Runnable {
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, pos);
 
-		
 		asyncActionBus.sharedLock.readLock().lock();
 		camera.update();
-		
+
 		for (GameRenderable renderable : toDraw.values()) {
 
 			renderable.render();
 
 		}
 		asyncActionBus.sharedLock.readLock().unlock();
-		
-		//GL11.glFlush();
+
+		// GL11.glFlush();
 		GL11.glFinish();
 		updateFPS();
 	}
@@ -231,11 +227,19 @@ public class GraphicsManager implements Runnable {
 		while (!Display.isCloseRequested()) {
 
 			update();
-			
+
 		}
 
 		Display.destroy();
 
+	}
+
+	public void update() {
+		processActions();
+
+		render();
+
+		Display.update();
 	}
 
 	/**
@@ -249,16 +253,6 @@ public class GraphicsManager implements Runnable {
 			lastFPS += 1000; // add one second
 		}
 		fps++;
-	}
-	
-	public void update() {
-		processActions();
-
-		
-		render();
-		
-
-		Display.update();
 	}
 
 }

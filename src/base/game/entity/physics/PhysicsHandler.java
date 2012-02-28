@@ -14,10 +14,10 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
 
 import server.entity.RadarEntity;
-
 import base.common.InfoBodyContainer;
 import base.game.entity.physics.common.BodyBlueprint;
-import base.worker.*;
+import base.worker.Worker;
+
 /**
  * 
  * @author mauro
@@ -29,10 +29,10 @@ public class PhysicsHandler {
 	private final AtomicInteger step;
 	World physicWorld;
 	public TreeMap<Integer, InfoBodyContainer> sortedOggetto2D = new TreeMap<>();
-	
+
 	private HashMap<Integer, Vec2[]> forcesToApply = new HashMap<>();
 	private HashMap<Integer, Float> torquesToApply = new HashMap<>();
-	
+
 	private long delta;
 	private long timeBuffer = 0;
 	private int pUpdates = 0;
@@ -41,9 +41,9 @@ public class PhysicsHandler {
 	private long physicsStep;
 
 	private ReentrantReadWriteLock sharedLock;
-	
+
 	public PhysicsHandler(long timestepNanos, ReentrantReadWriteLock sharedLock, AtomicInteger step) {
-		TIMESTEP = timestepNanos/1000000000f;
+		TIMESTEP = timestepNanos / 1000000000f;
 		physicsStep = timestepNanos;
 		Vec2 worldGravity = new Vec2(0.0f, -10.0f);
 		physicWorld = new World(worldGravity, true);
@@ -51,15 +51,15 @@ public class PhysicsHandler {
 		this.step = step;
 	}
 
-	public InfoBodyContainer addBody(BodyBlueprint t) {		
+	public InfoBodyContainer addBody(BodyBlueprint t) {
 		InfoBodyContainer out = null;
 		Body body = physicWorld.createBody(t.getBodyDef());
-		
+
 		if (body != null) {
 			body.createFixture(t.getFixtureDef());
 			out = new InfoBodyContainer(body);
 			out.updateSharedPosition();
-			
+
 			int ID = getNewID();
 			sortedOggetto2D.put(ID, out);
 			System.out.println("New element in world! ID:" + ID);
@@ -69,12 +69,43 @@ public class PhysicsHandler {
 		return out;
 	}
 
+	public void addForce(Vec2[] worldForce, Integer objectID) {
+		Vec2[] toAdd = new Vec2[2];
+		toAdd[0] = worldForce[0];
+		toAdd[1] = worldForce[1];
+		forcesToApply.put(objectID, toAdd);
+	}
+
+	public void addTorque(float torque, Integer objectID) {
+		torquesToApply.put(objectID, torque);
+	}
+
+	private void applyForces() {
+		for (Map.Entry<Integer, Vec2[]> forceToBody : forcesToApply.entrySet()) {
+			sortedOggetto2D.get(forceToBody.getKey()).body.applyForce(forceToBody.getValue()[0], forceToBody.getValue()[1]);
+		}
+	}
+
+	private void applyTorques() {
+		for (Map.Entry<Integer, Float> torqueToBody : torquesToApply.entrySet()) {
+			sortedOggetto2D.get(torqueToBody.getKey()).body.applyTorque(torqueToBody.getValue());
+		}
+	}
+
+	private long getDelta() {
+		return (System.nanoTime() - delta);
+	}
+
 	private Integer getNewID() {
 		int potentialID = 0;
 
-		while(sortedOggetto2D.containsKey(new Integer(potentialID)))
+		while (sortedOggetto2D.containsKey(new Integer(potentialID)))
 			potentialID++;
 		return new Integer(potentialID);
+	}
+
+	public void queryAABB(RadarEntity radar, AABB aabb) {
+		physicWorld.queryAABB(radar, aabb);
 	}
 
 	public void removeBody(Body b) {
@@ -94,12 +125,25 @@ public class PhysicsHandler {
 		running.set(true);
 	}
 
-	public void stop(){
+	private void step() throws Exception {
+
+		sharedLock.writeLock().lock();
+		for (InfoBodyContainer info : sortedOggetto2D.values()) {
+			info.updateSharedPosition();
+		}
+		sharedLock.writeLock().unlock();
+
+		step.addAndGet(1);
+
+		physicWorld.step(TIMESTEP, 10, 10);
+	}
+
+	public void stop() {
 		running.set(false);
 	}
 
 	public void update(ArrayList<Worker> w) {
-		if(running.get()){
+		if (running.get()) {
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
 				delta = System.nanoTime();
@@ -108,12 +152,12 @@ public class PhysicsHandler {
 
 					try {
 						long timePhysics = System.nanoTime();
-						
+
 						applyForces();
 						applyTorques();
-						
+
 						step();
-						
+
 						if (System.nanoTime() - timePhysics > physicsStep)
 							System.out.println("Warning! Computing physics is taking too long!");
 						timeBuffer -= physicsStep;
@@ -125,7 +169,7 @@ public class PhysicsHandler {
 					}
 
 				}
-				
+
 				forcesToApply.clear();
 				torquesToApply.clear();
 
@@ -142,22 +186,6 @@ public class PhysicsHandler {
 		}
 	}
 
-	private void applyTorques() {
-		for(Map.Entry<Integer, Float> torqueToBody : torquesToApply.entrySet()){
-			sortedOggetto2D.get(torqueToBody.getKey()).body.applyTorque(torqueToBody.getValue());
-		}
-	}
-
-	private void applyForces() {
-		for(Map.Entry<Integer, Vec2[]> forceToBody : forcesToApply.entrySet()){
-			sortedOggetto2D.get(forceToBody.getKey()).body.applyForce(forceToBody.getValue()[0], forceToBody.getValue()[1]);
-		}
-	}
-
-	private long getDelta() {
-		return (System.nanoTime() - delta);
-	}
-
 	private void updatePPS() {
 		long deltaPhysics = System.nanoTime() - lastCheck;
 		if (deltaPhysics > 1000000000) {
@@ -168,32 +196,4 @@ public class PhysicsHandler {
 		}
 	}
 
-	private void step() throws Exception {		
-
-		sharedLock.writeLock().lock();
-		for (InfoBodyContainer info : sortedOggetto2D.values()) {
-			info.updateSharedPosition();
-		}
-		sharedLock.writeLock().unlock();
-
-		step.addAndGet(1);
-
-		physicWorld.step(TIMESTEP, 10, 10);
-	}
-
-	public void addForce(Vec2[] worldForce, Integer objectID) {
-		Vec2[] toAdd = new Vec2[2];
-		toAdd[0] = worldForce[0];
-		toAdd[1] = worldForce[1];
-		forcesToApply.put(objectID, toAdd);
-	}
-	
-	public void addTorque(float torque, Integer objectID) {
-		torquesToApply.put(objectID, torque);
-	}
-
-	public void queryAABB(RadarEntity radar, AABB aabb) {
-		physicWorld.queryAABB(radar, aabb);
-	}
-	
 }

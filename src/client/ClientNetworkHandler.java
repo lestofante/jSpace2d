@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import base.game.network.NetworkHandler;
-import base.game.network.SelectorHandler;
 import base.worker.Worker;
 
 public class ClientNetworkHandler extends NetworkHandler {

@@ -3,7 +3,7 @@ package base.game.worker;
 import base.game.GameHandler;
 import base.worker.Worker;
 
-public class MapLoader implements Worker{
+public class MapLoader implements Worker {
 
 	private String mapName;
 
@@ -13,7 +13,7 @@ public class MapLoader implements Worker{
 
 	@Override
 	public void update(GameHandler g) {
-		
+
 	}
-	
+
 }

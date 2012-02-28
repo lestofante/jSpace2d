@@ -9,7 +9,7 @@ import base.game.entity.physics.common.BodyBlueprint;
 
 public class StaticLoader {
 
-	public static BodyBlueprint loadBodyBlueprint(int modelID){
+	public static BodyBlueprint loadBodyBlueprint(int modelID) {
 		BodyDef bd = new BodyDef();
 		FixtureDef fd = new FixtureDef();
 		PolygonShape shape = new PolygonShape();

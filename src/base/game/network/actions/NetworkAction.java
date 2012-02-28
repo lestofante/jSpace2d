@@ -12,20 +12,19 @@ import java.nio.ByteBuffer;
  * @author mauro
  */
 public abstract class NetworkAction {
-	
+
 	public byte actionID;
 	public InetSocketAddress address;
 	public int actionSize;
-	
-	protected NetworkAction(InetSocketAddress address, byte actionID, int actionSize){
+
+	protected NetworkAction(InetSocketAddress address, byte actionID, int actionSize) {
 		this.actionSize = actionSize;
 		this.address = address;
 		this.actionID = actionID;
 	}
-	
-	public void writeToByteBuffer(ByteBuffer toWrite){
+
+	public void writeToByteBuffer(ByteBuffer toWrite) {
 		toWrite.put(actionID);
 	}
-	
-	
+
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import base.common.AsyncActionBus;
 import base.game.GameHandler;
+import base.game.network.packets.LoginPacket;
 
 public class ClientGameHandler extends GameHandler {
 
@@ -14,11 +15,14 @@ public class ClientGameHandler extends GameHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		LoginPacket lPacket = new LoginPacket("maronna", (byte) 0);
+
 	}
 
 	@Override
 	public void update() {
-		
+
 	}
 
 }

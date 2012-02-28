@@ -16,11 +16,7 @@ import base.game.entity.graphics.actions.GraphicAction;
 public class AsyncActionBus {
 
 	public ReentrantReadWriteLock sharedLock;
-	
-	public AsyncActionBus(){
-		sharedLock = new ReentrantReadWriteLock(false);
-	}
-	
+
 	/*
 	 * GRAPHICS
 	 */
@@ -30,49 +26,53 @@ public class AsyncActionBus {
 	 * NETWORK
 	 */
 	private LinkedBlockingQueue<ByteBuffer> rawPacketsOut = new LinkedBlockingQueue<>();
+
 	private ConcurrentLinkedQueue<ByteBuffer> rawPacketsIn = new ConcurrentLinkedQueue<>();
-	
 	/*
 	 * GAME
 	 */
 	private ConcurrentLinkedQueue<GameAction> gameActions = new ConcurrentLinkedQueue<>();
-		
-	public void addGameAction(GameAction gameAction){
+
+	public AsyncActionBus() {
+		sharedLock = new ReentrantReadWriteLock(false);
+	}
+
+	public void addGameAction(GameAction gameAction) {
 		gameActions.offer(gameAction);
 	}
-	
-	public ArrayList<GameAction> getGameActions(){
+
+	public void addGraphicsAction(GraphicAction a) {
+		graphicActions.offer(a);
+	}
+
+	public void addRawNetworkOut(ArrayList<ByteBuffer> rawActions) {
+		rawPacketsOut.addAll(rawActions);
+	}
+
+	public ArrayList<GameAction> getGameActions() {
 		ArrayList<GameAction> returnActions = new ArrayList<>();
 		GameAction temp = gameActions.poll();
-		while(temp!=null){
+		while (temp != null) {
 			returnActions.add(temp);
 			temp = gameActions.poll();
 		}
 		return returnActions;
 	}
-	
-	public void addGraphicsAction(GraphicAction a) {
-		graphicActions.offer(a);
-	}
 
 	public ArrayList<GraphicAction> getGraphicActions() {
 		ArrayList<GraphicAction> returnActions = new ArrayList<>();
 		GraphicAction temp = graphicActions.poll();
-		while(temp!=null){
+		while (temp != null) {
 			returnActions.add(temp);
 			temp = graphicActions.poll();
 		}
 		return returnActions;
 	}
 
-	public void addRawNetworkOut(ArrayList<ByteBuffer> rawActions) {
-		rawPacketsOut.addAll(rawActions);
-	}
-	
-	public ArrayList<ByteBuffer> getRawNetworkIn(){
+	public ArrayList<ByteBuffer> getRawNetworkIn() {
 		ArrayList<ByteBuffer> out = new ArrayList<>();
 		ByteBuffer temp = rawPacketsIn.poll();
-		while(temp!=null){
+		while (temp != null) {
 			out.add(temp);
 			temp = rawPacketsIn.poll();
 		}

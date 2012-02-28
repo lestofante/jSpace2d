@@ -26,6 +26,18 @@ public class ObjectHandler {
 		init();
 	}
 
+	private Mesh getMesh(String modelName) {
+		Mesh out = models.get(modelName);
+
+		if (out != null) {
+			return out;
+		} else {
+			System.out.println("Graphical model does not exist");
+			System.exit(-1);
+			return out;
+		}
+	}
+
 	private void init() {
 		ArrayList<Path> modelPaths = searchForModels();
 		System.out.println("size " + modelPaths.size());
@@ -47,6 +59,30 @@ public class ObjectHandler {
 		return out;
 	}
 
+	public RAMRenderable requestRAMMesh(String modelName, float[] transform) {
+		Mesh temp = getMesh(modelName);
+		RAMRenderable out = new RAMRenderable(temp.verticesBuffer, temp.normalsBuffer, temp.interleavedBuffer, transform);
+		return out;
+	}
+
+	public VBORenderable requestVBOMesh(String modelName, float[] transform) {
+		Mesh temp = getMesh(modelName);
+		if (!temp.VBOInitialized) {
+			temp.vertexVBOID = GPUHandler.createVBOID();
+			GPUHandler.bufferData(temp.vertexVBOID, temp.verticesBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
+
+			temp.normalVBOID = GPUHandler.createVBOID();
+			GPUHandler.bufferData(temp.normalVBOID, temp.normalsBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
+
+			VBORenderable out = new VBORenderable(temp.vertexVBOID, temp.normalVBOID, temp.triangles.size(), transform);
+			temp.VBOInitialized = true;
+			return out;
+		} else {
+			VBORenderable out = new VBORenderable(temp.vertexVBOID, temp.normalVBOID, temp.triangles.size(), transform);
+			return out;
+		}
+	}
+
 	private ArrayList<Path> searchForModels() {
 		ArrayList<Path> out = new ArrayList<>();
 
@@ -66,42 +102,6 @@ public class ObjectHandler {
 		}
 
 		return out;
-	}
-
-	public RAMRenderable requestRAMMesh(String modelName, float[] transform) {
-		Mesh temp = getMesh(modelName);
-		RAMRenderable out = new RAMRenderable(temp.verticesBuffer, temp.normalsBuffer, temp.interleavedBuffer, transform);
-		return out;
-	}
-
-	private Mesh getMesh(String modelName) {
-		Mesh out = models.get(modelName);
-		
-		if(out!=null){
-			return out;
-		}else{
-			System.out.println("Graphical model does not exist");
-			System.exit(-1);
-			return out;
-		}
-	}
-
-	public VBORenderable requestVBOMesh(String modelName, float[] transform) {
-		Mesh temp = getMesh(modelName);
-		if(!temp.VBOInitialized){
-			temp.vertexVBOID = GPUHandler.createVBOID();			
-			GPUHandler.bufferData(temp.vertexVBOID, temp.verticesBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
-			
-			temp.normalVBOID = GPUHandler.createVBOID();
-			GPUHandler.bufferData(temp.normalVBOID, temp.normalsBuffer, ARBBufferObject.GL_STATIC_DRAW_ARB);
-			
-			VBORenderable out = new VBORenderable(temp.vertexVBOID, temp.normalVBOID, temp.triangles.size(), transform);
-			temp.VBOInitialized = true;
-			return out;
-		}else{
-			VBORenderable out = new VBORenderable(temp.vertexVBOID, temp.normalVBOID, temp.triangles.size(), transform);
-			return out;
-		}
 	}
 
 }

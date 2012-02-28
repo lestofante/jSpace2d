@@ -3,14 +3,13 @@ package server.net;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 import base.game.network.NetworkHandler;
 import base.worker.Worker;
 
 public class ServerNetworkHandler extends NetworkHandler {
 
 	public ServerNetworkHandler() throws IOException {
-		super( new ServerSelectorHandler(getNetworkMTU()) );
+		super(new ServerSelectorHandler(getNetworkMTU()));
 	}
 
 	@Override
@@ -26,7 +25,7 @@ public class ServerNetworkHandler extends NetworkHandler {
 	@Override
 	public void write(ArrayList<Worker> wOUT) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

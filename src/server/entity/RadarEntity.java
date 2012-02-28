@@ -17,27 +17,15 @@ public class RadarEntity extends ServerEntity implements QueryCallback {
 	private HashSet<Entity> persistentEntities = new HashSet<>();
 	public HashSet<Entity> toRemoveEntities = new HashSet<>();
 	private final float radius;
-	
+
 	public RadarEntity(int id, Player player, float radius) {
 		super(id, player);
 		this.radius = radius;
 	}
 
-	@Override
-	public boolean reportFixture(Fixture arg0) {
-		Entity toAdd = (Entity) arg0.getBody().getUserData();
-		toRemoveEntities.remove(toAdd);
-		
-		if(visibleEntities.add(toAdd))
-			newEntities.add(toAdd);
-		else
-			persistentEntities.add(toAdd);
-		return true;
-	}
-
 	public AABB getAABB() {
-		Vec2 lV = infoBody.body.getWorldCenter().sub(new Vec2(radius,radius));
-		Vec2 uV = infoBody.body.getWorldCenter().add(new Vec2(radius,radius));
+		Vec2 lV = infoBody.body.getWorldCenter().sub(new Vec2(radius, radius));
+		Vec2 uV = infoBody.body.getWorldCenter().add(new Vec2(radius, radius));
 		return new AABB(lV, uV);
 	}
 
@@ -47,6 +35,18 @@ public class RadarEntity extends ServerEntity implements QueryCallback {
 		toRemoveEntities.addAll(visibleEntities);
 		newEntities.clear();
 		persistentEntities.clear();
+	}
+
+	@Override
+	public boolean reportFixture(Fixture arg0) {
+		Entity toAdd = (Entity) arg0.getBody().getUserData();
+		toRemoveEntities.remove(toAdd);
+
+		if (visibleEntities.add(toAdd))
+			newEntities.add(toAdd);
+		else
+			persistentEntities.add(toAdd);
+		return true;
 	}
 
 }

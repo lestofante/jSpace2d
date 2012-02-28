@@ -17,7 +17,7 @@ import base.game.network.WaitingInfo;
 import base.worker.NetworkWorker;
 import base.worker.Worker;
 
-public class ServerSelectorHandler implements SelectorHandler{
+public class ServerSelectorHandler implements SelectorHandler {
 
 	Selector connected = null;
 	ServerSocketChannel listener;
@@ -27,24 +27,27 @@ public class ServerSelectorHandler implements SelectorHandler{
 		this.MTU = MTU;
 	}
 
-	public ArrayList<Worker> update() throws IOException {
-
-		SocketChannel accept = listener.accept();
-		if (accept != null) {
-			accept.register(connected, SelectionKey.OP_READ, new WaitingInfo(System.currentTimeMillis()));
+	private ServerSocketChannel createServerTCPSocketChannel(int port) {
+		try {
+			ServerSocketChannel listener = ServerSocketChannel.open();
+			listener.configureBlocking(false);
+			listener.socket().bind(new InetSocketAddress(port));
+			return listener;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		return lookForInput();
+		return null;
 	}
-	
-	public boolean start() throws IOException {
-			// Create the selectors
-			connected = Selector.open();
 
-			listener = createServerTCPSocketChannel(9999);
-			if (listener == null)
-				return false;
-			return true;		
+	private void disconnectAndRemove(SelectionKey key) {
+		try {
+			key.channel().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		key.cancel();
 	}
 
 	private ArrayList<Worker> lookForInput() {
@@ -97,27 +100,26 @@ public class ServerSelectorHandler implements SelectorHandler{
 		return null;
 	}
 
-	private void disconnectAndRemove(SelectionKey key) {
-		try {
-			key.channel().close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		key.cancel();
+	@Override
+	public boolean start() throws IOException {
+		// Create the selectors
+		connected = Selector.open();
+
+		listener = createServerTCPSocketChannel(9999);
+		if (listener == null)
+			return false;
+		return true;
 	}
 
-	private ServerSocketChannel createServerTCPSocketChannel(int port) {
-		try {
-			ServerSocketChannel listener = ServerSocketChannel.open();
-			listener.configureBlocking(false);
-			listener.socket().bind(new InetSocketAddress(port));
-			return listener;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	@Override
+	public ArrayList<Worker> update() throws IOException {
+
+		SocketChannel accept = listener.accept();
+		if (accept != null) {
+			accept.register(connected, SelectionKey.OP_READ, new WaitingInfo(System.currentTimeMillis()));
 		}
-		return null;
+
+		return lookForInput();
 	}
 
 }
