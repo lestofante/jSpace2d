@@ -10,9 +10,9 @@ import java.util.Enumeration;
 
 import base.worker.Worker;
 
-public class NetworkHandler {
+public abstract class NetworkHandler {
 
-	private final SelectorHandler sh;
+	protected final SelectorHandler sh;
 
 	public NetworkHandler(SelectorHandler s) throws IOException{
 		this.sh = s;
@@ -36,23 +36,13 @@ public class NetworkHandler {
 		}
 		return out;
 	}
-
-	public ArrayList<ByteBuffer> writeRawActions() {
-		ArrayList<ByteBuffer> out = new ArrayList<>();
-		return out;
-	}
-
+	
 	public ArrayList<Worker> update() throws IOException {
 		return sh.update();
 	}
 
-	public void read(ArrayList<Worker> w) {
-		
-	}
+	public abstract void read(ArrayList<Worker> w);
 
-	public void write(ArrayList<Worker> wOUT) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void write(ArrayList<Worker> wOUT);
 
 }

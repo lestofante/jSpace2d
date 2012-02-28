@@ -103,7 +103,7 @@ public class PhysicsHandler {
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
 				delta = System.nanoTime();
-
+				int i = 0;
 				while (timeBuffer > physicsStep) {
 
 					try {
@@ -113,7 +113,7 @@ public class PhysicsHandler {
 						applyTorques();
 						
 						step();
-						// net.update();
+						
 						if (System.nanoTime() - timePhysics > physicsStep)
 							System.out.println("Warning! Computing physics is taking too long!");
 						timeBuffer -= physicsStep;

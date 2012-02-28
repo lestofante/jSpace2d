@@ -29,7 +29,7 @@ public class EntityHandler {
 	private final AsyncActionBus bus;
 	
 	public EntityHandler(AsyncActionBus graphicBus, AtomicInteger step){
-		phisic = new PhysicsHandler(12000000, graphicBus.sharedLock, step);
+		phisic = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
 		this.bus = graphicBus;
 		phisic.start();
 	}

@@ -41,11 +41,10 @@ public class ServerSelectorHandler implements SelectorHandler{
 			// Create the selectors
 			connected = Selector.open();
 
-			listener = createServerTCPSocketChannel(5000);
+			listener = createServerTCPSocketChannel(9999);
 			if (listener == null)
 				return false;
-			return true;
-		
+			return true;		
 	}
 
 	private ArrayList<Worker> lookForInput() {
