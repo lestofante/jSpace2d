@@ -3,6 +3,7 @@ package server.net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -11,16 +12,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-import base.game.network.Login;
 import base.game.network.SelectorHandler;
-import base.game.network.WaitingInfo;
+import base.game.network.packets.PacketRecognizer;
+import base.game.network.packets.TCP_Packet;
+import base.game.network.packets.TCP_Packet.PacketType;
+import base.game.player.worker.RemoveNetworkPlayer;
 import base.worker.NetworkWorker;
 import base.worker.Worker;
 
 public class ServerSelectorHandler implements SelectorHandler {
 
 	Selector connected = null;
-	ServerSocketChannel listener;
 	private final int MTU;
 
 	public ServerSelectorHandler(int MTU) {
@@ -40,7 +42,7 @@ public class ServerSelectorHandler implements SelectorHandler {
 		return null;
 	}
 
-	private void disconnectAndRemove(SelectionKey key) {
+	private RemoveNetworkPlayer disconnectAndRemove(SelectionKey key) {
 		try {
 			key.channel().close();
 		} catch (IOException e) {
@@ -48,6 +50,10 @@ public class ServerSelectorHandler implements SelectorHandler {
 			e.printStackTrace();
 		}
 		key.cancel();
+
+		System.out.println("Disconnected player: " + key.attachment());
+
+		return new RemoveNetworkPlayer(key);
 	}
 
 	private ArrayList<Worker> lookForInput() {
@@ -66,79 +72,80 @@ public class ServerSelectorHandler implements SelectorHandler {
 		SelectionKey key;
 
 		while (keyIterator.hasNext()) {
-			System.out.println("have next!");
 			key = keyIterator.next();
-			if (key.isReadable()) {
+			if (key.isReadable() && key.isValid()) {
 				try {
 					input = readWorker(key);
-					if (input != null) {
+					if (input != null)
 						ret.add(input);
-					} else {
-						disconnectAndRemove(key);
-					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					ret.add(disconnectAndRemove(key));
 					e.printStackTrace();
-					disconnectAndRemove(key);
+				} catch (Exception e) {
+					ret.add(disconnectAndRemove(key));
+					e.printStackTrace();
 				}
 			}
+			keyIterator.remove();
 		}
-		if (!ret.isEmpty())
-			System.out.println(ret.size());
+
 		return ret;
 	}
 
-	private NetworkWorker readWorker(SelectionKey key) throws IOException {
-		ByteBuffer buf = ByteBuffer.allocateDirect(MTU);
+	private NetworkWorker readWorker(SelectionKey key) throws Exception {
+		ByteBuffer buf = ByteBuffer.allocate(MTU);
 		buf.clear();
 		SocketChannel channel = (SocketChannel) key.channel();
 		int numBytesRead = channel.read(buf);
-		System.out.println("read: " + numBytesRead + " bytes");
-		buf.flip();
 
-		while (numBytesRead != -1) {
-			if (buf.hasRemaining()) {
-				switch (buf.get()) {
-				case -127:
-					Login l = new Login();
-					if (l.read(buf)) {
-						l.setKey(key);
-						return l;
-					} else {
-						return null;
-					}
-				}
-			} else {
-				System.out.println("Read zero bytes from channel. weird uh?");
-				return null;
-			}
+		if (numBytesRead == -1) {
+			throw new Exception("Error reading from channel");
 		}
+
+		buf.flip();
+		TCP_Packet packet = null;
+
+		try {
+			packet = PacketRecognizer.getTCP(buf);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (packet != null) {
+			if (packet.packetType != PacketType.LOGIN) {
+				// TODO implement packets
+			} else {
+				throw new Exception("Address already logged in");
+			}
+		} else {
+			throw new Exception("Error handling packet");
+		}
+
 		return null;
+
 	}
 
 	@Override
 	public boolean start() throws IOException {
 		// Create the selectors
 		connected = Selector.open();
-		listener = createServerTCPSocketChannel(9999);
-
-		if (listener == null)
-			return false;
 		return true;
 	}
 
 	@Override
 	public ArrayList<Worker> update() throws IOException {
-
-		SocketChannel accept = listener.accept();
-
-		if (accept != null) {
-			accept.configureBlocking(false);
-			accept.register(connected, SelectionKey.OP_READ, new WaitingInfo(System.currentTimeMillis()));
-			System.out.println("accepted something");
-		}
-
 		return lookForInput();
+	}
+
+	public void addConnectedChannel(SocketChannel newLogin, String playerName) throws ClosedChannelException {
+		newLogin.register(connected, SelectionKey.OP_READ | SelectionKey.OP_WRITE, playerName);
+		try {
+			System.out.println("New channel connected: " + newLogin.getRemoteAddress());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

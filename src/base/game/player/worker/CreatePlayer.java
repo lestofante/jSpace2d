@@ -13,7 +13,11 @@ public class CreatePlayer implements Worker {
 
 	@Override
 	public void update(GameHandler g) {
-		g.playerHandler.createPlayer(playerName, null);
+		try {
+			g.playerHandler.createPlayer(playerName, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

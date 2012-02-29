@@ -33,9 +33,7 @@ public class ServerGameHandler extends GameHandler {
 			networkHandler.read(wIN);
 
 			for (Worker wTmp : wIN) {
-				System.out.println("Worker found");
 				wTmp.update(this);
-
 			}
 			wIN.clear();
 			playerHandler.update(wIN);

@@ -15,27 +15,35 @@ public class ClientGameHandler extends GameHandler {
 		try {
 			this.networkHandler = new ClientNetworkHandler();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		LoginPacket lPacket = new LoginPacket("maronna", (byte) 0);
+		LoginPacket lPacket = new LoginPacket("falskd123asdfasdf", (byte) 0);
 
 		SocketChannel kkSocket = null;
+
 		try {
 			kkSocket = SocketChannel.open(new InetSocketAddress("127.0.0.1", 9999));
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		while (true)
+			try {
+				send(lPacket, kkSocket);
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	}
+
+	private void send(LoginPacket lPacket, SocketChannel kkSocket) {
 
 		try {
 			System.out.println("Wrote " + kkSocket.write(lPacket.getDataBuffer()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

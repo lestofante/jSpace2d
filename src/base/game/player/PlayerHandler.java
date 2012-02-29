@@ -1,20 +1,23 @@
 package base.game.player;
 
 import java.io.IOException;
-import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import base.worker.Worker;
 
 public class PlayerHandler {
-	private HashMap<String, Player> players = new HashMap<>();
+	protected HashMap<String, Player> players = new HashMap<>();
 
 	public PlayerHandler() throws IOException {
 	}
 
-	public void createPlayer(String name, SelectionKey key) {
-		players.put(name, new Player(name, key));
+	public void createPlayer(String name, SocketChannel channel) throws Exception {
+		if (players.containsKey(name))
+			throw new Exception("Player already present!");
+		players.put(name, new Player(name, channel));
+		System.out.println("Creating player: " + name);
 	}
 
 	public Player getPlayer(String playerName) {
@@ -27,6 +30,25 @@ public class PlayerHandler {
 			p.update(w);
 		}
 
+	}
+
+	public String listPlayers() {
+		String out = new String();
+
+		for (Player player : players.values())
+			out = out.concat(player.playerName + " ");
+		return out;
+
+	}
+
+	public ArrayList<Player> getPlayers() {
+		ArrayList<Player> out = new ArrayList<>(players.values());
+		return out;
+	}
+
+	public void removePlayer(String name) {
+		players.remove(name);
+		System.out.println("Removed player: " + name);
 	}
 
 }

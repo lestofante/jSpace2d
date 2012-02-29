@@ -25,4 +25,10 @@ public class ClientNetworkHandler extends NetworkHandler {
 
 	}
 
+	@Override
+	protected void update(ArrayList<Worker> w) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

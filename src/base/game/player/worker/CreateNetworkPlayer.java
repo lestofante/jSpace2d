@@ -1,59 +1,28 @@
 package base.game.player.worker;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 import base.game.GameHandler;
-import base.worker.NetworkWorker;
+import base.worker.Worker;
 
-public class CreateNetworkPlayer extends NetworkWorker {
-	private static final int usernameSize = 20;
-	private static final int passwordSize = 20;
+public class CreateNetworkPlayer implements Worker {
 
 	String username;
-	String password;
-	SelectionKey key;
+	byte shipID;
+	SocketChannel channel;
 
-	@Override
-	public boolean read(ByteBuffer buf) {
-		try {
-			for (int i = 0; i < usernameSize; i++)
-				username += buf.getChar();
-			for (int i = 0; i < passwordSize; i++)
-				password += buf.getChar();
-			username = username.trim();
-			password = password.trim();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public void setKey(SelectionKey key) {
-		this.key = key;
+	public CreateNetworkPlayer(String username, byte shipID, SocketChannel channel) {
+		this.username = username;
+		this.shipID = shipID;
+		this.channel = channel;
 	}
 
 	@Override
 	public void update(GameHandler g) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void write(ByteBuffer buf) {
-		int i = 0;
-		for (; i < username.length(); i++)
-			buf.putChar(username.charAt(i));
-		for (; i < usernameSize; i++) {
-			buf.putChar(' ');
-		}
-
-		i = 0;
-		for (; i < password.length(); i++)
-			buf.putChar(username.charAt(i));
-		for (; i < passwordSize; i++) {
-			buf.putChar(' ');
+		try {
+			g.playerHandler.createPlayer(username, channel);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

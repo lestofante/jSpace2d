@@ -38,9 +38,7 @@ public abstract class NetworkHandler {
 
 	public abstract void read(ArrayList<Worker> w);
 
-	public ArrayList<Worker> update() throws IOException {
-		return sh.update();
-	}
+	protected abstract void update(ArrayList<Worker> w) throws IOException;
 
 	public abstract void write(ArrayList<Worker> wOUT);
 

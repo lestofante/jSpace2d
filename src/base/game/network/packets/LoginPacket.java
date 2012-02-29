@@ -5,14 +5,23 @@ import java.nio.ByteBuffer;
 
 public class LoginPacket extends TCP_Packet {
 
-	private final String userName;
+	private final String username;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public byte getShipID() {
+		return shipID;
+	}
+
 	private final byte shipID;
 
 	public LoginPacket(String userName, byte shipID) {
 		super(PacketType.LOGIN);
 		if (userName.length() > 30)
 			userName = userName.substring(0, 30);
-		this.userName = userName;
+		this.username = userName;
 		this.shipID = shipID;
 	}
 
@@ -24,15 +33,14 @@ public class LoginPacket extends TCP_Packet {
 
 		int i = 0;
 		try {
-			for (; i < userName.getBytes("ASCII").length; i++)
-				out.put(userName.getBytes("ASCII")[i]);
+			for (; i < username.getBytes("ASCII").length; i++)
+				out.put(username.getBytes("ASCII")[i]);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		for (; i < 30; i++)
-			out.put((byte) -127);
+			out.put((byte) 32);
 		out.put(shipID);
 		out.flip();
 		return out;
