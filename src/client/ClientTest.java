@@ -16,11 +16,7 @@ public class ClientTest {
 	static GraphicsManager gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
 
 	public static void main(String[] args) {
-		/*
-		 * Thread graphicsThread = new Thread(gr); graphicsThread.start();
-		 * while(true){ g.update(); }
-		 */
-
+		new ClientTest();
 	}
 
 }
