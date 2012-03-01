@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import base.worker.Worker;
 
 public class PlayerHandler {
-	protected Logger log = LoggerFactory.getLogger(this.getClass());
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	protected HashMap<String, Player> players = new HashMap<>();
 
 	public PlayerHandler() throws IOException {
@@ -51,7 +51,7 @@ public class PlayerHandler {
 	}
 
 	public void removePlayer(Player player) {
-		players.remove(player);
+		players.remove(player.getPlayerName());
 		System.out.println("Removed player: " + player.getPlayerName());
 	}
 

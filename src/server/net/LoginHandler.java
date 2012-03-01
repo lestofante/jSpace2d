@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import server.net.workers.Login;
+import server.net.worker.Login;
 import base.game.network.packets.LoginPacket;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
@@ -34,7 +34,6 @@ public class LoginHandler {
 	}
 
 	public void checkForLoginRequests(ArrayList<Worker> w) throws IOException {
-
 		Login wLogin = null;
 
 		if (!pendingConnections.isEmpty()) {

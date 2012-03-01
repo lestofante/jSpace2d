@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import base.game.entity.EntityHandler;
 import base.game.network.NetworkHandler;
 import base.game.player.PlayerHandler;
 import base.worker.Worker;
 
 public abstract class GameHandler {
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	public EntityHandler entityHandler;
 	public PlayerHandler playerHandler;
 	public final AtomicBoolean run = new AtomicBoolean();

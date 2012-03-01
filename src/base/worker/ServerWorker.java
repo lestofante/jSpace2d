@@ -3,7 +3,7 @@ package base.worker;
 import server.ServerGameHandler;
 import base.game.GameHandler;
 
-public abstract class ServerWorker implements Worker {
+public abstract class ServerWorker extends Worker {
 
 	@Override
 	public int execute(GameHandler g) {

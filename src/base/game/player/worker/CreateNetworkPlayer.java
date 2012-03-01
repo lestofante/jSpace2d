@@ -5,7 +5,7 @@ import java.nio.channels.SocketChannel;
 import base.game.GameHandler;
 import base.worker.Worker;
 
-public class CreateNetworkPlayer implements Worker {
+public class CreateNetworkPlayer extends Worker {
 
 	String username;
 	byte shipID;
@@ -25,7 +25,7 @@ public class CreateNetworkPlayer implements Worker {
 			SetObserver setObserver = new SetObserver(username);
 			setObserver.execute(g);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error creating player", e);
 			return -1;
 		}
 		return 0;

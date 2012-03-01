@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jbox2d.common.Vec2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.common.AsyncActionBus;
 import base.game.entity.physics.PhysicsHandler;
@@ -19,20 +21,21 @@ import base.worker.Worker;
 
 public class EntityHandler {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final LinkedList<Integer> unusedIDs = new LinkedList<>();
 	private int currentID = 0;
 	private final HashMap<Integer, Entity> entityMap = new HashMap<>();
 
-	/* for physic */
-	protected final PhysicsHandler phisic;
+	/* for physics */
+	protected final PhysicsHandler phisicsHandler;
 
 	/* for graphics */
 	private final AsyncActionBus bus;
 
 	public EntityHandler(AsyncActionBus graphicBus, AtomicInteger step) {
-		phisic = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
+		phisicsHandler = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
 		this.bus = graphicBus;
-		phisic.start();
+		phisicsHandler.start();
 	}
 
 	public void setObserved(int entityID) {
@@ -49,6 +52,8 @@ public class EntityHandler {
 
 		infoBody.setOwner(e);
 
+		log.debug("Created entity with ID: {}", id);
+
 		if (infoBody != null) {
 			e.infoBody = infoBody;
 			createGraphics(id, infoBody, graphicModelName);
@@ -63,14 +68,14 @@ public class EntityHandler {
 	}
 
 	private PhysicalObject createPhisicalObject(BodyBlueprint bodyBlueprint) {
-		return phisic.addPhysicalObject(bodyBlueprint);
+		return phisicsHandler.addPhysicalObject(bodyBlueprint);
 	}
 
-	private void destroyBody(PhysicalObject infoBody) {
-		phisic.removeBody(infoBody);
+	private void removePhysicalObject(PhysicalObject infoBody) {
+		phisicsHandler.removePhysicalObject(infoBody);
 	}
 
-	private void destroyGraphic(int ID) {
+	private void destroyGraphicalObject(int ID) {
 		bus.addGraphicsAction(new G_RemoveGameRenderable(ID));
 	}
 
@@ -89,18 +94,18 @@ public class EntityHandler {
 	public void removeEntity(int id) {
 		removeID(id);
 		Entity e = entityMap.remove(id);
-		destroyBody(e.infoBody);
-		destroyGraphic(e.entityID);
+		removePhysicalObject(e.infoBody);
+		destroyGraphicalObject(e.entityID);
 	}
 
 	private void removeID(int ID) {
 		if (ID < currentID) {
-			unusedIDs.add(currentID);
+			unusedIDs.add(ID);
 		}
 	}
 
 	public void update(ArrayList<Worker> w) {
-		phisic.update(w);
+		phisicsHandler.update(w);
 	}
 
 	public Entity getEntity(int ID) {

@@ -29,7 +29,6 @@ public class PacketRecognizer {
 		byte shipID = in.get();
 
 		out = new LoginPacket(username, shipID);
-		log.debug("Recognized login packet");
 		return out;
 	}
 }

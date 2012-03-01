@@ -2,7 +2,7 @@ package base.worker;
 
 import base.game.GameHandler;
 
-public abstract class NetworkWorker implements Worker {
+public abstract class NetworkWorker extends Worker {
 
 	public static enum PacketType {
 		Login;

@@ -24,6 +24,7 @@ public class ClientGameHandler extends GameHandler {
 
 		try {
 			kkSocket = SocketChannel.open(new InetSocketAddress(serverAddress, 9999));
+			log.debug("Opening connection with {}", kkSocket.getRemoteAddress());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -37,21 +38,21 @@ public class ClientGameHandler extends GameHandler {
 			e.printStackTrace();
 		}
 		send(lPacket, kkSocket);
-		/*
-				while (true)
-					try {
-						System.out.println(kkSocket.isConnected());
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-		*/
+
+		while (true)
+			try {
+				log.info("Still connected: {}", kkSocket.isConnected());
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
 	}
 
 	private void send(LoginPacket lPacket, SocketChannel kkSocket) {
 
 		try {
-			System.out.println("Wrote " + kkSocket.write(lPacket.getDataBuffer()));
+			log.debug("Wrote {} bytes", kkSocket.write(lPacket.getDataBuffer()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

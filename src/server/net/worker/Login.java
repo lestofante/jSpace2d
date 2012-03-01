@@ -1,4 +1,4 @@
-package server.net.workers;
+package server.net.worker;
 
 import java.nio.channels.SocketChannel;
 
@@ -44,7 +44,7 @@ public class Login extends ServerWorker {
 		return 0;
 
 		/*
-		 * ci sei? sì allora il problema non si gra quì, a the che eccezzione
+		 * ci sei? s?? allora il problema non si gra qu??, a the che eccezzione
 		 * dice?
 		 */
 		/*
@@ -54,7 +54,7 @@ public class Login extends ServerWorker {
 		 * creare il giocatore e a questo punto come dicevi tu, registriamo il
 		 * channel nel selector, ok? perfetto creiamo un altro worker? ah,
 		 * piccolo particolare bisogna ancora sistemare il connection manager
-		 * guarda sì un worker apposito, come mai?
+		 * guarda s?? un worker apposito, come mai?
 		 */
 	}
 }

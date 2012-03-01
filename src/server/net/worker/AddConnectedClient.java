@@ -1,4 +1,4 @@
-package server.net.workers;
+package server.net.worker;
 
 import java.nio.channels.SocketChannel;
 

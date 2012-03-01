@@ -1,7 +1,7 @@
 package base.game.entity.physics;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -9,6 +9,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.game.entity.physics.common.BodyBlueprint;
 import base.game.entity.physics.common.Collidable;
@@ -23,12 +25,14 @@ import base.worker.Worker;
  */
 public class PhysicsHandler {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private final float TIMESTEP;
 
 	private final AtomicInteger step;
 	private final World physicWorld;
-	private final TreeMap<Integer, Collidable> physicalBodies = new TreeMap<>();
-	private final TreeMap<Integer, Radar> radars = new TreeMap<>();
+	private final LinkedList<Collidable> collidables = new LinkedList<>();
+	private final LinkedList<Radar> radars = new LinkedList<>();
 
 	private long delta;
 	private long timeBuffer = 0;
@@ -63,11 +67,9 @@ public class PhysicsHandler {
 			body.createFixture(t.getFixtureDef());
 			out = new Collidable(body);
 			((Collidable) out).updateSharedPosition();
-
-			int ID = getNewBodyID();
-			physicalBodies.put(ID, (Collidable) out);
-			System.out.println("New element in world! ID:" + ID);
-			System.out.println("elements in world:" + physicWorld.getBodyCount());
+			collidables.add((Collidable) out);
+			log.debug("New collidable in world");
+			log.debug("Collidables in world: {}", physicWorld.getBodyCount());
 			return out;
 		}
 		return out;
@@ -75,7 +77,7 @@ public class PhysicsHandler {
 
 	private Radar createRadar(Vec2 extensions) {
 		Radar out = new Radar(extensions.x, extensions.y);
-		radars.put(getNewRadarID(), out);
+		radars.add(out);
 		return out;
 	}
 
@@ -83,30 +85,33 @@ public class PhysicsHandler {
 		return (System.nanoTime() - delta);
 	}
 
-	private Integer getNewBodyID() {
-		int potentialID = 0;
+	/*
+		private Integer getNewBodyID() {
+			int potentialID = 0;
 
-		while (physicalBodies.containsKey(new Integer(potentialID)))
-			potentialID++;
-		return new Integer(potentialID);
-	}
-
-	private Integer getNewRadarID() {
-		int potentialID = 0;
-
-		while (radars.containsKey(new Integer(potentialID)))
-			potentialID++;
-		return new Integer(potentialID);
-	}
-
-	public void removeBody(PhysicalObject infoBody) {
-		Collidable deletedBody = physicalBodies.remove(infoBody);
-		if (deletedBody != null) {
-			physicWorld.destroyBody(deletedBody.getBody());
-			System.out.println("Removed element in world! ID:" + infoBody);
+			while (collidables.containsKey(new Integer(potentialID)))
+				potentialID++;
+			return new Integer(potentialID);
 		}
-		System.out.println("Failed to remove element in world! ID:" + infoBody);
 
+		private Integer getNewRadarID() {
+			int potentialID = 0;
+
+			while (radars.containsKey(new Integer(potentialID)))
+				potentialID++;
+			return new Integer(potentialID);
+		}
+	*/
+
+	public void removePhysicalObject(PhysicalObject toRemove) {
+		if (toRemove instanceof Collidable) {
+			Collidable temp = (Collidable) toRemove;
+			physicWorld.destroyBody(temp.getBody());
+			collidables.remove(temp);
+		} else if (toRemove instanceof Radar) {
+			Radar temp = (Radar) toRemove;
+			radars.remove(temp);
+		}
 	}
 
 	public void start() {
@@ -119,7 +124,7 @@ public class PhysicsHandler {
 	private void step() throws Exception {
 
 		sharedLock.writeLock().lock();
-		for (Collidable info : physicalBodies.values()) {
+		for (Collidable info : collidables) {
 			info.updateSharedPosition();
 		}
 		sharedLock.writeLock().unlock();
@@ -174,7 +179,7 @@ public class PhysicsHandler {
 	}
 
 	private void applyCollidableActions() {
-		for (Collidable collidable : physicalBodies.values()) {
+		for (Collidable collidable : collidables) {
 			for (CollidableAction action : collidable.getCollidableActions()) {
 				action.apply(collidable.getBody());
 			}
@@ -182,7 +187,7 @@ public class PhysicsHandler {
 	}
 
 	private void clearCollidableActions() {
-		for (Collidable collidable : physicalBodies.values()) {
+		for (Collidable collidable : collidables) {
 			collidable.clearCollidableActions();
 		}
 	}

@@ -25,10 +25,10 @@ import base.graphics.object.GameRenderable;
 
 public class GraphicsManager implements Runnable {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private static void loadNatives() {
-		Logger staticLog = LoggerFactory.getLogger(base.graphics.GraphicsManager.class);
+		Logger staticLog = LoggerFactory.getLogger("Natives Loader");
 		staticLog.debug("Loading natives");
 		try {
 			String osName = System.getProperty("os.name");

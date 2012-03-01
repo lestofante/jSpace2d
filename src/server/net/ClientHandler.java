@@ -55,7 +55,7 @@ public class ClientHandler {
 
 		key.cancel();
 
-		log.info("Disconnected player: {}", key.attachment());
+		log.info("Disconnected player: {}", ((Player) key.attachment()).getPlayerName());
 
 		return new RemoveNetworkPlayer(key);
 	}
@@ -124,11 +124,11 @@ public class ClientHandler {
 					if (input != null)
 						w.add(input);
 				} catch (IOException e) {
-					w.add(disconnectAndRemove(key));
 					log.error("Error reading from channel", e);
+					w.add(disconnectAndRemove(key));
 				} catch (Exception e) {
-					w.add(disconnectAndRemove(key));
 					log.error("Error reading from channel", e);
+					w.add(disconnectAndRemove(key));
 				}
 			}
 			keyIterator.remove();

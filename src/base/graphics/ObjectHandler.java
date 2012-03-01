@@ -52,10 +52,10 @@ public class ObjectHandler {
 	}
 
 	private Mesh loadMesh(Path pathToModel) {
-		log.debug("loading: {}", pathToModel.toString());
+		log.debug("Loading: {}", pathToModel.toString());
 		ArrayList<Triangle> triangles = SimpleObjLoader.loadGeometry(pathToModel);
 
-		log.debug("loaded: {} with {} triangles", pathToModel.getFileName().toString(), triangles.size());
+		log.debug("Loaded: {} with {} triangles", pathToModel.getFileName().toString(), triangles.size());
 
 		Mesh out = new Mesh(triangles, pathToModel.getFileName().toString());
 		return out;

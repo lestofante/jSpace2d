@@ -6,7 +6,7 @@ import base.game.player.Player;
 import base.game.resources.BodyBluePrints;
 import base.worker.Worker;
 
-public class SetObserver implements Worker {
+public class SetObserver extends Worker {
 
 	private final String username;
 
@@ -22,7 +22,7 @@ public class SetObserver implements Worker {
 		if (currentEntity != null)
 			g.entityHandler.removeEntity(currentEntity.entityID);
 		// create new observer entity
-		int entityID = g.entityHandler.createEntity("Observer", BodyBluePrints.requestObserver(), player);
+		int entityID = g.entityHandler.createEntity("observer.obj", BodyBluePrints.requestObserver(), player);
 		// set the new entity to the player
 		player.setAsObserver(g.entityHandler.getEntity(entityID));
 		// tell graphics to follow the player's entity
