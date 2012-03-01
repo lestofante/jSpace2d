@@ -1,4 +1,4 @@
-package base.game.entity.graphics.object;
+package base.graphics.object;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;

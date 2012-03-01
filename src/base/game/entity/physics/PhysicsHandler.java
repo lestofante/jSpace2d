@@ -27,32 +27,39 @@ public class PhysicsHandler {
 	private final float TIMESTEP;
 
 	private final AtomicInteger step;
-	World physicWorld;
-	public TreeMap<Integer, InfoBodyContainer> sortedOggetto2D = new TreeMap<>();
+	private final World physicWorld;
+	private final TreeMap<Integer, InfoBodyContainer> physicalBodies = new TreeMap<>();
+	private final TreeMap<Integer, InfoBodyContainer> radars = new TreeMap<>();
 
-	private HashMap<Integer, Vec2[]> forcesToApply = new HashMap<>();
-	private HashMap<Integer, Float> torquesToApply = new HashMap<>();
+	private final HashMap<Integer, Vec2[]> forcesToApply = new HashMap<>();
+	private final HashMap<Integer, Float> torquesToApply = new HashMap<>();
 
 	private long delta;
 	private long timeBuffer = 0;
 	private int pUpdates = 0;
 	private long lastCheck;
-	private AtomicBoolean running = new AtomicBoolean(false);
-	private long physicsStep;
+	private final AtomicBoolean running = new AtomicBoolean(false);
+	private final long physicsStep;
 
-	private ReentrantReadWriteLock sharedLock;
+	private final ReentrantReadWriteLock sharedLock;
 
 	public PhysicsHandler(long timestepNanos, ReentrantReadWriteLock sharedLock, AtomicInteger step) {
-		TIMESTEP = timestepNanos / 1000000000f;
-		physicsStep = timestepNanos;
+		this.TIMESTEP = timestepNanos / 1000000000f;
+		this.physicsStep = timestepNanos;
 		Vec2 worldGravity = new Vec2(0.0f, -10.0f);
-		physicWorld = new World(worldGravity, true);
+		this.physicWorld = new World(worldGravity, true);
 		this.sharedLock = sharedLock;
 		this.step = step;
 	}
 
 	public InfoBodyContainer addBody(BodyBlueprint t) {
 		InfoBodyContainer out = null;
+
+		if (t.getFixtureDef() == null) {
+			// TODO find a better way to do this!
+			// createRadar((AABB) t.getBodyDef().userData);
+		}
+
 		Body body = physicWorld.createBody(t.getBodyDef());
 
 		if (body != null) {
@@ -60,8 +67,8 @@ public class PhysicsHandler {
 			out = new InfoBodyContainer(body);
 			out.updateSharedPosition();
 
-			int ID = getNewID();
-			sortedOggetto2D.put(ID, out);
+			int ID = getNewBodyID();
+			physicalBodies.put(ID, out);
 			System.out.println("New element in world! ID:" + ID);
 			System.out.println("elements in world:" + physicWorld.getBodyCount());
 			return out;
@@ -82,13 +89,13 @@ public class PhysicsHandler {
 
 	private void applyForces() {
 		for (Map.Entry<Integer, Vec2[]> forceToBody : forcesToApply.entrySet()) {
-			sortedOggetto2D.get(forceToBody.getKey()).body.applyForce(forceToBody.getValue()[0], forceToBody.getValue()[1]);
+			physicalBodies.get(forceToBody.getKey()).body.applyForce(forceToBody.getValue()[0], forceToBody.getValue()[1]);
 		}
 	}
 
 	private void applyTorques() {
 		for (Map.Entry<Integer, Float> torqueToBody : torquesToApply.entrySet()) {
-			sortedOggetto2D.get(torqueToBody.getKey()).body.applyTorque(torqueToBody.getValue());
+			physicalBodies.get(torqueToBody.getKey()).body.applyTorque(torqueToBody.getValue());
 		}
 	}
 
@@ -96,10 +103,18 @@ public class PhysicsHandler {
 		return (System.nanoTime() - delta);
 	}
 
-	private Integer getNewID() {
+	private Integer getNewBodyID() {
 		int potentialID = 0;
 
-		while (sortedOggetto2D.containsKey(new Integer(potentialID)))
+		while (physicalBodies.containsKey(new Integer(potentialID)))
+			potentialID++;
+		return new Integer(potentialID);
+	}
+
+	private Integer getNewRadarID() {
+		int potentialID = 0;
+
+		while (radars.containsKey(new Integer(potentialID)))
 			potentialID++;
 		return new Integer(potentialID);
 	}
@@ -109,7 +124,7 @@ public class PhysicsHandler {
 	}
 
 	public void removeBody(Body b) {
-		InfoBodyContainer deletedBody = sortedOggetto2D.remove(b);
+		InfoBodyContainer deletedBody = physicalBodies.remove(b);
 		if (deletedBody != null) {
 			physicWorld.destroyBody(deletedBody.body);
 			System.out.println("Removed element in world! ID:" + b);
@@ -128,7 +143,7 @@ public class PhysicsHandler {
 	private void step() throws Exception {
 
 		sharedLock.writeLock().lock();
-		for (InfoBodyContainer info : sortedOggetto2D.values()) {
+		for (InfoBodyContainer info : physicalBodies.values()) {
 			info.updateSharedPosition();
 		}
 		sharedLock.writeLock().unlock();
@@ -164,7 +179,6 @@ public class PhysicsHandler {
 						pUpdates++;
 						updatePPS();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -179,7 +193,6 @@ public class PhysicsHandler {
 					if (milliseconds > 0)
 						Thread.sleep(milliseconds);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

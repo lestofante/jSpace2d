@@ -1,4 +1,4 @@
-package base.game.entity.graphics.object.common;
+package base.graphics.object.common;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;

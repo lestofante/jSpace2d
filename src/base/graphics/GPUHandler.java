@@ -1,4 +1,4 @@
-package base.game.entity.graphics;
+package base.graphics;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

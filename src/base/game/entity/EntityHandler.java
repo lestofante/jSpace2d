@@ -9,11 +9,12 @@ import org.jbox2d.common.Vec2;
 
 import base.common.AsyncActionBus;
 import base.common.InfoBodyContainer;
-import base.game.entity.graphics.actions.G_CreateGameRenderableAction;
-import base.game.entity.graphics.actions.G_RemoveGameRenderable;
 import base.game.entity.physics.PhysicsHandler;
 import base.game.entity.physics.common.BodyBlueprint;
 import base.game.player.Player;
+import base.graphics.actions.G_CreateGameRenderableAction;
+import base.graphics.actions.G_FollowObjectWithCamera;
+import base.graphics.actions.G_RemoveGameRenderable;
 import base.worker.Worker;
 
 public class EntityHandler {
@@ -32,6 +33,11 @@ public class EntityHandler {
 		phisic = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
 		this.bus = graphicBus;
 		phisic.start();
+	}
+
+	public void setObserved(int entityID) {
+		G_FollowObjectWithCamera gA = new G_FollowObjectWithCamera(getEntity(entityID).infoBody);
+		bus.addGraphicsAction(gA);
 	}
 
 	public int createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
@@ -97,4 +103,7 @@ public class EntityHandler {
 		phisic.update(w);
 	}
 
+	public Entity getEntity(int ID) {
+		return entityMap.get(ID);
+	}
 }

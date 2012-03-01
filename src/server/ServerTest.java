@@ -3,7 +3,7 @@ package server;
 import org.lwjgl.opengl.DisplayMode;
 
 import base.common.AsyncActionBus;
-import base.game.entity.graphics.GraphicsManager;
+import base.graphics.GraphicsManager;
 
 public class ServerTest {
 

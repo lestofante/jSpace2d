@@ -1,4 +1,4 @@
-package base.game.entity.graphics;
+package base.graphics;
 
 import java.io.File;
 import java.nio.FloatBuffer;
@@ -14,12 +14,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import base.common.AsyncActionBus;
-import base.game.entity.graphics.actions.G_CreateGameRenderableAction;
-import base.game.entity.graphics.actions.G_FollowObjectWithCamera;
-import base.game.entity.graphics.actions.G_RemoveGameRenderable;
-import base.game.entity.graphics.actions.GraphicAction;
-import base.game.entity.graphics.object.Camera;
-import base.game.entity.graphics.object.GameRenderable;
+import base.graphics.actions.G_CreateGameRenderableAction;
+import base.graphics.actions.G_FollowObjectWithCamera;
+import base.graphics.actions.G_RemoveGameRenderable;
+import base.graphics.actions.GraphicAction;
+import base.graphics.object.Camera;
+import base.graphics.object.GameRenderable;
 
 public class GraphicsManager implements Runnable {
 
@@ -40,20 +40,21 @@ public class GraphicsManager implements Runnable {
 			e.printStackTrace();
 		}
 	}
+
 	private int fps;
-	private boolean fullScreen;
+	private final boolean fullScreen;
 	private long lastFPS;
 	private long lastFrame;
-	private DisplayMode mode;
+	private final DisplayMode mode;
 	private FloatBuffer pos;
-	private HashMap<Integer, GameRenderable> toDraw = new HashMap<Integer, GameRenderable>();
+	private final HashMap<Integer, GameRenderable> toDraw = new HashMap<Integer, GameRenderable>();
 	private ArrayList<GraphicAction> toProcess = new ArrayList<GraphicAction>();
-	private boolean vSync;
+	private final boolean vSync;
 
 	private Camera camera;
 	private ObjectHandler oHandler;
 
-	private AsyncActionBus asyncActionBus;
+	private final AsyncActionBus asyncActionBus;
 
 	/**
 	 * Manages graphics.
@@ -194,7 +195,7 @@ public class GraphicsManager implements Runnable {
 				break;
 
 			case FOLLOW_OBJECT:
-				camera.sharedTransform = toDraw.get(((G_FollowObjectWithCamera) action).ID).transform;
+				camera.sharedTransform = ((G_FollowObjectWithCamera) action).info.transform;
 			}
 
 		}

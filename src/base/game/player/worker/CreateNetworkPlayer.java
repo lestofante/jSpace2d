@@ -21,6 +21,9 @@ public class CreateNetworkPlayer implements Worker {
 	public int execute(GameHandler g) {
 		try {
 			g.playerHandler.createPlayer(username, channel);
+			// set as Observer
+			SetObserver setObserver = new SetObserver(username);
+			setObserver.execute(g);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;

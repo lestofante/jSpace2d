@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import base.game.actions.GameAction;
-import base.game.entity.graphics.actions.GraphicAction;
+import base.graphics.actions.GraphicAction;
 
 /**
  * 

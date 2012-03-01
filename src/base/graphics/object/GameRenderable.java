@@ -1,4 +1,4 @@
-package base.game.entity.graphics.object;
+package base.graphics.object;
 
 public abstract class GameRenderable {
 

@@ -9,8 +9,8 @@ public class BodyBlueprint {
 
 	private final FixtureDef fixtureDef;
 
-	public BodyBlueprint(BodyDef bodydef, FixtureDef fixtureDef) {
-		this.bodyDef = bodydef;
+	public BodyBlueprint(BodyDef bodyDef, FixtureDef fixtureDef) {
+		this.bodyDef = bodyDef;
 		this.fixtureDef = fixtureDef;
 	}
 	public BodyDef getBodyDef() {

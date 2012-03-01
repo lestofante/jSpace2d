@@ -38,7 +38,6 @@ public class ClientHandler {
 			reader = Selector.open();
 			writer = Selector.open();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -47,7 +46,6 @@ public class ClientHandler {
 		try {
 			key.channel().close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		key.cancel();
@@ -73,7 +71,6 @@ public class ClientHandler {
 		try {
 			packet = PacketRecognizer.getTCP(buf);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -97,7 +94,6 @@ public class ClientHandler {
 		try {
 			System.out.println("New channel connected: " + clientChannel.getRemoteAddress());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -105,9 +101,8 @@ public class ClientHandler {
 	public void read(ArrayList<Worker> w) {
 		try {
 			reader.selectNow();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		Set<SelectionKey> selectedKeys = reader.selectedKeys();
 
@@ -134,5 +129,4 @@ public class ClientHandler {
 			keyIterator.remove();
 		}
 	}
-
 }

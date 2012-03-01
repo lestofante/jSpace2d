@@ -1,9 +1,8 @@
-package base.game.network;
+package server.net.workers;
 
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
-import server.net.workers.AddConnectedClient;
 import base.game.network.packets.LoginPacket;
 import base.game.player.worker.CreateNetworkPlayer;
 import base.worker.ServerWorker;

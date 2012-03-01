@@ -1,4 +1,4 @@
-package base.game.entity.graphics.object.loaders;
+package base.graphics.object.loaders;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import base.game.entity.graphics.object.common.Triangle;
+import base.graphics.object.common.Triangle;
 
 public class SimpleObjLoader {
 

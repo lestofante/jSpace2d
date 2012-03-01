@@ -36,7 +36,7 @@ public class PlayerHandler {
 		String out = new String();
 
 		for (Player player : players.values())
-			out = out.concat(player.playerName + " ");
+			out = out.concat(player.getPlayerName() + " ");
 		return out;
 
 	}
@@ -48,7 +48,7 @@ public class PlayerHandler {
 
 	public void removePlayer(Player player) {
 		players.remove(player);
-		System.out.println("Removed player: " + player.playerName);
+		System.out.println("Removed player: " + player.getPlayerName());
 	}
 
 }

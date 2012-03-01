@@ -1,4 +1,4 @@
-package base.game.entity.graphics.object;
+package base.graphics.object;
 
 import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBVertexBufferObject;

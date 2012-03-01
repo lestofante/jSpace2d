@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import base.game.network.Login;
+import server.net.workers.Login;
 import base.game.network.packets.LoginPacket;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
@@ -39,6 +39,11 @@ public class LoginHandler {
 			while (entrySetIterator.hasNext()) {
 				Entry<SocketChannel, Long> entry = entrySetIterator.next();
 				if (System.currentTimeMillis() - entry.getValue() > connectionTimeout) {
+					try {
+						throw new Exception("No login arrived before timeout from " + entry.getKey().getRemoteAddress());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					entry.getKey().close();
 					pendingConnections.remove(entry.getKey());
 					continue;
@@ -101,6 +106,7 @@ public class LoginHandler {
 	public void acceptNewConnection() throws IOException {
 		SocketChannel accept = listenerChannel.accept();
 		if (accept != null) {
+			System.out.println("Connection initiated by: " + accept.getRemoteAddress());
 			accept.configureBlocking(false);
 			pendingConnections.put(accept, System.currentTimeMillis());
 		}

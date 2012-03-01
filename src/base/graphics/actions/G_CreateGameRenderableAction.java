@@ -1,4 +1,4 @@
-package base.game.entity.graphics.actions;
+package base.graphics.actions;
 
 /**
  * 

@@ -30,13 +30,22 @@ public class ClientGameHandler extends GameHandler {
 			e.printStackTrace();
 		}
 
-		while (true)
-			try {
-				send(lPacket, kkSocket);
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		send(lPacket, kkSocket);
+		/*
+				while (true)
+					try {
+						System.out.println(kkSocket.isConnected());
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+		*/
 	}
 
 	private void send(LoginPacket lPacket, SocketChannel kkSocket) {

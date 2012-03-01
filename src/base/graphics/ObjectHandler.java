@@ -1,4 +1,4 @@
-package base.game.entity.graphics;
+package base.graphics;
 
 import java.io.IOException;
 import java.nio.file.DirectoryIteratorException;
@@ -10,11 +10,11 @@ import java.util.HashMap;
 
 import org.lwjgl.opengl.ARBBufferObject;
 
-import base.game.entity.graphics.object.RAMRenderable;
-import base.game.entity.graphics.object.VBORenderable;
-import base.game.entity.graphics.object.common.Mesh;
-import base.game.entity.graphics.object.common.Triangle;
-import base.game.entity.graphics.object.loaders.SimpleObjLoader;
+import base.graphics.object.RAMRenderable;
+import base.graphics.object.VBORenderable;
+import base.graphics.object.common.Mesh;
+import base.graphics.object.common.Triangle;
+import base.graphics.object.loaders.SimpleObjLoader;
 
 public class ObjectHandler {
 
