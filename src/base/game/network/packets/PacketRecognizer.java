@@ -2,7 +2,12 @@ package base.game.network.packets;
 
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PacketRecognizer {
+
+	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketRecognizer.class);
 
 	public static TCP_Packet getTCP(ByteBuffer in) throws Exception {
 
@@ -24,7 +29,7 @@ public class PacketRecognizer {
 		byte shipID = in.get();
 
 		out = new LoginPacket(username, shipID);
-		System.out.println("Recognized login packet");
+		log.debug("Recognized login packet");
 		return out;
 	}
 }

@@ -27,8 +27,7 @@ public class ServerNetworkHandler extends NetworkHandler {
 			loginHandler.checkForLoginRequests(w);
 			clientHandler.read(w);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error reading from network", e);
 		}
 	}
 
@@ -42,8 +41,7 @@ public class ServerNetworkHandler extends NetworkHandler {
 		try {
 			clientHandler.addConnectedClient(channel, player);
 		} catch (ClosedChannelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error adding client", e);
 		}
 	}
 

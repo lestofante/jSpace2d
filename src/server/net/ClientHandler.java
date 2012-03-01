@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.PacketType;
@@ -30,6 +33,7 @@ public class ClientHandler {
 	Selector writer = null;
 
 	private final int MTU;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public ClientHandler(int MTU) {
 		this.MTU = MTU;
@@ -38,7 +42,7 @@ public class ClientHandler {
 			reader = Selector.open();
 			writer = Selector.open();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Failed opening a selector", e);
 		}
 	}
 
@@ -46,11 +50,12 @@ public class ClientHandler {
 		try {
 			key.channel().close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error removing player", e);
 		}
+
 		key.cancel();
 
-		System.out.println("Disconnected player: " + key.attachment());
+		log.info("Disconnected player: {}", key.attachment());
 
 		return new RemoveNetworkPlayer(key);
 	}
@@ -62,7 +67,7 @@ public class ClientHandler {
 		int numBytesRead = channel.read(buf);
 
 		if (numBytesRead == -1) {
-			throw new Exception("Error reading from channel");
+			throw new Exception("Read EOF from channel");
 		}
 
 		buf.flip();
@@ -71,7 +76,7 @@ public class ClientHandler {
 		try {
 			packet = PacketRecognizer.getTCP(buf);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error recognizing packet", e);
 		}
 
 		if (packet != null) {
@@ -92,9 +97,9 @@ public class ClientHandler {
 		clientChannel.register(reader, SelectionKey.OP_READ, player);
 		clientChannel.register(writer, SelectionKey.OP_WRITE, player);
 		try {
-			System.out.println("New channel connected: " + clientChannel.getRemoteAddress());
+			log.info("New client connected: {}", clientChannel.getRemoteAddress());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error adding client", e);
 		}
 	}
 
@@ -120,10 +125,10 @@ public class ClientHandler {
 						w.add(input);
 				} catch (IOException e) {
 					w.add(disconnectAndRemove(key));
-					e.printStackTrace();
+					log.error("Error reading from channel", e);
 				} catch (Exception e) {
 					w.add(disconnectAndRemove(key));
-					e.printStackTrace();
+					log.error("Error reading from channel", e);
 				}
 			}
 			keyIterator.remove();

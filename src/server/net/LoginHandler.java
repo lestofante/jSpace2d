@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import server.net.workers.Login;
 import base.game.network.packets.LoginPacket;
 import base.game.network.packets.PacketRecognizer;
@@ -19,6 +22,7 @@ import base.worker.Worker;
 
 public class LoginHandler {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ServerSocketChannel listenerChannel;
 	private final HashMap<SocketChannel, Long> pendingConnections = new HashMap<>();
 	private final static long connectionTimeout = 10000;
@@ -40,9 +44,9 @@ public class LoginHandler {
 				Entry<SocketChannel, Long> entry = entrySetIterator.next();
 				if (System.currentTimeMillis() - entry.getValue() > connectionTimeout) {
 					try {
-						throw new Exception("No login arrived before timeout from " + entry.getKey().getRemoteAddress());
+						throw new Exception();
 					} catch (Exception e) {
-						e.printStackTrace();
+						log.error("No login arrived before timeout from {}", entry.getKey().getRemoteAddress(), e);
 					}
 					entry.getKey().close();
 					pendingConnections.remove(entry.getKey());
@@ -69,25 +73,25 @@ public class LoginHandler {
 					if (packet.packetType == PacketType.LOGIN) {
 						wLogin = new Login((LoginPacket) packet);
 						wLogin.setChannel(entry.getKey());
-						System.out.println("Received a login from address: " + entry.getKey().getRemoteAddress() + " with username: " + ((LoginPacket) packet).getUsername());
+						log.debug("Received a login from address: {} with username: {}", entry.getKey().getRemoteAddress(), ((LoginPacket) packet).getUsername());
 						w.add(wLogin);
 						pendingConnections.remove(entry.getKey());
 					} else {
 						entry.getKey().close();
 						pendingConnections.remove(entry.getKey());
 						try {
-							throw new Exception("Not a login packet");
+							throw new Exception();
 						} catch (Exception e) {
-							e.printStackTrace();
+							log.error("Not a login packet", e);
 						}
 					}
 				} else {
 					entry.getKey().close();
 					pendingConnections.remove(entry.getKey());
 					try {
-						throw new Exception("Error handling packet");
+						throw new Exception();
 					} catch (Exception e) {
-						e.printStackTrace();
+						log.error("Error handling packet", e);
 					}
 				}
 			}
@@ -106,7 +110,7 @@ public class LoginHandler {
 	public void acceptNewConnection() throws IOException {
 		SocketChannel accept = listenerChannel.accept();
 		if (accept != null) {
-			System.out.println("Connection initiated by: " + accept.getRemoteAddress());
+			log.info("Connection initiated by: {}", accept.getRemoteAddress());
 			accept.configureBlocking(false);
 			pendingConnections.put(accept, System.currentTimeMillis());
 		}

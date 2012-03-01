@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.ARBBufferObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.graphics.object.RAMRenderable;
 import base.graphics.object.VBORenderable;
@@ -18,54 +20,54 @@ import base.graphics.object.loaders.SimpleObjLoader;
 
 public class ObjectHandler {
 
-	private HashMap<String, Mesh> models = new HashMap<>();;
-	private Path modelLocation;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final HashMap<String, Mesh> models = new HashMap<>();;
+	private final Path modelLocation;
 
 	public ObjectHandler(Path modelLocation) {
 		this.modelLocation = modelLocation;
 		init();
 	}
 
-	private Mesh getMesh(String modelName) {
+	private Mesh getMesh(String modelName) throws Exception {
 		Mesh out = models.get(modelName);
 
-		if (out != null) {
-			return out;
-		} else {
-			System.out.println("Graphical model does not exist");
-			System.exit(-1);
-			return out;
+		if (out == null) {
+			throw new Exception("Graphical model does not exist: " + modelName);
 		}
+
+		return out;
 	}
 
 	private void init() {
+		log.debug("Loading graphical models");
 		ArrayList<Path> modelPaths = searchForModels();
-		System.out.println("size " + modelPaths.size());
 
 		Mesh temp;
 		for (Path pathToModel : modelPaths) {
 			temp = loadMesh(pathToModel);
 			models.put(pathToModel.getFileName().toString(), temp);
 		}
+		log.info("Loaded graphical models");
 	}
 
 	private Mesh loadMesh(Path pathToModel) {
-		System.out.println("loading: " + pathToModel.toString());
+		log.debug("loading: {}", pathToModel.toString());
 		ArrayList<Triangle> triangles = SimpleObjLoader.loadGeometry(pathToModel);
 
-		System.out.println("loaded: " + pathToModel.getFileName().toString() + " with " + triangles.size() + " triangles");
+		log.debug("loaded: {} with {} triangles", pathToModel.getFileName().toString(), triangles.size());
 
 		Mesh out = new Mesh(triangles, pathToModel.getFileName().toString());
 		return out;
 	}
 
-	public RAMRenderable requestRAMMesh(String modelName, float[] transform) {
+	public RAMRenderable requestRAMMesh(String modelName, float[] transform) throws Exception {
 		Mesh temp = getMesh(modelName);
 		RAMRenderable out = new RAMRenderable(temp.verticesBuffer, temp.normalsBuffer, temp.interleavedBuffer, transform);
 		return out;
 	}
 
-	public VBORenderable requestVBOMesh(String modelName, float[] transform) {
+	public VBORenderable requestVBOMesh(String modelName, float[] transform) throws Exception {
 		Mesh temp = getMesh(modelName);
 		if (!temp.VBOInitialized) {
 			temp.vertexVBOID = GPUHandler.createVBOID();

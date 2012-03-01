@@ -5,9 +5,13 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import base.worker.Worker;
 
 public class PlayerHandler {
+	protected Logger log = LoggerFactory.getLogger(this.getClass());
 	protected HashMap<String, Player> players = new HashMap<>();
 
 	public PlayerHandler() throws IOException {
@@ -17,7 +21,7 @@ public class PlayerHandler {
 		if (players.containsKey(name))
 			throw new Exception("Player already present!");
 		players.put(name, new Player(name, channel));
-		System.out.println("Creating player: " + name);
+		log.info("Created player: {}", name);
 	}
 
 	public Player getPlayer(String playerName) {

@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jbox2d.common.Vec2;
 
 import base.common.AsyncActionBus;
-import base.common.InfoBodyContainer;
 import base.game.entity.physics.PhysicsHandler;
 import base.game.entity.physics.common.BodyBlueprint;
+import base.game.entity.physics.common.PhysicalObject;
 import base.game.player.Player;
 import base.graphics.actions.G_CreateGameRenderableAction;
 import base.graphics.actions.G_FollowObjectWithCamera;
@@ -36,7 +36,7 @@ public class EntityHandler {
 	}
 
 	public void setObserved(int entityID) {
-		G_FollowObjectWithCamera gA = new G_FollowObjectWithCamera(getEntity(entityID).infoBody);
+		G_FollowObjectWithCamera gA = new G_FollowObjectWithCamera(getEntity(entityID).infoBody.getTransform());
 		bus.addGraphicsAction(gA);
 	}
 
@@ -45,9 +45,9 @@ public class EntityHandler {
 		Entity e = new Entity(id, player);
 		entityMap.put(id, e);
 
-		InfoBodyContainer infoBody = createPhisic(bodyBlueprint);
+		PhysicalObject infoBody = createPhisicalObject(bodyBlueprint);
 
-		infoBody.body.setUserData(e);
+		infoBody.setOwner(e);
 
 		if (infoBody != null) {
 			e.infoBody = infoBody;
@@ -57,17 +57,17 @@ public class EntityHandler {
 			return -3; // phisic error
 	}
 
-	private void createGraphics(int ID, InfoBodyContainer infoBody, String graphicModelName) {
-		G_CreateGameRenderableAction a = new G_CreateGameRenderableAction(ID, graphicModelName, infoBody.transform);
+	private void createGraphics(int ID, PhysicalObject infoBody, String graphicModelName) {
+		G_CreateGameRenderableAction a = new G_CreateGameRenderableAction(ID, graphicModelName, infoBody.getTransform());
 		bus.addGraphicsAction(a);
 	}
 
-	private InfoBodyContainer createPhisic(BodyBlueprint bodyBlueprint) {
-		return phisic.addBody(bodyBlueprint);
+	private PhysicalObject createPhisicalObject(BodyBlueprint bodyBlueprint) {
+		return phisic.addPhysicalObject(bodyBlueprint);
 	}
 
-	private void destroyBody(InfoBodyContainer infoBody) {
-		phisic.removeBody(infoBody.body);
+	private void destroyBody(PhysicalObject infoBody) {
+		phisic.removeBody(infoBody);
 	}
 
 	private void destroyGraphic(int ID) {
@@ -83,7 +83,7 @@ public class EntityHandler {
 	}
 
 	public void moveEntity(float newX, float newY, int entity) {
-		entityMap.get(entity).infoBody.body.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.body.getAngle());
+		entityMap.get(entity).infoBody.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.getTransform()[2]);
 	}
 
 	public void removeEntity(int id) {

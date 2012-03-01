@@ -6,9 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import base.worker.Worker;
 
 public abstract class NetworkHandler {
+
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public static int getNetworkMTU() {
 		int out = Integer.MAX_VALUE;

@@ -12,6 +12,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.common.AsyncActionBus;
 import base.graphics.actions.G_CreateGameRenderableAction;
@@ -23,22 +25,24 @@ import base.graphics.object.GameRenderable;
 
 public class GraphicsManager implements Runnable {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private static void loadNatives() {
+		Logger staticLog = LoggerFactory.getLogger(base.graphics.GraphicsManager.class);
+		staticLog.debug("Loading natives");
 		try {
 			String osName = System.getProperty("os.name");
 
-			System.out.println("Operating system name => " + osName);
+			staticLog.info("Operating system name => {}", osName);
 
 			File path = new File("Libraries" + File.separator + "lwjgl-2.8.3" + File.separator + "native" + File.separator + osName.toLowerCase());
-
-			System.out.println("Operating system name => " + osName + " " + path.getAbsolutePath());
 
 			System.setProperty("org.lwjgl.librarypath", path.getAbsolutePath());
 
 		} catch (UnsatisfiedLinkError e) {
-			System.err.println("Native code library failed to load.\n" + e);
-			e.printStackTrace();
+			staticLog.error("Native code library failed to load", e);
 		}
+		staticLog.info("Loaded natives");
 	}
 
 	private int fps;
@@ -118,8 +122,8 @@ public class GraphicsManager implements Runnable {
 			Display.create();
 
 		} catch (Exception e) {
-			System.out.println("Error setting up display");
-			System.exit(0);
+			log.error("Error setting up display");
+			System.exit(-1);
 		}
 
 		this.camera = new Camera();
@@ -165,15 +169,21 @@ public class GraphicsManager implements Runnable {
 				GameRenderable temp = toDraw.get(((G_CreateGameRenderableAction) action).iD);
 
 				if (temp == null) {
-					System.out.println("Creating graphical object! ID: " + ((G_CreateGameRenderableAction) action).iD);
-					GameRenderable tempRenderable = oHandler.requestVBOMesh(((G_CreateGameRenderableAction) action).modelName, ((G_CreateGameRenderableAction) action).transform);
+					log.debug("Creating graphical object with ID: {}", ((G_CreateGameRenderableAction) action).iD);
+					GameRenderable tempRenderable = null;
+					try {
+						tempRenderable = oHandler.requestVBOMesh(((G_CreateGameRenderableAction) action).modelName, ((G_CreateGameRenderableAction) action).transform);
+					} catch (Exception e) {
+						log.error("Error loading VBOMesh", e);
+						System.exit(-1);
+					}
 					toDraw.put(((G_CreateGameRenderableAction) action).iD, tempRenderable);
 				} else {
 					try {
-						throw new Exception("Object ID already present!");
+						throw new Exception();
 					} catch (Exception e) {
-						e.printStackTrace();
-						System.exit(0);
+						log.error("Object ID already present: {}", ((G_CreateGameRenderableAction) action).iD, e);
+						System.exit(-1);
 					}
 				}
 				break;
@@ -182,20 +192,20 @@ public class GraphicsManager implements Runnable {
 				temp = toDraw.get(((G_RemoveGameRenderable) action).iD);
 
 				if (temp != null) {
-					System.out.println("Removing a suzanne! ID: " + ((G_RemoveGameRenderable) action).iD);
+					log.debug("Removing graphical obejct with ID: {}", ((G_RemoveGameRenderable) action).iD);
 					toDraw.remove(((G_RemoveGameRenderable) action).iD);
 				} else {
 					try {
-						throw new Exception("Object ID does not exist!");
+						throw new Exception();
 					} catch (Exception e) {
-						e.printStackTrace();
-						System.exit(0);
+						log.error("Object ID does not exist: {}", ((G_RemoveGameRenderable) action).iD, e);
+						System.exit(-1);
 					}
 				}
 				break;
 
 			case FOLLOW_OBJECT:
-				camera.sharedTransform = ((G_FollowObjectWithCamera) action).info.transform;
+				camera.sharedTransform = ((G_FollowObjectWithCamera) action).transform;
 			}
 
 		}
