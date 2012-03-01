@@ -3,6 +3,7 @@ package client;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import base.common.AsyncActionBus;
@@ -34,17 +35,29 @@ public class ClientGameHandler extends GameHandler {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error with thread sleep", e);
 		}
+
 		send(lPacket, kkSocket);
+
+		try {
+			kkSocket.configureBlocking(false);
+		} catch (IOException e) {
+			log.error("Error blocking channel", e);
+		}
 
 		while (true)
 			try {
-				log.info("Still connected: {}", kkSocket.isConnected());
+				if (kkSocket.read(ByteBuffer.allocate(1)) != -1) {
+					log.info("Still connected");
+				} else {
+					log.error("EOF: lost connection to server");
+				}
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				log.error("Error with thread sleep", e);
+			} catch (IOException e) {
+				log.error("Error with connection", e);
 			}
 
 	}
