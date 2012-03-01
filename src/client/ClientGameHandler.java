@@ -11,19 +11,19 @@ import base.game.network.packets.LoginPacket;
 
 public class ClientGameHandler extends GameHandler {
 
-	public ClientGameHandler(AsyncActionBus bus) {
+	public ClientGameHandler(AsyncActionBus bus, String clientName, String serverAddress) {
 		try {
 			this.networkHandler = new ClientNetworkHandler();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		LoginPacket lPacket = new LoginPacket("falskd123asdfasdf", (byte) 0);
+		LoginPacket lPacket = new LoginPacket(clientName, (byte) 0);
 
 		SocketChannel kkSocket = null;
 
 		try {
-			kkSocket = SocketChannel.open(new InetSocketAddress("127.0.0.1", 9999));
+			kkSocket = SocketChannel.open(new InetSocketAddress(serverAddress, 9999));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

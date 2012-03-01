@@ -3,6 +3,7 @@ package base.game.player.worker;
 import java.nio.channels.SelectionKey;
 
 import base.game.GameHandler;
+import base.game.player.Player;
 import base.worker.Worker;
 
 public class RemoveNetworkPlayer implements Worker {
@@ -14,7 +15,8 @@ public class RemoveNetworkPlayer implements Worker {
 	}
 
 	@Override
-	public void update(GameHandler g) {
-		g.playerHandler.removePlayer((String) toRemove.attachment());
+	public int execute(GameHandler g) {
+		g.playerHandler.removePlayer((Player) toRemove.attachment());
+		return 0;
 	}
 }

@@ -12,7 +12,7 @@ public class ClientTest {
 	 */
 
 	static AsyncActionBus bus = new AsyncActionBus();
-	static ClientGameHandler g = new ClientGameHandler(bus);
+	static ClientGameHandler g = new ClientGameHandler(bus, "123431", "192.168.1.2");
 	static GraphicsManager gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
 
 	public static void main(String[] args) {

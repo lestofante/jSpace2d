@@ -46,9 +46,9 @@ public class PlayerHandler {
 		return out;
 	}
 
-	public void removePlayer(String name) {
-		players.remove(name);
-		System.out.println("Removed player: " + name);
+	public void removePlayer(Player player) {
+		players.remove(player);
+		System.out.println("Removed player: " + player.playerName);
 	}
 
 }

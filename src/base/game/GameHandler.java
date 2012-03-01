@@ -14,7 +14,7 @@ public abstract class GameHandler {
 	public PlayerHandler playerHandler;
 	public final AtomicBoolean run = new AtomicBoolean();
 	public final AtomicInteger step = new AtomicInteger();
-	protected NetworkHandler networkHandler;
+	public NetworkHandler networkHandler;
 	public ArrayList<Worker> wOUT = new ArrayList<>();
 	public ArrayList<Worker> wIN = new ArrayList<>();;
 

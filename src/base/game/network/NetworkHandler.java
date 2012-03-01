@@ -1,6 +1,5 @@
 package base.game.network;
 
-import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -29,16 +28,7 @@ public abstract class NetworkHandler {
 		return out;
 	}
 
-	protected final SelectorHandler sh;
-
-	public NetworkHandler(SelectorHandler s) throws IOException {
-		this.sh = s;
-		sh.start();
-	}
-
 	public abstract void read(ArrayList<Worker> w);
-
-	protected abstract void update(ArrayList<Worker> w) throws IOException;
 
 	public abstract void write(ArrayList<Worker> wOUT);
 

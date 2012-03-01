@@ -9,6 +9,6 @@ public abstract class NetworkWorker implements Worker {
 	};
 
 	@Override
-	public abstract void update(GameHandler g);
+	public abstract int execute(GameHandler g);
 
 }

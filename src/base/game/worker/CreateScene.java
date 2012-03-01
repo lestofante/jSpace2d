@@ -14,9 +14,10 @@ public class CreateScene implements Worker {
 	}
 
 	@Override
-	public void update(GameHandler g) {
-		new CreatePlayer("Scene").update(g);
-		new LoadScene(mapName, "Scene").update(g);
+	public int execute(GameHandler g) {
+		new CreatePlayer("Scene").execute(g);
+		new LoadScene(mapName, "Scene").execute(g);
+		return 0;
 	}
 
 }

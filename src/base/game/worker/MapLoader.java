@@ -5,15 +5,15 @@ import base.worker.Worker;
 
 public class MapLoader implements Worker {
 
-	private String mapName;
+	private final String mapName;
 
 	public MapLoader(String mapName) {
 		this.mapName = mapName;
 	}
 
 	@Override
-	public void update(GameHandler g) {
-
+	public int execute(GameHandler g) {
+		return 0;
 	}
 
 }

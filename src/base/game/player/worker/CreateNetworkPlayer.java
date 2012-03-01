@@ -18,12 +18,14 @@ public class CreateNetworkPlayer implements Worker {
 	}
 
 	@Override
-	public void update(GameHandler g) {
+	public int execute(GameHandler g) {
 		try {
 			g.playerHandler.createPlayer(username, channel);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return -1;
 		}
+		return 0;
 	}
 
 }

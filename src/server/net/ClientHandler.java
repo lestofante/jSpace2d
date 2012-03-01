@@ -1,45 +1,46 @@
 package server.net;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-import base.game.network.SelectorHandler;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.PacketType;
+import base.game.player.Player;
 import base.game.player.worker.RemoveNetworkPlayer;
 import base.worker.NetworkWorker;
 import base.worker.Worker;
 
-public class ServerSelectorHandler implements SelectorHandler {
+public class ClientHandler {
+	/*
+	 * innanzitutto si chiama nel modo sbagliato :P è ancora il vecchio selector
+	 * handler, anche se ci sono già quasi tutti i metodi che ci servono
+	 * immagino che quello che si occupa dei login sia praticamente identico in
+	 * realtà è piuttosto diverso
+	 */
 
-	Selector connected = null;
+	Selector reader = null;
+	Selector writer = null;
+
 	private final int MTU;
 
-	public ServerSelectorHandler(int MTU) {
+	public ClientHandler(int MTU) {
 		this.MTU = MTU;
-	}
 
-	private ServerSocketChannel createServerTCPSocketChannel(int port) {
 		try {
-			ServerSocketChannel listener = ServerSocketChannel.open();
-			listener.configureBlocking(false);
-			listener.socket().bind(new InetSocketAddress(port));
-			return listener;
+			reader = Selector.open();
+			writer = Selector.open();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	private RemoveNetworkPlayer disconnectAndRemove(SelectionKey key) {
@@ -54,42 +55,6 @@ public class ServerSelectorHandler implements SelectorHandler {
 		System.out.println("Disconnected player: " + key.attachment());
 
 		return new RemoveNetworkPlayer(key);
-	}
-
-	private ArrayList<Worker> lookForInput() {
-		ArrayList<Worker> ret = new ArrayList<>();
-		try {
-			connected.selectNow();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Set<SelectionKey> selectedKeys = connected.selectedKeys();
-
-		Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
-
-		NetworkWorker input;
-		SelectionKey key;
-
-		while (keyIterator.hasNext()) {
-			key = keyIterator.next();
-			if (key.isReadable() && key.isValid()) {
-				try {
-					input = readWorker(key);
-					if (input != null)
-						ret.add(input);
-				} catch (IOException e) {
-					ret.add(disconnectAndRemove(key));
-					e.printStackTrace();
-				} catch (Exception e) {
-					ret.add(disconnectAndRemove(key));
-					e.printStackTrace();
-				}
-			}
-			keyIterator.remove();
-		}
-
-		return ret;
 	}
 
 	private NetworkWorker readWorker(SelectionKey key) throws Exception {
@@ -126,25 +91,47 @@ public class ServerSelectorHandler implements SelectorHandler {
 
 	}
 
-	@Override
-	public boolean start() throws IOException {
-		// Create the selectors
-		connected = Selector.open();
-		return true;
-	}
-
-	@Override
-	public ArrayList<Worker> update() throws IOException {
-		return lookForInput();
-	}
-
-	public void addConnectedChannel(SocketChannel newLogin, String playerName) throws ClosedChannelException {
-		newLogin.register(connected, SelectionKey.OP_READ | SelectionKey.OP_WRITE, playerName);
+	public void addConnectedClient(SocketChannel clientChannel, Player player) throws ClosedChannelException {
+		clientChannel.register(reader, SelectionKey.OP_READ, player);
+		clientChannel.register(writer, SelectionKey.OP_WRITE, player);
 		try {
-			System.out.println("New channel connected: " + newLogin.getRemoteAddress());
+			System.out.println("New channel connected: " + clientChannel.getRemoteAddress());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public void read(ArrayList<Worker> w) {
+		try {
+			reader.selectNow();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Set<SelectionKey> selectedKeys = reader.selectedKeys();
+
+		Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
+
+		NetworkWorker input;
+		SelectionKey key;
+
+		while (keyIterator.hasNext()) {
+			key = keyIterator.next();
+			if (key.isReadable() && key.isValid()) {
+				try {
+					input = readWorker(key);
+					if (input != null)
+						w.add(input);
+				} catch (IOException e) {
+					w.add(disconnectAndRemove(key));
+					e.printStackTrace();
+				} catch (Exception e) {
+					w.add(disconnectAndRemove(key));
+					e.printStackTrace();
+				}
+			}
+			keyIterator.remove();
 		}
 	}
 

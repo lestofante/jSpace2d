@@ -33,14 +33,14 @@ public class ServerGameHandler extends GameHandler {
 			networkHandler.read(wIN);
 
 			for (Worker wTmp : wIN) {
-				wTmp.update(this);
+				wTmp.execute(this);
 			}
 			wIN.clear();
 			playerHandler.update(wIN);
 			entityHandler.update(wIN);
 
 			for (Worker wTmp : wIN) {
-				wTmp.update(this);
+				wTmp.execute(this);
 			}
 
 			networkHandler.write(wOUT);

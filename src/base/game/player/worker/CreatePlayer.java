@@ -12,12 +12,14 @@ public class CreatePlayer implements Worker {
 	}
 
 	@Override
-	public void update(GameHandler g) {
+	public int execute(GameHandler g) {
 		try {
 			g.playerHandler.createPlayer(playerName, null);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return -1;
 		}
+		return 0;
 	}
 
 }
