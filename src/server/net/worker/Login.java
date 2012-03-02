@@ -1,5 +1,6 @@
 package server.net.worker;
 
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
@@ -9,7 +10,6 @@ import base.worker.ServerWorker;
 
 public class Login extends ServerWorker {
 
-	byte shipID;
 	String username;
 	CreateNetworkPlayer createPlayerWorker;
 	AddConnectedClient addConnectedClientWorker;
@@ -24,7 +24,6 @@ public class Login extends ServerWorker {
 	}
 
 	public Login(LoginPacket packet) {
-		this.shipID = packet.getShipID();
 		this.username = packet.getUsername();
 	}
 
@@ -34,11 +33,17 @@ public class Login extends ServerWorker {
 
 	@Override
 	public int execute(ServerGameHandler g) {
-		createPlayerWorker = new CreateNetworkPlayer(username, shipID, channel);
+		createPlayerWorker = new CreateNetworkPlayer(username, channel);
 		if (createPlayerWorker.execute(g) == 0) {
 			addConnectedClientWorker = new AddConnectedClient(g.playerHandler.getPlayer(username), channel);
 			addConnectedClientWorker.execute(g);
 		} else {
+			try {
+				log.debug("Closing channel to: {}", channel.getRemoteAddress());
+				channel.close();
+			} catch (IOException e) {
+				log.error("Error closing channel", e);
+			}
 			return -1;
 		}
 		return 0;

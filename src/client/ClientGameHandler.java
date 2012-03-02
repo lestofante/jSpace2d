@@ -19,7 +19,7 @@ public class ClientGameHandler extends GameHandler {
 			e.printStackTrace();
 		}
 
-		LoginPacket lPacket = new LoginPacket(clientName, (byte) 0);
+		LoginPacket lPacket = new LoginPacket(clientName);
 
 		SocketChannel kkSocket = null;
 

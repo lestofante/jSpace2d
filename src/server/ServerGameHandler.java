@@ -51,4 +51,5 @@ public class ServerGameHandler extends GameHandler {
 			System.exit(-1);
 		}
 	}
+
 }

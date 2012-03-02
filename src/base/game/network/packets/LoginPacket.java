@@ -34,22 +34,16 @@ public class LoginPacket extends TCP_Packet {
 	 */
 
 	private final String username;
-	private final byte shipID;
 
 	public String getUsername() {
 		return username;
 	}
 
-	public byte getShipID() {
-		return shipID;
-	}
-
-	public LoginPacket(String userName, byte shipID) {
+	public LoginPacket(String userName) {
 		super(PacketType.LOGIN);
 		if (userName.length() > 30)
 			userName = userName.substring(0, 30);
 		this.username = userName;
-		this.shipID = shipID;
 	}
 
 	@Override
@@ -68,7 +62,6 @@ public class LoginPacket extends TCP_Packet {
 
 		for (; i < 30; i++)
 			out.put((byte) 32);
-		out.put(shipID);
 		out.flip();
 		return out;
 	}

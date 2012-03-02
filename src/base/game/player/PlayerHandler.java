@@ -17,10 +17,10 @@ public class PlayerHandler {
 	public PlayerHandler() throws IOException {
 	}
 
-	public void createPlayer(String name, SocketChannel channel) throws Exception {
+	public void createNetworkPlayer(String name, SocketChannel channel) throws Exception {
 		if (players.containsKey(name))
 			throw new Exception("Player already present!");
-		players.put(name, new Player(name, channel));
+		players.put(name, new NetworkPlayer(name, channel));
 		log.info("Created player: {}", name);
 	}
 

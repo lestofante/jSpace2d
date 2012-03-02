@@ -26,9 +26,8 @@ public class PacketRecognizer {
 		for (int i = 0; i < 30; i++)
 			tmp[i] = (char) in.get();
 		String username = String.copyValueOf(tmp).trim();
-		byte shipID = in.get();
 
-		out = new LoginPacket(username, shipID);
+		out = new LoginPacket(username);
 		return out;
 	}
 }
