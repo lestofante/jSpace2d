@@ -8,7 +8,7 @@ import java.nio.channels.SocketChannel;
 
 import base.common.AsyncActionBus;
 import base.game.GameHandler;
-import base.game.network.packets.LoginPacket;
+import base.game.network.packets.TCP.LoginPacket;
 
 public class ClientGameHandler extends GameHandler {
 

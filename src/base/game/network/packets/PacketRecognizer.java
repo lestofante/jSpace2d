@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.game.network.packets.TCP.LoginPacket;
+
 public class PacketRecognizer {
 
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketRecognizer.class);
@@ -12,7 +14,7 @@ public class PacketRecognizer {
 	public static TCP_Packet getTCP(ByteBuffer in) throws Exception {
 
 		switch (in.get()) {
-		case -127:
+		case -128:
 			return createLoginPacket(in);
 		default:
 			throw new Exception("Uknown packet type");

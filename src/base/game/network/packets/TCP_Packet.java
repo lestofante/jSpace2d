@@ -4,14 +4,14 @@ import java.nio.ByteBuffer;
 
 public abstract class TCP_Packet {
 
-	public enum PacketType {
-		LOGIN
+	public enum TCP_PacketType {
+		LOGIN, PLAY_REQUEST, CLIENT_ACTION
 	}
 
-	public final PacketType packetType;
+	public final TCP_PacketType PacketType;
 
-	public TCP_Packet(PacketType packetType) {
-		this.packetType = packetType;
+	public TCP_Packet(TCP_PacketType PacketType) {
+		this.PacketType = PacketType;
 	}
 
 	public abstract ByteBuffer getDataBuffer();

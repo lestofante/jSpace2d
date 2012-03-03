@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
-import base.game.network.packets.LoginPacket;
+import base.game.network.packets.TCP.LoginPacket;
 import base.game.player.worker.CreateNetworkPlayer;
 import base.worker.ServerWorker;
 

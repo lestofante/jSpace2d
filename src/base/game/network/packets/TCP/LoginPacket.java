@@ -1,7 +1,9 @@
-package base.game.network.packets;
+package base.game.network.packets.TCP;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+
+import base.game.network.packets.TCP_Packet;
 
 public class LoginPacket extends TCP_Packet {
 
@@ -40,7 +42,7 @@ public class LoginPacket extends TCP_Packet {
 	}
 
 	public LoginPacket(String userName) {
-		super(PacketType.LOGIN);
+		super(TCP_PacketType.LOGIN);
 		if (userName.length() > 30)
 			userName = userName.substring(0, 30);
 		this.username = userName;
@@ -50,7 +52,7 @@ public class LoginPacket extends TCP_Packet {
 	public ByteBuffer getDataBuffer() {
 		ByteBuffer out = ByteBuffer.allocate(32);
 		out.clear();
-		out.put((byte) -127);
+		out.put((byte) -128);
 
 		int i = 0;
 		try {
@@ -62,7 +64,7 @@ public class LoginPacket extends TCP_Packet {
 
 		for (; i < 30; i++)
 			out.put((byte) 32);
-		out.flip();
+		out.rewind();
 		return out;
 	}
 

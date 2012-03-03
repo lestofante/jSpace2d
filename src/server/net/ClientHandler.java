@@ -15,10 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP_Packet.PacketType;
+import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.player.Player;
 import base.game.player.worker.RemoveNetworkPlayer;
-import base.worker.NetworkWorker;
 import base.worker.Worker;
 
 public class ClientHandler {
@@ -60,7 +59,7 @@ public class ClientHandler {
 		return new RemoveNetworkPlayer(key);
 	}
 
-	private NetworkWorker readWorker(SelectionKey key) throws Exception {
+	private Worker readWorker(SelectionKey key) throws Exception {
 		ByteBuffer buf = ByteBuffer.allocate(MTU);
 		buf.clear();
 		SocketChannel channel = (SocketChannel) key.channel();
@@ -80,7 +79,7 @@ public class ClientHandler {
 		}
 
 		if (packet != null) {
-			if (packet.packetType != PacketType.LOGIN) {
+			if (packet.PacketType != TCP_PacketType.LOGIN) {
 				// TODO implement packets
 			} else {
 				throw new Exception("Address already logged in");
@@ -113,7 +112,7 @@ public class ClientHandler {
 
 		Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
-		NetworkWorker input;
+		Worker input;
 		SelectionKey key;
 
 		while (keyIterator.hasNext()) {

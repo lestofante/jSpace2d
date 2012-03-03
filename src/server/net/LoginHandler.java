@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.net.worker.Login;
-import base.game.network.packets.LoginPacket;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP_Packet.PacketType;
+import base.game.network.packets.TCP.LoginPacket;
+import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.worker.Worker;
 
 public class LoginHandler {
@@ -69,7 +69,7 @@ public class LoginHandler {
 				}
 
 				if (packet != null) {
-					if (packet.packetType == PacketType.LOGIN) {
+					if (packet.PacketType == TCP_PacketType.LOGIN) {
 						wLogin = new Login((LoginPacket) packet);
 						wLogin.setChannel(entry.getKey());
 						log.debug("Received a login from address: {} with username: {}", entry.getKey().getRemoteAddress(), ((LoginPacket) packet).getUsername());
