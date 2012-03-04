@@ -1,6 +1,6 @@
 package server.net.worker;
 
-import java.io.IOException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
@@ -11,55 +11,32 @@ import base.worker.ServerWorker;
 public class Login extends ServerWorker {
 
 	String username;
-	CreateNetworkPlayer createPlayerWorker;
-	AddConnectedClient addConnectedClientWorker;
-	SocketChannel channel;
+	SocketChannel socketChannel;
 
 	public String getUsername() {
 		return username;
 	}
 
-	public SocketChannel getChannel() {
-		return channel;
+	public SocketChannel getSocketChannel() {
+		return socketChannel;
 	}
 
-	public Login(LoginPacket packet) {
+	public Login(LoginPacket packet, SocketChannel socketChannel) {
 		this.username = packet.getUsername();
-	}
-
-	public void setChannel(SocketChannel channel) {
-		this.channel = channel;
+		this.socketChannel = socketChannel;
 	}
 
 	@Override
-	public int execute(ServerGameHandler g) {
-		createPlayerWorker = new CreateNetworkPlayer(username, channel);
-		if (createPlayerWorker.execute(g) == 0) {
-			addConnectedClientWorker = new AddConnectedClient(g.playerHandler.getPlayer(username), channel);
-			addConnectedClientWorker.execute(g);
-		} else {
-			try {
-				log.debug("Closing channel to: {}", channel.getRemoteAddress());
-				channel.close();
-			} catch (IOException e) {
-				log.error("Error closing channel", e);
-			}
-			return -1;
+	public int execute(ServerGameHandler g) {		
+		AddConnectedClient c = new AddConnectedClient(socketChannel);
+		c.execute(g);
+		SelectionKey key = c.getKey();
+		
+		if(key!=null){
+			CreateNetworkPlayer c2 = new CreateNetworkPlayer(username, key);
+			return c2.execute(g);
 		}
-		return 0;
-
-		/*
-		 * ci sei? s?? allora il problema non si gra qu??, a the che eccezzione
-		 * dice?
-		 */
-		/*
-		 * ci sei? si aspe, dove siamo finiti?! :) :) siamo nel worker login.
-		 * una volta ricevuto il pacchetto di login da un client, viene creato
-		 * questo worker quando viene eseguito il worker ne crea un altro per
-		 * creare il giocatore e a questo punto come dicevi tu, registriamo il
-		 * channel nel selector, ok? perfetto creiamo un altro worker? ah,
-		 * piccolo particolare bisogna ancora sistemare il connection manager
-		 * guarda s?? un worker apposito, come mai?
-		 */
+		
+		return -1;
 	}
 }

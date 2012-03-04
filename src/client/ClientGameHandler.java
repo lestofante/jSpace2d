@@ -18,9 +18,7 @@ public class ClientGameHandler extends GameHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		LoginPacket lPacket = new LoginPacket(clientName);
-
+		
 		SocketChannel kkSocket = null;
 
 		try {
@@ -32,6 +30,8 @@ public class ClientGameHandler extends GameHandler {
 			e.printStackTrace();
 		}
 
+		LoginPacket lPacket = new LoginPacket(clientName);
+		
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

@@ -2,10 +2,14 @@ package server.net;
 
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import base.game.network.NetworkHandler;
+import base.game.network.packets.TCP_Packet;
+import base.game.player.NetworkPlayer;
 import base.game.player.Player;
 import base.worker.Worker;
 
@@ -31,18 +35,19 @@ public class ServerNetworkHandler extends NetworkHandler {
 		}
 	}
 
-	@Override
-	public void write(ArrayList<Worker> wOUT) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addConnectedClient(SocketChannel channel, Player player) {
+	public SelectionKey addConnectedClient(SocketChannel channel) {
 		try {
-			clientHandler.addConnectedClient(channel, player);
+			return clientHandler.addConnectedClient(channel);
 		} catch (ClosedChannelException e) {
 			log.error("Error adding client", e);
 		}
+		return null;
+	}
+
+	@Override
+	public void write(HashMap<NetworkPlayer, ArrayList<TCP_Packet>> wOUT,
+			ArrayList<Worker> wIN) {
+		clientHandler.write(wOUT, wIN);		
 	}
 
 }

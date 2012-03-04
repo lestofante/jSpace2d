@@ -5,8 +5,8 @@ import base.game.player.Player;
 
 public class ServerEntity extends Entity {
 
-	public ServerEntity(int id, Player player) {
-		super(id, player);
+	public ServerEntity(char id, char blueprint, Player player) {
+		super(id, blueprint, player);
 	}
 
 }

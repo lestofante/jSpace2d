@@ -143,7 +143,6 @@ public class PhysicsHandler {
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
 				delta = System.nanoTime();
-				int i = 0;
 				while (timeBuffer > physicsStep) {
 
 					try {

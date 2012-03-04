@@ -13,4 +13,8 @@ public class Radar extends PhysicalObject {
 		this.aabb = new AABB(lowerVertex, upperVertex);
 	}
 
+	public AABB getAabb() {
+		return aabb;
+	}
+
 }

@@ -12,7 +12,7 @@ public class BodyBluePrints {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.KINEMATIC;
 		bodyDef.userData = new Vec2(1.0f, 1.0f);
-		return new BodyBlueprint(bodyDef, null);
+		return new BodyBlueprint((char)0, bodyDef, null);
 	}
 
 }

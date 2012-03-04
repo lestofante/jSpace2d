@@ -5,10 +5,14 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.game.network.packets.TCP_Packet;
+import base.game.player.NetworkPlayer;
+import base.game.player.Player;
 import base.worker.Worker;
 
 public abstract class NetworkHandler {
@@ -35,6 +39,6 @@ public abstract class NetworkHandler {
 
 	public abstract void read(ArrayList<Worker> w);
 
-	public abstract void write(ArrayList<Worker> wOUT);
+	public abstract void write(HashMap<NetworkPlayer, ArrayList<TCP_Packet>> wOUT, ArrayList<Worker> wIN);
 
 }

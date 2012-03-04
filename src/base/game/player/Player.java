@@ -1,5 +1,6 @@
 package base.game.player;
 
+import java.nio.channels.Channel;
 import java.util.ArrayList;
 
 import base.game.entity.Entity;
@@ -8,11 +9,13 @@ import base.worker.Worker;
 public class Player {
 
 	private final String playerName;
+	public final char playerID;
 	private Entity currentEntity;
 	private boolean isObserver;
 
-	public Player(String playerName) {
+	public Player(char id, String playerName) {
 		this.playerName = playerName;
+		playerID = id;
 	}
 
 	public void update(ArrayList<Worker> toUpdate) {

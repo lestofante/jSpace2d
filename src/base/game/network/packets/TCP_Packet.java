@@ -1,11 +1,19 @@
 package base.game.network.packets;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class TCP_Packet {
-
+	
+	protected ByteBuffer buffer;
+	protected Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	public enum TCP_PacketType {
-		LOGIN, PLAY_REQUEST, CLIENT_ACTION
+		LOGIN, PLAY_REQUEST, CLIENT_ACTION, UPDATE_MAP
 	}
 
 	public final TCP_PacketType PacketType;
@@ -14,6 +22,10 @@ public abstract class TCP_Packet {
 		this.PacketType = PacketType;
 	}
 
-	public abstract ByteBuffer getDataBuffer();
+	public ByteBuffer getDataBuffer(){
+		return buffer;
+	}
+	
+	public abstract void createBuffer();
 
 }

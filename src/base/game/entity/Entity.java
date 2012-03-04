@@ -5,13 +5,15 @@ import base.game.player.Player;
 
 public class Entity {
 
-	public final int entityID;
+	public final char entityID;
+	public final char blueprintID;
 	public final Player owner;
 	public PhysicalObject infoBody;
 
-	public Entity(int id, Player player) {
+	public Entity(char id, char blueprint, Player player) {
 		this.entityID = id;
 		this.owner = player;
+		this.blueprintID = blueprint;
 	}
 
 }

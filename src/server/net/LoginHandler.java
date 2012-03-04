@@ -70,8 +70,7 @@ public class LoginHandler {
 
 				if (packet != null) {
 					if (packet.PacketType == TCP_PacketType.LOGIN) {
-						wLogin = new Login((LoginPacket) packet);
-						wLogin.setChannel(entry.getKey());
+						wLogin = new Login((LoginPacket) packet, entry.getKey());
 						log.debug("Received a login from address: {} with username: {}", entry.getKey().getRemoteAddress(), ((LoginPacket) packet).getUsername());
 						w.add(wLogin);
 						pendingConnections.remove(entry.getKey());

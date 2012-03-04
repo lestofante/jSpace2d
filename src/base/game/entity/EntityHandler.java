@@ -1,6 +1,7 @@
 package base.game.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,9 +23,9 @@ import base.worker.Worker;
 public class EntityHandler {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final LinkedList<Integer> unusedIDs = new LinkedList<>();
-	private int currentID = 0;
-	private final HashMap<Integer, Entity> entityMap = new HashMap<>();
+	private final LinkedList<Character> unusedIDs = new LinkedList<>();
+	private char currentID = 0;
+	private final HashMap<Character, Entity> entityMap = new HashMap<>();
 
 	/* for physics */
 	protected final PhysicsHandler phisicsHandler;
@@ -44,8 +45,8 @@ public class EntityHandler {
 	}
 
 	public int createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
-		int id = getFreeID();
-		Entity e = new Entity(id, player);
+		char id = getFreeID();
+		Entity e = new Entity(id, bodyBlueprint.ID, player);
 		entityMap.put(id, e);
 
 		PhysicalObject infoBody = createPhisicalObject(bodyBlueprint);
@@ -58,8 +59,8 @@ public class EntityHandler {
 			e.infoBody = infoBody;
 			createGraphics(id, infoBody, graphicModelName);
 			return id;
-		} else
-			return -3; // phisic error
+		}
+		return -3; // phisic error
 	}
 
 	private void createGraphics(int ID, PhysicalObject infoBody, String graphicModelName) {
@@ -79,7 +80,7 @@ public class EntityHandler {
 		bus.addGraphicsAction(new G_RemoveGameRenderable(ID));
 	}
 
-	private int getFreeID() {
+	private char getFreeID() {
 		if (unusedIDs.size() > 0) {
 			return unusedIDs.poll();
 		} else {
@@ -91,14 +92,14 @@ public class EntityHandler {
 		entityMap.get(entity).infoBody.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.getTransform()[2]);
 	}
 
-	public void removeEntity(int id) {
+	public void removeEntity(char id) {
 		removeID(id);
 		Entity e = entityMap.remove(id);
 		removePhysicalObject(e.infoBody);
 		destroyGraphicalObject(e.entityID);
 	}
 
-	private void removeID(int ID) {
+	private void removeID(char ID) {
 		if (ID < currentID) {
 			unusedIDs.add(ID);
 		}
@@ -110,5 +111,9 @@ public class EntityHandler {
 
 	public Entity getEntity(int ID) {
 		return entityMap.get(ID);
+	}
+
+	public Collection<Entity> getEntitys() {
+		return entityMap.values();
 	}
 }

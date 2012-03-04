@@ -1,5 +1,6 @@
 package server.net.worker;
 
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
@@ -9,18 +10,25 @@ import base.worker.ServerWorker;
 
 public class AddConnectedClient extends ServerWorker {
 
-	Player player;
 	SocketChannel channel;
-
-	public AddConnectedClient(Player player, SocketChannel channel) {
-		this.player = player;
+	private SelectionKey key;
+	
+	public AddConnectedClient(SocketChannel channel) {
 		this.channel = channel;
 	}
 
 	@Override
 	protected int execute(ServerGameHandler g) {
-		((ServerNetworkHandler) g.networkHandler).addConnectedClient(channel, player);
+		setKey(((ServerNetworkHandler) g.networkHandler).addConnectedClient(channel));
 		return 0;
+	}
+
+	public SelectionKey getKey() {
+		return key;
+	}
+
+	private void setKey(SelectionKey key) {
+		this.key = key;
 	}
 
 }

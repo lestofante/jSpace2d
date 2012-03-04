@@ -1,6 +1,7 @@
 package base.game.network.packets;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -26,8 +26,7 @@ public class ServerGameHandler extends GameHandler {
 
 	@Override
 	public void update() {
-		wIN.clear();
-		wOUT.clear();
+		
 
 		try {
 			networkHandler.read(wIN);
@@ -35,6 +34,7 @@ public class ServerGameHandler extends GameHandler {
 			for (Worker wTmp : wIN) {
 				wTmp.execute(this);
 			}
+			
 			wIN.clear();
 			playerHandler.update(wIN);
 			entityHandler.update(wIN);
@@ -42,9 +42,10 @@ public class ServerGameHandler extends GameHandler {
 			for (Worker wTmp : wIN) {
 				wTmp.execute(this);
 			}
-
-			networkHandler.write(wOUT);
-
+			wIN.clear();
+			
+			networkHandler.write(wOUT,wIN);
+			wOUT.clear();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
