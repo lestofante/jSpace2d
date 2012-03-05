@@ -5,7 +5,6 @@ import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
 import server.net.ServerNetworkHandler;
-import base.game.player.Player;
 import base.worker.ServerWorker;
 
 public class AddConnectedClient extends ServerWorker {

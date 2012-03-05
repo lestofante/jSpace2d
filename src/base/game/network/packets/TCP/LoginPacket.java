@@ -2,7 +2,6 @@ package base.game.network.packets.TCP;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channel;
 
 import base.game.network.packets.TCP_Packet;
 
@@ -36,9 +35,9 @@ public class LoginPacket extends TCP_Packet {
 	 * e cambiarci nome :) ok allora, poi domenica di nuovo insieme però
 	 */
 
-	private final String username;
+	private String username;
 	private static final int dimension = 32;
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -48,6 +47,13 @@ public class LoginPacket extends TCP_Packet {
 		if (userName.length() > 30)
 			userName = userName.substring(0, 30);
 		this.username = userName;
+		createBuffer();
+	}
+
+	public LoginPacket(ByteBuffer in) {
+		super(TCP_PacketType.LOGIN);
+		this.buffer = in;
+		recognizePacket();
 	}
 
 	@Override
@@ -67,6 +73,14 @@ public class LoginPacket extends TCP_Packet {
 		for (; i < 30; i++)
 			buffer.put((byte) 32);
 		buffer.rewind();
+	}
+
+	@Override
+	protected void recognizePacket() {
+		char[] tmp = new char[30];
+		for (int i = 0; i < 30; i++)
+			tmp[i] = (char) buffer.get();
+		username = String.copyValueOf(tmp).trim();
 	}
 
 }

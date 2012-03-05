@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import base.game.network.packets.TCP_Packet;
 import base.game.player.NetworkPlayer;
-import base.game.player.Player;
 import base.worker.Worker;
 
 public abstract class NetworkHandler {

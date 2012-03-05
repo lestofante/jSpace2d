@@ -12,9 +12,7 @@ import base.game.entity.EntityHandler;
 import base.game.network.NetworkHandler;
 import base.game.network.packets.TCP_Packet;
 import base.game.player.NetworkPlayer;
-import base.game.player.Player;
 import base.game.player.PlayerHandler;
-import base.game.worker.LoadMap;
 import base.worker.Worker;
 
 public abstract class GameHandler {
@@ -31,8 +29,6 @@ public abstract class GameHandler {
 	public abstract void update();
 
 	public void loadMap(String string) {
-		LoadMap lMWorker = new LoadMap(string);
-		wIN.add(lMWorker);
 	}
 
 }

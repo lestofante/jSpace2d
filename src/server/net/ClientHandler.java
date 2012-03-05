@@ -18,9 +18,8 @@ import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.player.NetworkPlayer;
-import base.game.player.Player;
-import base.game.player.worker.RemoveNetworkPlayer;
 import base.worker.Worker;
+import base.worker.player.RemoveNetworkPlayer;
 
 public class ClientHandler {
 	/*

@@ -1,4 +1,4 @@
-package base.game.player.worker;
+package base.worker.player;
 
 import base.game.GameHandler;
 import base.game.entity.Entity;
@@ -22,7 +22,7 @@ public class SetObserver extends Worker {
 		if (currentEntity != null)
 			g.entityHandler.removeEntity(currentEntity.entityID);
 		// create new observer entity
-		int entityID = g.entityHandler.createEntity("observer.obj", BodyBluePrints.requestObserver(), player);
+		char entityID = g.entityHandler.createEntity("observer.obj", BodyBluePrints.requestObserver(), player);
 		// set the new entity to the player
 		player.setAsObserver(g.entityHandler.getEntity(entityID));
 		// tell graphics to follow the player's entity

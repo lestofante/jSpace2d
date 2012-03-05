@@ -24,7 +24,7 @@ public class EntityHandler {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final LinkedList<Character> unusedIDs = new LinkedList<>();
-	private char currentID = 0;
+	private char currentID = 1;
 	private final HashMap<Character, Entity> entityMap = new HashMap<>();
 
 	/* for physics */
@@ -39,12 +39,12 @@ public class EntityHandler {
 		phisicsHandler.start();
 	}
 
-	public void setObserved(int entityID) {
+	public void setObserved(char entityID) {
 		G_FollowObjectWithCamera gA = new G_FollowObjectWithCamera(getEntity(entityID).infoBody.getTransform());
 		bus.addGraphicsAction(gA);
 	}
 
-	public int createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
+	public char createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
 		char id = getFreeID();
 		Entity e = new Entity(id, bodyBlueprint.ID, player);
 		entityMap.put(id, e);
@@ -53,14 +53,14 @@ public class EntityHandler {
 
 		infoBody.setOwner(e);
 
-		log.debug("Created entity with ID: {}", id);
+		log.debug("Created entity with ID: {}", (int) id);
 
 		if (infoBody != null) {
 			e.infoBody = infoBody;
 			createGraphics(id, infoBody, graphicModelName);
 			return id;
 		}
-		return -3; // phisic error
+		return (char) -3; // phisic error
 	}
 
 	private void createGraphics(int ID, PhysicalObject infoBody, String graphicModelName) {
@@ -84,7 +84,8 @@ public class EntityHandler {
 		if (unusedIDs.size() > 0) {
 			return unusedIDs.poll();
 		} else {
-			return currentID++; // return current ID and then increment it by 1
+			currentID += 2; // next odd
+			return (char) (currentID - 2); // return
 		}
 	}
 
@@ -109,7 +110,7 @@ public class EntityHandler {
 		phisicsHandler.update(w);
 	}
 
-	public Entity getEntity(int ID) {
+	public Entity getEntity(char ID) {
 		return entityMap.get(ID);
 	}
 

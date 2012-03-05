@@ -1,6 +1,5 @@
 package base.game.player;
 
-import java.nio.channels.Channel;
 import java.util.ArrayList;
 
 import base.game.entity.Entity;

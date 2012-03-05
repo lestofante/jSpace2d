@@ -1,10 +1,9 @@
-package base.game.player.worker;
+package base.worker.player;
 
 import java.io.IOException;
 
 import base.game.GameHandler;
 import base.game.player.NetworkPlayer;
-import base.game.player.Player;
 import base.worker.Worker;
 
 public class RemoveNetworkPlayer extends Worker {

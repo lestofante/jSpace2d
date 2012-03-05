@@ -10,7 +10,6 @@ import java.util.HashMap;
 import base.game.network.NetworkHandler;
 import base.game.network.packets.TCP_Packet;
 import base.game.player.NetworkPlayer;
-import base.game.player.Player;
 import base.worker.Worker;
 
 public class ServerNetworkHandler extends NetworkHandler {

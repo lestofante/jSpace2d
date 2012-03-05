@@ -2,6 +2,7 @@ package server.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -16,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import server.net.worker.Login;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP.LoginPacket;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
+import base.game.network.packets.TCP.LoginPacket;
 import base.worker.Worker;
 
 public class LoginHandler {
@@ -41,14 +42,16 @@ public class LoginHandler {
 
 			while (entrySetIterator.hasNext()) {
 				Entry<SocketChannel, Long> entry = entrySetIterator.next();
+				SocketAddress address = entry.getKey().getRemoteAddress();
 				if (System.currentTimeMillis() - entry.getValue() > connectionTimeout) {
 					try {
 						throw new Exception();
 					} catch (Exception e) {
-						log.error("No login arrived before timeout from {}", entry.getKey().getRemoteAddress(), e);
+						log.error("No login arrived before timeout from {}", address, e);
 					}
 					entry.getKey().close();
 					pendingConnections.remove(entry.getKey());
+					log.debug("Removed pending connection: {}", address);
 					continue;
 				}
 				ByteBuffer dst = ByteBuffer.allocate(32);
