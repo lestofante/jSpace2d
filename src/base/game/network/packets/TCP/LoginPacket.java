@@ -50,9 +50,9 @@ public class LoginPacket extends TCP_Packet {
 		createBuffer();
 	}
 
-	public LoginPacket(ByteBuffer in) {
+	public LoginPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.LOGIN);
-		this.buffer = in;
+		this.buffer = buffer;
 		recognizePacket();
 	}
 

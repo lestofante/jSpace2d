@@ -6,12 +6,18 @@ import base.game.network.packets.TCP_Packet;
 
 public class PlayRequestPacket extends TCP_Packet {
 
-	private final byte shipID;
+	private byte shipID;
 	private static final int dimension = 2;
 
 	public PlayRequestPacket(byte shipID) {
 		super(TCP_PacketType.PLAY_REQUEST);
 		this.shipID = shipID;
+	}
+
+	public PlayRequestPacket(ByteBuffer buffer) {
+		super(TCP_PacketType.PLAY_REQUEST);
+		this.buffer = buffer;
+		recognizePacket();
 	}
 
 	@Override
@@ -25,8 +31,7 @@ public class PlayRequestPacket extends TCP_Packet {
 
 	@Override
 	protected void recognizePacket() {
-		// TODO Auto-generated method stub
-
+		shipID = buffer.get();
 	}
 
 }

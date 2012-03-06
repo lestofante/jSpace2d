@@ -22,9 +22,9 @@ public class UpdateMapPacket extends TCP_Packet {
 		createBuffer();
 	}
 
-	public UpdateMapPacket(ByteBuffer in) {
+	public UpdateMapPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.UPDATE_MAP);
-		this.buffer = in;
+		this.buffer = buffer;
 		entities = new ArrayList<>();
 		players = new ArrayList<>();
 		recognizePacket();

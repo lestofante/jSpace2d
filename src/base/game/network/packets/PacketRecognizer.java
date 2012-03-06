@@ -5,7 +5,9 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.game.network.packets.TCP.ClientActionPacket;
 import base.game.network.packets.TCP.LoginPacket;
+import base.game.network.packets.TCP.PlayRequestPacket;
 import base.game.network.packets.TCP.UpdateMapPacket;
 
 public class PacketRecognizer {
@@ -13,7 +15,6 @@ public class PacketRecognizer {
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketRecognizer.class);
 
 	public static TCP_Packet getTCP(ByteBuffer in) throws Exception {
-
 		switch (in.get()) {
 		case -128:
 			return createLoginPacket(in);
@@ -33,13 +34,11 @@ public class PacketRecognizer {
 	}
 
 	private static TCP_Packet createClientActionPacket(ByteBuffer in) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ClientActionPacket(in);
 	}
 
 	private static TCP_Packet createPlayRequestPacket(ByteBuffer in) {
-		// TODO Auto-generated method stub
-		return null;
+		return new PlayRequestPacket(in);
 	}
 
 	private static LoginPacket createLoginPacket(ByteBuffer in) {

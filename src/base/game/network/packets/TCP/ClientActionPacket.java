@@ -6,12 +6,18 @@ import base.game.network.packets.TCP_Packet;
 
 public class ClientActionPacket extends TCP_Packet {
 
-	private final ClientState clientState;
+	private ClientState clientState;
 	private static final int dimension = 2;
 
 	public ClientActionPacket(ClientState clientState) {
 		super(TCP_PacketType.CLIENT_ACTION);
 		this.clientState = clientState;
+		recognizePacket();
+	}
+
+	public ClientActionPacket(ByteBuffer buffer) {
+		super(TCP_PacketType.CLIENT_ACTION);
+		this.buffer = buffer;
 	}
 
 	@Override
@@ -25,7 +31,6 @@ public class ClientActionPacket extends TCP_Packet {
 
 	@Override
 	protected void recognizePacket() {
-		// TODO Auto-generated method stub
-
+		clientState = new ClientState(buffer.get());
 	}
 }
