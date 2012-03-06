@@ -12,6 +12,7 @@ import base.game.network.packets.TCP.UpdateMapPacket;
 
 public class PacketRecognizer {
 
+	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketRecognizer.class);
 
 	public static TCP_Packet getTCP(ByteBuffer in) throws Exception {

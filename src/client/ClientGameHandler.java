@@ -15,7 +15,7 @@ import base.game.network.packets.TCP.LoginPacket;
 
 public class ClientGameHandler extends GameHandler {
 
-	public ClientGameHandler(AsyncActionBus bus, String clientName, String serverAddress) {
+	public ClientGameHandler(AsyncActionBus bus, String clientName, String serverAddress, int serverPort) {
 		try {
 			this.networkHandler = new ClientNetworkHandler();
 		} catch (IOException e) {
@@ -25,12 +25,19 @@ public class ClientGameHandler extends GameHandler {
 		SocketChannel kkSocket = null;
 
 		try {
-			kkSocket = SocketChannel.open(new InetSocketAddress(serverAddress, 9999));
-			log.debug("Opening connection with {}", kkSocket.getRemoteAddress());
+			log.debug("Opening connection with {}:{}", serverAddress, serverPort);
+			kkSocket = SocketChannel.open(new InetSocketAddress(serverAddress, serverPort));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+
+		try {
+			log.debug("Opened connection with {}", kkSocket.getRemoteAddress());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		LoginPacket lPacket = new LoginPacket(clientName);
@@ -52,10 +59,11 @@ public class ClientGameHandler extends GameHandler {
 		while (true)
 			try {
 				ByteBuffer buf = ByteBuffer.allocate(1500);
-				if (kkSocket.read(buf) != -1) {
+				int read = kkSocket.read(buf);
+				if (read != -1) {
 					buf.flip();
 					if (buf.hasRemaining()) {
-						log.debug("{}", buf);
+						log.debug("Read {} bytes in {}", read, buf);
 						TCP_Packet in = PacketRecognizer.getTCP(buf);
 						if (in.PacketType == TCP_PacketType.UPDATE_MAP) {
 							log.info("UPDATE MAP PACKET!\n{}", in);

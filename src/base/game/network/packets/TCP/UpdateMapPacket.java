@@ -83,8 +83,9 @@ public class UpdateMapPacket extends TCP_Packet {
 
 	private String getPlayerName() {
 		char[] tmp = new char[30];
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < 30; i++) {
 			tmp[i] = (char) buffer.get();
+		}
 		return String.copyValueOf(tmp).trim();
 	}
 
@@ -97,16 +98,16 @@ public class UpdateMapPacket extends TCP_Packet {
 	@Override
 	public String toString() {
 		String out = new String();
-
+		out = out.concat("\n");
 		for (Player player : players) {
-			out = out.concat("\nPlayer: " + player.getPlayerName());
-			out = out.concat("\n" + String.valueOf((int) player.playerID));
+			out = out.concat("Player: " + player.getPlayerName());
+			out = out.concat("\nplayer ID: " + String.valueOf((int) player.playerID) + "\n");
 		}
-
+		out = out.concat("\n");
 		for (Entity entity : entities) {
-			out = out.concat("\nEntity id: " + String.valueOf((int) entity.entityID));
+			out = out.concat("Entity id: " + String.valueOf((int) entity.entityID));
 			out = out.concat("\nEntity owner's id: cannot calculate");
-			out = out.concat("\nEntity blueprint's id: " + String.valueOf((int) entity.blueprintID));
+			out = out.concat("\nEntity blueprint's id: " + String.valueOf((int) entity.blueprintID) + "\n");
 		}
 
 		return out;

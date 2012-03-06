@@ -5,24 +5,29 @@ import org.lwjgl.opengl.DisplayMode;
 import base.common.AsyncActionBus;
 import base.graphics.GraphicsManager;
 
-public class ClientTest {
+public class ClientTest implements Runnable {
 
 	/**
 	 * @param args
 	 */
 
 	AsyncActionBus bus = new AsyncActionBus();
-	// ClientGameHandler g = new ClientGameHandler(bus, "bella mauro!",
-	// "82.84.124.222");
-	ClientGameHandler g = new ClientGameHandler(bus, "bella fra!", "127.0.0.1");
-	GraphicsManager gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
+	ClientGameHandler g;
+	GraphicsManager gr;
+	private final String playerName;
+	private final String serverAddress;
+	private final int serverPort;
 
-	public static void main(String[] args) {
-		new ClientTest();
+	public ClientTest(String playerName, String serverAddress, int serverPort) {
+		this.playerName = playerName;
+		this.serverAddress = serverAddress;
+		this.serverPort = serverPort;
 	}
 
-	public ClientTest() {
-		Thread.currentThread().setName("Client");
+	@Override
+	public void run() {
+		Thread.currentThread().setName("Client " + playerName);
+		g = new ClientGameHandler(bus, playerName, serverAddress, serverPort);
+		gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
 	}
-
 }

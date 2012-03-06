@@ -51,13 +51,11 @@ public class EntityHandler {
 
 		PhysicalObject infoBody = createPhisicalObject(bodyBlueprint);
 
-		infoBody.setOwner(e);
-
-		log.debug("Created entity with ID: {}", (int) id);
-
 		if (infoBody != null) {
+			infoBody.setOwner(e);
 			e.infoBody = infoBody;
 			createGraphics(id, infoBody, graphicModelName);
+			log.debug("Created entity with ID: {}", (int) id);
 			return id;
 		}
 		return (char) -3; // phisic error
