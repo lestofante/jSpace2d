@@ -20,7 +20,7 @@ public class RemoveNetworkPlayer extends Worker {
 		g.entityHandler.removeEntity(toRemove.getCurrentEntity().entityID);
 		// remove the player
 		g.playerHandler.removePlayer(toRemove);
-		
+
 		try {
 			toRemove.getKey().channel().close();
 			toRemove.getKey().cancel();

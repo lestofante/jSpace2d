@@ -7,7 +7,7 @@ import base.worker.Worker;
 
 public class CreateNetworkPlayer extends Worker {
 
-	String username;
+	protected String username;
 	SelectionKey key;
 
 	public CreateNetworkPlayer(String username, SelectionKey key) {

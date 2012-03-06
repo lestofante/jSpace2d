@@ -14,12 +14,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import server.net.worker.S_RemoveNetworkPlayer;
 import base.game.network.packets.PacketRecognizer;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.player.NetworkPlayer;
 import base.worker.Worker;
-import base.worker.player.RemoveNetworkPlayer;
 
 public class ClientHandler {
 	/*
@@ -44,8 +44,8 @@ public class ClientHandler {
 		}
 	}
 
-	private RemoveNetworkPlayer disconnectAndRemove(NetworkPlayer player) {
-		return new RemoveNetworkPlayer(player);
+	private S_RemoveNetworkPlayer disconnectAndRemove(NetworkPlayer player) {
+		return new S_RemoveNetworkPlayer(player);
 	}
 
 	private Worker readWorker(SelectionKey key) throws Exception {
@@ -81,12 +81,10 @@ public class ClientHandler {
 
 	}
 
-	public SelectionKey addConnectedClient(SocketChannel clientChannel)
-			throws ClosedChannelException {
+	public SelectionKey addConnectedClient(SocketChannel clientChannel) throws ClosedChannelException {
 		SelectionKey key = clientChannel.register(reader, SelectionKey.OP_READ);
 		try {
-			log.info("New client connected: {}",
-					clientChannel.getRemoteAddress());
+			log.info("New client connected: {}", clientChannel.getRemoteAddress());
 		} catch (IOException e) {
 			log.error("Error adding client", e);
 		}
@@ -127,18 +125,17 @@ public class ClientHandler {
 		}
 	}
 
-	public void write(HashMap<NetworkPlayer, ArrayList<TCP_Packet>> wOUT,
-			ArrayList<Worker> wIN) {
+	public void write(HashMap<NetworkPlayer, ArrayList<TCP_Packet>> wOUT, ArrayList<Worker> wIN) {
 		for (NetworkPlayer player : wOUT.keySet()) {
 			try {
 				for (TCP_Packet p : wOUT.get(player)) {
-					((SocketChannel) player.getKey().channel()).write(p
-							.getDataBuffer());
+					log.debug("writing tcp_packet to: {}", player.getPlayerName());
+					((SocketChannel) player.getKey().channel()).write(p.getDataBuffer());
 				}
+				wOUT.get(player).clear();
 			} catch (IOException e) {
-				wIN.add(new RemoveNetworkPlayer(player));
-				log.error("Error writing to player {}: disconnected",
-						player.getPlayerName(), e);
+				wIN.add(new S_RemoveNetworkPlayer(player));
+				log.error("Error writing to player {}: disconnected", player.getPlayerName(), e);
 			}
 		}
 	}

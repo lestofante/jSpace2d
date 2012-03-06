@@ -18,9 +18,13 @@ public class UpdateMap extends ServerWorker {
 	@Override
 	protected int execute(ServerGameHandler g) {
 		UpdateMapPacket map = new UpdateMapPacket(g.entityHandler.getEntitys(), g.playerHandler.getPlayers());
-		ArrayList<TCP_Packet> temp = new ArrayList<TCP_Packet>();
-		temp.add(map);
-		g.wOUT.put(receiver, temp);
+		ArrayList<TCP_Packet> pL = g.wOUT.get(receiver);
+		if (pL != null)
+			pL.add(map);
+		else {
+			log.error("Retrieved null arrayList for player: {}", receiver.getPlayerName());
+			return -1;
+		}
 		return 0;
 	}
 

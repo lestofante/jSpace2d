@@ -6,10 +6,7 @@ import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
 import base.game.network.packets.TCP.LoginPacket;
-import base.game.player.NetworkPlayer;
-import base.game.player.Player;
 import base.worker.ServerWorker;
-import base.worker.player.CreateNetworkPlayer;
 
 public class Login extends ServerWorker {
 
@@ -36,19 +33,14 @@ public class Login extends ServerWorker {
 		SelectionKey key = c.getKey();
 
 		if (key != null) {
-			CreateNetworkPlayer c2 = new CreateNetworkPlayer(username, key);
+			S_CreateNetworkPlayer c2 = new S_CreateNetworkPlayer(username, key);
 			if (c2.execute(g) == 0) {
-				for (Player toUpdatewithMap : g.playerHandler.getPlayers()) {
-					if (toUpdatewithMap instanceof NetworkPlayer) {
-						UpdateMap uMap = new UpdateMap((NetworkPlayer) toUpdatewithMap);
-						uMap.execute(g);
-					}
-				}
+				return 0;
 			} else {
+				log.debug("Disconneting {}", key.channel());
 				try {
 					key.channel().close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				key.cancel();
