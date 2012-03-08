@@ -20,7 +20,7 @@ public class UpdateMapPacket extends TCP_Packet {
 		this.entities = entitys;
 		this.players = players;
 		createBuffer();
-		setValid(true); // we created it so it better be!
+		setComplete(true); // we created it so it better be!
 	}
 
 	public UpdateMapPacket(ByteBuffer buffer) {
@@ -28,7 +28,7 @@ public class UpdateMapPacket extends TCP_Packet {
 		this.buffer = buffer;
 		entities = new ArrayList<>();
 		players = new ArrayList<>();
-		setValid(recognizePacket());
+		setComplete(recognizePacket());
 	}
 
 	@Override

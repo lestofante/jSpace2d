@@ -66,7 +66,7 @@ public class LoginHandler {
 				TCP_Packet packet = null;
 
 				try {
-					packet = PacketHandler.getTCP(dst);
+					packet = PacketHandler.getLogin(dst);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

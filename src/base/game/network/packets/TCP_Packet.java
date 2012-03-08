@@ -9,14 +9,14 @@ public abstract class TCP_Packet {
 
 	protected ByteBuffer buffer;
 	protected Logger log = LoggerFactory.getLogger(this.getClass());
-	protected boolean valid = false;
+	protected boolean complete = false;
 
-	public final boolean isValid() {
-		return valid;
+	public final boolean isComplete() {
+		return complete;
 	}
 
-	protected final void setValid(boolean valid) {
-		this.valid = valid;
+	protected final void setComplete(boolean valid) {
+		this.complete = valid;
 	}
 
 	public enum TCP_PacketType {

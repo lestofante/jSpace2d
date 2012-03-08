@@ -13,13 +13,13 @@ public class ClientActionPacket extends TCP_Packet {
 		super(TCP_PacketType.CLIENT_ACTION);
 		this.clientState = clientState;
 		createBuffer();
-		setValid(true); // we created it so it better be!
+		setComplete(true); // we created it so it better be!
 	}
 
 	public ClientActionPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.CLIENT_ACTION);
 		this.buffer = buffer;
-		setValid(recognizePacket());
+		setComplete(recognizePacket());
 	}
 
 	@Override

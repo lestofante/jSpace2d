@@ -20,13 +20,13 @@ public class LoginPacket extends TCP_Packet {
 			userName = userName.substring(0, 30);
 		this.username = userName;
 		createBuffer();
-		setValid(true); // we created it so it better be!
+		setComplete(true); // we created it so it better be!
 	}
 
 	public LoginPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.LOGIN);
 		this.buffer = buffer;
-		setValid(recognizePacket());
+		setComplete(recognizePacket());
 	}
 
 	@Override

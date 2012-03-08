@@ -18,86 +18,61 @@ public class PacketHandler {
 
 	public static ArrayList<TCP_Packet> getTCP(ByteBuffer in) throws Exception {
 		ArrayList<TCP_Packet> out = new ArrayList<>();
+		TCP_Packet pOut = null;
 		boolean enoughtByteToRead = in.hasRemaining();
+
 		while (enoughtByteToRead) {
 			byte read = in.get();
 			switch (read) {
 			case 0:
 				log.debug("Possible login packet read: {} {}", read, (read & 0xFF));
-				LoginPacket pL = createLoginPacket(in);
-				if (pL == null) {
-					// underflow error, add back packet type, and terminate
-					// reading cicle because we don't have enought data
-					in.position(in.position() - 1);
-					in.put(read);
-					enoughtByteToRead = false;
-				} else {
-					out.add(pL);
-				}
+				pOut = createLoginPacket(in);
 				break;
 			case 1:
 				log.debug("Possible player request packet read: {} {}", read, (read & 0xFF));
-				PlayRequestPacket pPR = createPlayRequestPacket(in);
-				if (pPR == null) {
-					// underflow error, add back packet type, and terminate
-					// reading cicle because we don't have enought data
-					in.position(in.position() - 1);
-					in.put(read);
-					enoughtByteToRead = false;
-				} else {
-					out.add(pPR);
-				}
+				pOut = createPlayRequestPacket(in);
 				break;
 			case 2:
 				log.debug("Possible client action packet read: {} {}", read, (read & 0xFF));
-				ClientActionPacket pCA = createClientActionPacket(in);
-				if (pCA == null) {
-					// underflow error, add back packet type, and terminate
-					// reading cicle because we don't have enought data
-					in.position(in.position() - 1);
-					in.put(read);
-					enoughtByteToRead = false;
-				} else {
-					out.add(pCA);
-				}
+				pOut = createClientActionPacket(in);
 				break;
 			case 3:
 				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
-				UpdateMapPacket pUM = createUpdateMapPacket(in);
-				if (pUM == null) {
-					// underflow error, add back packet type, and terminate
-					// reading cicle because we don't have enought data
-					in.position(in.position() - 1);
-					in.put(read);
-					enoughtByteToRead = false;
-				} else {
-					out.add(pUM);
-				}
+				pOut = createUpdateMapPacket(in);
 				break;
 			default:
-				log.error("readed: " + read);
-				// put it back?!
-				in.position(in.position() - 1);
-				in.put(read);
+				/*
+				 * FATAL: you screwed up big time!
+				 * or in other words, we don't know what kind of packet we got!
+				 */
+				log.error("read unknown packet type: {}", read);
+
+				/*
+				 * You are going down!
+				 */
+				throw new Exception("Uknown packet type");
 			}
 
-			if (!in.hasRemaining()) {
-				// if the buffer is over without throwing any error (over any
-				// expectation)
+			/*
+			 * if the packet is complete add it to the the outgoing arraylist
+			 * else, restore buffer and return the arraylist with the complete packets
+			 */
+			if (pOut.isComplete()) {
+				out.add(pOut);
+			} else {
+				// underflow error, add back packet type, and terminate
+				// reading cicle because we don't have enought data
+				in.position(in.position() - 1);
+				in.put(read);
 				enoughtByteToRead = false;
-				throw new Exception("Uknown packet type");
+				pOut = null; // useless, but it makes me feel safe
 			}
 		}
 		return out;
 	}
 
 	private static UpdateMapPacket createUpdateMapPacket(ByteBuffer in) {
-		UpdateMapPacket out = new UpdateMapPacket(in);
-		if (out.isValid()) {
-			return out;
-		} else {
-			return null;
-		}
+		return new UpdateMapPacket(in);
 	}
 
 	private static ClientActionPacket createClientActionPacket(ByteBuffer in) {
@@ -110,5 +85,21 @@ public class PacketHandler {
 
 	private static LoginPacket createLoginPacket(ByteBuffer in) {
 		return new LoginPacket(in);
+	}
+
+	/**
+	 * This method checks whether we had a login attempt. If the login packet is
+	 * successfully created, we return the packet. (also the ByteBuffer's
+	 * position will be updated, ready to be read by the ClientHandler) else we
+	 * return null
+	 * 
+	 * @param dst
+	 *            the ByteBuffer to check
+	 * @return the received LoginPacket or null if none
+	 */
+
+	public static LoginPacket getLogin(ByteBuffer dst) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

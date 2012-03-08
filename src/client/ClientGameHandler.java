@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 
 import base.common.AsyncActionBus;
 import base.game.GameHandler;
@@ -64,12 +65,13 @@ public class ClientGameHandler extends GameHandler {
 					buf.flip();
 					if (buf.hasRemaining()) {
 						log.debug("Read {} bytes in {}", read, buf);
-						TCP_Packet in = PacketHandler.getTCP(buf);
-						if (in.PacketType == TCP_PacketType.UPDATE_MAP) {
-							log.info("UPDATE MAP PACKET!\n{}", in);
-						}
+						ArrayList<TCP_Packet> inList = PacketHandler.getTCP(buf);
+						for (TCP_Packet in : inList)
+							if (in.PacketType == TCP_PacketType.UPDATE_MAP) {
+								log.info("UPDATE MAP PACKET!\n{}", in);
+							}
 					}
-					//log.info("Still connected");
+					// log.info("Still connected");
 				} else {
 					log.error("EOF: lost connection to server");
 				}
