@@ -12,12 +12,14 @@ public class ClientActionPacket extends TCP_Packet {
 	public ClientActionPacket(ClientState clientState) {
 		super(TCP_PacketType.CLIENT_ACTION);
 		this.clientState = clientState;
-		recognizePacket();
+		createBuffer();
+		setValid(true); // we created it so it better be!
 	}
 
 	public ClientActionPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.CLIENT_ACTION);
 		this.buffer = buffer;
+		setValid(recognizePacket());
 	}
 
 	@Override
@@ -34,4 +36,5 @@ public class ClientActionPacket extends TCP_Packet {
 		clientState = new ClientState(buffer.get());
 		return false;
 	}
+
 }

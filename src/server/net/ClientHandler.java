@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.net.worker.S_RemoveNetworkPlayer;
-import base.game.network.packets.PacketRecognizer;
+import base.game.network.packets.PacketHandler;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.player.NetworkPlayer;
@@ -62,7 +62,7 @@ public class ClientHandler {
 		TCP_Packet packet = null;
 
 		try {
-			packet = PacketRecognizer.getTCP(buf);
+			packet = PacketHandler.getTCP(buf);
 		} catch (Exception e) {
 			log.error("Error recognizing packet", e);
 		}

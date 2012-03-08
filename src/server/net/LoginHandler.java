@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.net.worker.Login;
-import base.game.network.packets.PacketRecognizer;
+import base.game.network.packets.PacketHandler;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.network.packets.TCP.LoginPacket;
@@ -66,7 +66,7 @@ public class LoginHandler {
 				TCP_Packet packet = null;
 
 				try {
-					packet = PacketRecognizer.getTCP(dst);
+					packet = PacketHandler.getTCP(dst);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -8,7 +8,7 @@ import java.nio.channels.SocketChannel;
 
 import base.common.AsyncActionBus;
 import base.game.GameHandler;
-import base.game.network.packets.PacketRecognizer;
+import base.game.network.packets.PacketHandler;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.network.packets.TCP.LoginPacket;
@@ -64,7 +64,7 @@ public class ClientGameHandler extends GameHandler {
 					buf.flip();
 					if (buf.hasRemaining()) {
 						log.debug("Read {} bytes in {}", read, buf);
-						TCP_Packet in = PacketRecognizer.getTCP(buf);
+						TCP_Packet in = PacketHandler.getTCP(buf);
 						if (in.PacketType == TCP_PacketType.UPDATE_MAP) {
 							log.info("UPDATE MAP PACKET!\n{}", in);
 						}

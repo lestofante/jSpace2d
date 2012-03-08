@@ -12,12 +12,14 @@ public class PlayRequestPacket extends TCP_Packet {
 	public PlayRequestPacket(byte shipID) {
 		super(TCP_PacketType.PLAY_REQUEST);
 		this.shipID = shipID;
+		createBuffer();
+		setValid(true); // we created it so it better be!
 	}
 
 	public PlayRequestPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.PLAY_REQUEST);
 		this.buffer = buffer;
-		recognizePacket();
+		setValid(recognizePacket());
 	}
 
 	@Override
