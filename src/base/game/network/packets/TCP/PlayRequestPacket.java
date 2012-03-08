@@ -30,8 +30,9 @@ public class PlayRequestPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected void recognizePacket() {
+	protected boolean recognizePacket() {
 		shipID = buffer.get();
+		return false;
 	}
 
 }

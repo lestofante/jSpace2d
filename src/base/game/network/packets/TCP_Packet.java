@@ -30,6 +30,6 @@ public abstract class TCP_Packet {
 
 	public abstract void createBuffer();
 
-	protected abstract void recognizePacket();
+	protected abstract boolean recognizePacket();
 
 }

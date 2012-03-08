@@ -69,7 +69,7 @@ public class ClientGameHandler extends GameHandler {
 							log.info("UPDATE MAP PACKET!\n{}", in);
 						}
 					}
-					log.info("Still connected");
+					//log.info("Still connected");
 				} else {
 					log.error("EOF: lost connection to server");
 				}

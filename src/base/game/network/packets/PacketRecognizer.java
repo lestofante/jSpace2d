@@ -16,17 +16,58 @@ public class PacketRecognizer {
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketRecognizer.class);
 
 	public static TCP_Packet getTCP(ByteBuffer in) throws Exception {
-		switch (in.get()) {
-		case -128:
-			return createLoginPacket(in);
-		case -127:
-			return createPlayRequestPacket(in);
-		case -126:
-			return createClientActionPacket(in);
-		case -125:
-			return createUpdateMapPacket(in);
-		default:
-			throw new Exception("Uknown packet type");
+		boolean enoughtByteToRead = in.hasRemaining();
+		while(enoughtByteToRead){
+			byte read =in.get();  
+			switch(read){
+				case 0:
+					System.out.println("packet UpdateMapPacket readed: "+read+" "+(read & 0xFF));
+					if ( !createLoginPacket(in) ){
+						//underflow error, add back packet type, and terminate reading cicle because we don't have enought data
+						in.position(in.position()-1);
+						in.put( read );
+						enoughtByteToRead=false;
+					}
+					break;
+				case 1:
+					System.out.println("packet UpdateMapPacket readed: "+read+" "+(read & 0xFF));
+					if ( !createPlayRequestPacket(in) ){
+						//underflow error, add back packet type, and terminate reading cicle because we don't have enought data
+						in.position(in.position()-1);
+						in.put( read );
+						enoughtByteToRead=false;
+					}
+					break;
+				case 2:
+					System.out.println("packet UpdateMapPacket readed: "+read+" "+(read & 0xFF));
+					if ( !createClientActionPacket(in) ){
+						//underflow error, add back packet type, and terminate reading cicle because we don't have enought data
+						in.position(in.position()-1);
+						in.put( read );
+						enoughtByteToRead=false;
+					}
+					break;
+				case 3:
+					System.out.println("packet UpdateMapPacket readed: "+read+" "+(read & 0xFF));
+					if ( !createUpdateMapPacket(in) ){
+						//underflow error, add back packet type, and terminate reading cicle because we don't have enought data
+						in.position(in.position()-1);
+						in.put( read );
+						enoughtByteToRead=false;
+					}
+					break;
+				default:
+					log.error("readed: "+read);
+					//put it back?!
+					in.position(in.position()-1);
+					in.put( read );
+			}
+			
+			if (!in.hasRemaining()){
+				//if the buffer is over without throwing any error (over any expectation)
+				enoughtByteToRead=false;
+				throw new Exception("Uknown packet type");
+			}
 		}
 	}
 

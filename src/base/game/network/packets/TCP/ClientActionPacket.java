@@ -30,7 +30,8 @@ public class ClientActionPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected void recognizePacket() {
+	protected boolean recognizePacket() {
 		clientState = new ClientState(buffer.get());
+		return false;
 	}
 }

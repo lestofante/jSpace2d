@@ -76,11 +76,12 @@ public class LoginPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected void recognizePacket() {
+	protected boolean recognizePacket() {
 		char[] tmp = new char[30];
 		for (int i = 0; i < 30; i++)
 			tmp[i] = (char) buffer.get();
 		username = String.copyValueOf(tmp).trim();
+		return false;
 	}
 
 }
