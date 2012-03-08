@@ -40,9 +40,7 @@ public class UpdateMapPacket extends TCP_Packet {
 		for (Player p : players) {
 			dimension += dimensionPlayer;
 			dimension += 2; // numero entity
-			for (Entity e : p.getEntities()) {
-				dimension += dimensionEntity;
-			}
+			dimension += dimensionEntity*p.getEntities().size();
 		}
 
 		buffer = ByteBuffer.allocate(dimension);

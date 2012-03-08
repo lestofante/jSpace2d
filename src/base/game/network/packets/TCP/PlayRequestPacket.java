@@ -7,7 +7,7 @@ import base.game.network.packets.TCP_Packet;
 public class PlayRequestPacket extends TCP_Packet {
 
 	private byte shipID;
-	private static final int dimension = 2;
+	private static final int dimension = 1;
 
 	public PlayRequestPacket(byte shipID) {
 		super(TCP_PacketType.PLAY_REQUEST);
@@ -24,7 +24,7 @@ public class PlayRequestPacket extends TCP_Packet {
 
 	@Override
 	public void createBuffer() {
-		buffer = ByteBuffer.allocate(dimension);
+		buffer = ByteBuffer.allocate(dimension+1);
 		buffer.clear();
 		buffer.put((byte) -127);
 		buffer.put(shipID);
@@ -33,8 +33,10 @@ public class PlayRequestPacket extends TCP_Packet {
 
 	@Override
 	protected boolean recognizePacket() {
+		if (buffer.remaining()<dimension)
+			return false;
 		shipID = buffer.get();
-		return false;
+		return true;
 	}
 
 }

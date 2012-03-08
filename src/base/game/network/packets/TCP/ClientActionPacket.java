@@ -7,7 +7,7 @@ import base.game.network.packets.TCP_Packet;
 public class ClientActionPacket extends TCP_Packet {
 
 	private ClientState clientState;
-	private static final int dimension = 2;
+	private static final int dimension = 1;
 
 	public ClientActionPacket(ClientState clientState) {
 		super(TCP_PacketType.CLIENT_ACTION);
@@ -24,7 +24,7 @@ public class ClientActionPacket extends TCP_Packet {
 
 	@Override
 	public void createBuffer() {
-		buffer = ByteBuffer.allocate(dimension);
+		buffer = ByteBuffer.allocate(dimension+1);
 		buffer.clear();
 		buffer.put((byte) -126);
 		buffer.put(clientState.getState());
@@ -33,8 +33,11 @@ public class ClientActionPacket extends TCP_Packet {
 
 	@Override
 	protected boolean recognizePacket() {
+		if (buffer.remaining() < dimension)
+			return false;
+		
 		clientState = new ClientState(buffer.get());
-		return false;
+		return true;
 	}
 
 }

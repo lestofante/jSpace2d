@@ -13,7 +13,6 @@ import base.game.network.packets.TCP.UpdateMapPacket;
 
 public class PacketHandler {
 
-	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketHandler.class);
 
 	public static ArrayList<TCP_Packet> getTCP(ByteBuffer in) throws Exception {
@@ -44,6 +43,7 @@ public class PacketHandler {
 				/*
 				 * FATAL: you screwed up big time!
 				 * or in other words, we don't know what kind of packet we got!
+				 * (and what to do with corrupted buffer)
 				 */
 				log.error("read unknown packet type: {}", read);
 
@@ -61,7 +61,7 @@ public class PacketHandler {
 				out.add(pOut);
 			} else {
 				// underflow error, add back packet type, and terminate
-				// reading cicle because we don't have enought data
+				// reading cycle because we don't have enough data
 				in.position(in.position() - 1);
 				in.put(read);
 				enoughtByteToRead = false;

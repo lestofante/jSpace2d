@@ -8,7 +8,7 @@ import base.game.network.packets.TCP_Packet;
 public class LoginPacket extends TCP_Packet {
 
 	private String username;
-	private static final int dimension = 32;
+	private static final int dimension = 30;
 
 	public String getUsername() {
 		return username;
@@ -31,7 +31,7 @@ public class LoginPacket extends TCP_Packet {
 
 	@Override
 	public void createBuffer() {
-		buffer = ByteBuffer.allocate(dimension);
+		buffer = ByteBuffer.allocate(dimension+1);
 		buffer.clear();
 		buffer.put((byte) -128);
 
@@ -50,11 +50,15 @@ public class LoginPacket extends TCP_Packet {
 
 	@Override
 	protected boolean recognizePacket() {
+		if (buffer.remaining() < dimension)
+			return false;
+		
+		//TODO: check that input are valid values
 		char[] tmp = new char[30];
 		for (int i = 0; i < 30; i++)
 			tmp[i] = (char) buffer.get();
 		username = String.copyValueOf(tmp).trim();
-		return false;
+		return true;
 	}
 
 }

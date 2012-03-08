@@ -59,19 +59,21 @@ public class ClientHandler {
 		}
 
 		buf.flip();
-		TCP_Packet packet = null;
+		ArrayList<TCP_Packet> packets = null;
 
 		try {
-			packet = PacketHandler.getTCP(buf);
+			packets = PacketHandler.getTCP(buf);
 		} catch (Exception e) {
 			log.error("Error recognizing packet", e);
 		}
 
-		if (packet != null) {
-			if (packet.PacketType != TCP_PacketType.LOGIN) {
-				// TODO implement packets
-			} else {
-				throw new Exception("Address already logged in");
+		if (packets != null) {
+			for (TCP_Packet p:packets){
+				if (p.PacketType != TCP_PacketType.LOGIN) {
+					// TODO implement packets
+				} else {
+					throw new Exception("Address already logged in");
+				}
 			}
 		} else {
 			throw new Exception("Error handling packet");
