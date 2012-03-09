@@ -22,12 +22,6 @@ import base.game.player.NetworkPlayer;
 import base.worker.Worker;
 
 public class ClientHandler {
-	/*
-	 * innanzitutto si chiama nel modo sbagliato :P è ancora il vecchio selector
-	 * handler, anche se ci sono già quasi tutti i metodi che ci servono
-	 * immagino che quello che si occupa dei login sia praticamente identico in
-	 * realtà è piuttosto diverso
-	 */
 
 	Selector reader = null;
 
@@ -49,8 +43,7 @@ public class ClientHandler {
 	}
 
 	private Worker readWorker(SelectionKey key) throws Exception {
-		ByteBuffer buf = ByteBuffer.allocate(MTU);
-		buf.clear();
+		ByteBuffer buf = (ByteBuffer) key.attachment();
 		SocketChannel channel = (SocketChannel) key.channel();
 		int numBytesRead = channel.read(buf);
 
@@ -68,7 +61,7 @@ public class ClientHandler {
 		}
 
 		if (packets != null) {
-			for (TCP_Packet p:packets){
+			for (TCP_Packet p : packets) {
 				if (p.PacketType != TCP_PacketType.LOGIN) {
 					// TODO implement packets
 				} else {
@@ -84,7 +77,7 @@ public class ClientHandler {
 	}
 
 	public SelectionKey addConnectedClient(SocketChannel clientChannel) throws ClosedChannelException {
-		SelectionKey key = clientChannel.register(reader, SelectionKey.OP_READ);
+		SelectionKey key = clientChannel.register(reader, SelectionKey.OP_READ, ByteBuffer.allocate(MTU));
 		try {
 			log.info("New client connected: {}", clientChannel.getRemoteAddress());
 		} catch (IOException e) {

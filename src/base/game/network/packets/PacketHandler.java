@@ -59,11 +59,21 @@ public class PacketHandler {
 			 */
 			if (pOut.isComplete()) {
 				out.add(pOut);
+				if (!in.hasRemaining()) {
+					enoughtByteToRead = false;
+					in.clear();
+				}
 			} else {
 				// underflow error, add back packet type, and terminate
 				// reading cycle because we don't have enough data
-				in.position(in.position() - 1);
+
+				// shift remaining bytes to the beginning of the buffer (putting
+				// the read byte back in)
+				int currentPosition = in.position();
+				in.rewind();
 				in.put(read);
+				in.put(in.array(), currentPosition, in.limit() - currentPosition);
+
 				enoughtByteToRead = false;
 				pOut = null; // useless, but it makes me feel safe
 			}
@@ -93,13 +103,30 @@ public class PacketHandler {
 	 * position will be updated, ready to be read by the ClientHandler) else we
 	 * return null
 	 * 
-	 * @param dst
+	 * @param in
 	 *            the ByteBuffer to check
 	 * @return the received LoginPacket or null if none
 	 */
 
-	public static LoginPacket getLogin(ByteBuffer dst) {
-		// TODO Auto-generated method stub
+	public static LoginPacket getLogin(ByteBuffer in) {
+		byte read = in.get();
+		log.debug("Should be login type (0). Read: {} {}", read, (read & 0xFF));
+
+		if (read == 0) {
+			log.debug("OK");
+			LoginPacket pOut = createLoginPacket(in);
+
+			if (pOut.isComplete()) {
+				return pOut;
+			} else {
+				log.debug("Login packet not complete");
+			}
+		} else {
+			log.debug("NOPE");
+			log.error("Uknown packet type");
+		}
+
+		in.rewind();
 		return null;
 	}
 }

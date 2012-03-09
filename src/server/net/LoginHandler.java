@@ -32,6 +32,7 @@ public class LoginHandler {
 		listenerChannel = ServerSocketChannel.open();
 		listenerChannel.configureBlocking(false);
 		listenerChannel.bind(new InetSocketAddress(port));
+		log.info("Server started listening on port {}", port);
 	}
 
 	public void checkForLoginRequests(ArrayList<Worker> w) throws IOException {
@@ -56,11 +57,14 @@ public class LoginHandler {
 				}
 				ByteBuffer dst = ByteBuffer.allocate(32);
 				dst.clear();
+
 				int bytesRead = entry.getKey().read(dst);
 
 				if (bytesRead <= 0) {
 					continue;
 				}
+
+				log.debug("{} bytes read from {} ", bytesRead, entry.getKey().getRemoteAddress());
 
 				dst.flip();
 				TCP_Packet packet = null;
@@ -73,40 +77,37 @@ public class LoginHandler {
 
 				if (packet != null) {
 					if (packet.PacketType == TCP_PacketType.LOGIN) {
+						if (dst.hasRemaining()) {
+							// Are you trying to inject? NO PACKETS BEFORE
+							// LOGIN! Son I am disappoint...
+							ditchPendingConnection(entry);
+							try {
+								throw new Exception();
+							} catch (Exception e) {
+								log.error("Packet arrived before login was acknowledged", e);
+							}
+						}
 						wLogin = new Login((LoginPacket) packet, entry.getKey());
 						log.debug("Received a login from address: {} with username: {}", entry.getKey().getRemoteAddress(), ((LoginPacket) packet).getUsername());
 						w.add(wLogin);
 						pendingConnections.remove(entry.getKey());
 					} else {
-						entry.getKey().close();
-						pendingConnections.remove(entry.getKey());
+						ditchPendingConnection(entry);
 						try {
 							throw new Exception();
 						} catch (Exception e) {
 							log.error("Not a login packet", e);
 						}
 					}
-				} else {
-					entry.getKey().close();
-					pendingConnections.remove(entry.getKey());
-					try {
-						throw new Exception();
-					} catch (Exception e) {
-						log.error("Error handling packet", e);
-					}
 				}
 			}
 		}
 	}
 
-	// va bene ora? uhmm non capisco perchè vuoi troware l'eccezzione....
-	/*
-	 * per chiarezza ma andebbe nel logger, sicuramente non è chiarezza stampare
-	 * lo stack trace, visto che fa riferimento a quì :-) guarda se hai voglia
-	 * di implementare il logger :) sicuramente così è meglio che stampare in
-	 * stdout, e se non lo fai qui, no? certo stampi in stderr :-) giusto :) mi
-	 * porti in tou a vedere il PacketRecognizer? si
-	 */
+	private void ditchPendingConnection(Entry<SocketChannel, Long> entry) throws IOException {
+		entry.getKey().close();
+		pendingConnections.remove(entry.getKey());
+	}
 
 	public void acceptNewConnection() throws IOException {
 		SocketChannel accept = listenerChannel.accept();
