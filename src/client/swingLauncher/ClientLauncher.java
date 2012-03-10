@@ -2,7 +2,6 @@ package client.swingLauncher;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import client.ClientTest;
@@ -36,7 +36,7 @@ public class ClientLauncher {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -47,6 +47,7 @@ public class ClientLauncher {
 				}
 			}
 		});
+		System.out.println("Swing Utilities invoked");
 	}
 
 	/**
@@ -95,7 +96,6 @@ public class ClientLauncher {
 		gbc_lblNewLabel.gridx = 0;
 		gbc_lblNewLabel.gridy = 0;
 		panel_5.add(lblNewLabel, gbc_lblNewLabel);
-
 		textField = new JTextField();
 		textField.setHorizontalAlignment(SwingConstants.TRAILING);
 		textField.setText("127.0.0.1");
@@ -169,6 +169,7 @@ public class ClientLauncher {
 				frmJspacdd.dispose();
 			}
 		});
+
 		btnNewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.fill = GridBagConstraints.BOTH;
@@ -178,6 +179,7 @@ public class ClientLauncher {
 		frmJspacdd.pack();
 		frmJspacdd.setLocationRelativeTo(null);
 		getPlayerTextField().requestFocusInWindow();
+
 	}
 
 	public JTextField getPlayerTextField() {

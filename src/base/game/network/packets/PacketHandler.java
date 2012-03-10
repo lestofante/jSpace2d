@@ -99,9 +99,7 @@ public class PacketHandler {
 
 	/**
 	 * This method checks whether we had a login attempt. If the login packet is
-	 * successfully created, we return the packet. (also the ByteBuffer's
-	 * position will be updated, ready to be read by the ClientHandler) else we
-	 * return null
+	 * successfully created, we return the packet. Else we return null
 	 * 
 	 * @param in
 	 *            the ByteBuffer to check
@@ -125,8 +123,6 @@ public class PacketHandler {
 			log.debug("NOPE");
 			log.error("Uknown packet type");
 		}
-
-		in.rewind();
 		return null;
 	}
 }
