@@ -45,7 +45,7 @@ public class UpdateMapPacket extends TCP_Packet {
 
 		buffer = ByteBuffer.allocate(dimension);
 		buffer.clear();
-		buffer.put((byte) -125);
+		buffer.put((byte) 3);
 
 		buffer.putChar((char) players.size());
 		log.debug("number player: " + players.size() + " " + (char) players.size());

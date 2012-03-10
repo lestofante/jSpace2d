@@ -109,8 +109,8 @@ public class PacketHandler {
 	 */
 
 	public static LoginPacket getLogin(ByteBuffer in) {
-		byte read = in.get();
-		log.debug("Should be login type (0). Read: {} {}", read, (read & 0xFF));
+		int read = in.get() & 0xFF;
+		log.debug("Should be login type (0). Read: {}", read);
 
 		if (read == 0) {
 			log.debug("OK");

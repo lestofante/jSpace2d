@@ -33,7 +33,7 @@ public class LoginPacket extends TCP_Packet {
 	public void createBuffer() {
 		buffer = ByteBuffer.allocate(dimension+1);
 		buffer.clear();
-		buffer.put((byte) -128);
+		buffer.put((byte) 0);
 
 		int i = 0;
 		try {

@@ -26,7 +26,7 @@ public class PlayRequestPacket extends TCP_Packet {
 	public void createBuffer() {
 		buffer = ByteBuffer.allocate(dimension+1);
 		buffer.clear();
-		buffer.put((byte) -127);
+		buffer.put((byte) 1);
 		buffer.put(shipID);
 		buffer.rewind();
 	}
