@@ -47,7 +47,6 @@ public class ClientLauncher {
 				}
 			}
 		});
-		System.out.println("Swing Utilities invoked");
 	}
 
 	/**

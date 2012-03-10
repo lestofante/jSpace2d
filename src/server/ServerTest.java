@@ -24,7 +24,6 @@ public class ServerTest {
 		Thread graphicsThread = new Thread(gr);
 		graphicsThread.setName("Server Graphics");
 		graphicsThread.start();
-		g.loadMap("test.obj");
 		while (true) {
 			g.update();
 		}

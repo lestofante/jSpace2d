@@ -13,7 +13,7 @@ public class ClientTest implements Runnable {
 
 	AsyncActionBus bus = new AsyncActionBus();
 	ClientGameHandler g;
-	GraphicsManager gr;
+	GraphicsManager gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);;
 	private final String playerName;
 	private final String serverAddress;
 	private final int serverPort;
@@ -23,11 +23,23 @@ public class ClientTest implements Runnable {
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 	}
-
+	
+	
 	@Override
 	public void run() {
 		Thread.currentThread().setName("Client " + playerName);
+		
+		Thread graphicsThread = new Thread(gr);
+		graphicsThread.setName("Client Graphics");
+		graphicsThread.start();
+		
+		//da qui in poi la grafica è per conto suo
+		
 		g = new ClientGameHandler(bus, playerName, serverAddress, serverPort);
-		gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
+		
+		//e qui c'è il loop di gioco (le varie wait sono dentro update)
+		while (true) {
+			g.update();
+		}
 	}
 }
