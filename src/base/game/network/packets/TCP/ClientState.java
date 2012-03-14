@@ -24,8 +24,8 @@ public class ClientState {
 		this.gun = gun;
 	}
 
-	public ClientState(byte rawState) {		
-		int state = rawState & 0xff; // convert to an int (avoidng the unsigned problem in java) 
+	public ClientState(byte rawState) {
+		int state = rawState & 0xff; // convert to an int (avoiding the unsigned problem in java) 
 		this.gun = Gun.values()[state / (Translation.values().length * Rotation.values().length)];
 
 		state %= (Translation.values().length * Rotation.values().length);
