@@ -13,7 +13,10 @@ import org.slf4j.LoggerFactory;
 import base.common.AsyncActionBus;
 import base.game.entity.physics.PhysicsHandler;
 import base.game.entity.physics.common.BodyBlueprint;
+import base.game.entity.physics.common.Collidable;
+import base.game.entity.physics.common.ForceAction;
 import base.game.entity.physics.common.PhysicalObject;
+import base.game.entity.ships.EntityShip;
 import base.game.player.Player;
 import base.graphics.actions.G_CreateGameRenderableAction;
 import base.graphics.actions.G_FollowObjectWithCamera;
@@ -46,7 +49,7 @@ public class EntityHandler {
 
 	public char createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
 		char id = getFreeID();
-		Entity e = new Entity(id, bodyBlueprint.ID, player);
+		Entity e = new EntityShip(id, bodyBlueprint.ID, player);
 		entityMap.put(id, e);
 
 		PhysicalObject infoBody = createPhisicalObject(bodyBlueprint);
@@ -86,11 +89,11 @@ public class EntityHandler {
 			return (char) (currentID - 2); // return
 		}
 	}
-
+/*
 	public void moveEntity(float newX, float newY, int entity) {
 		entityMap.get(entity).infoBody.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.getTransform()[2]);
 	}
-
+*/
 	public void removeEntity(char id) {
 		removeID(id);
 		Entity e = entityMap.remove(id);

@@ -11,7 +11,7 @@ public class ClientState {
 	}
 
 	public enum Gun {
-		NO_FIRE, PRIMARY_FIRE, SECONDARY_FIRE
+		NO_FIRE, PRIMARY_FIRE, SECONDARY_FIRE, TOGHEDER_FIRE
 	}
 
 	private final Translation translation;
@@ -51,7 +51,7 @@ public class ClientState {
 																						// the
 																						// gun
 																						// state
-																						// (0-2)
+																						// (0-3)
 																						// multiplied
 																						// by
 																						// the

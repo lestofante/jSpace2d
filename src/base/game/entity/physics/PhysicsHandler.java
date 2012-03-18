@@ -52,22 +52,16 @@ public class PhysicsHandler {
 		this.step = step;
 	}
 
-	public PhysicalObject addPhysicalObject(BodyBlueprint t) {
-		PhysicalObject out = null;
-
-		if (t.getFixtureDef() == null) {
-			// TODO find a better way to do this!
-			Radar radar = createRadar((Vec2) t.getBodyDef().userData);
-			return radar;
-		}
+	public Collidable addPhysicalObject(BodyBlueprint t) {
+		Collidable out = null;
 
 		Body body = physicWorld.createBody(t.getBodyDef());
 
 		if (body != null) {
 			body.createFixture(t.getFixtureDef());
 			out = new Collidable(body);
-			((Collidable) out).updateSharedPosition();
-			collidables.add((Collidable) out);
+			out.updateSharedPosition();
+			collidables.add(out);
 			log.debug("New collidable in world");
 			log.debug("Collidables in world: {}", physicWorld.getBodyCount());
 			return out;

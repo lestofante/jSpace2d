@@ -1,9 +1,11 @@
 package base.game.entity;
 
+import org.jbox2d.common.Vec2;
+
 import base.game.entity.physics.common.PhysicalObject;
 import base.game.player.Player;
 
-public class Entity {
+public abstract class Entity {
 
 	public final char entityID;
 	public final char blueprintID;
@@ -16,4 +18,5 @@ public class Entity {
 		this.blueprintID = blueprint;
 	}
 
+	public abstract void translate(boolean[] spostamento);
 }

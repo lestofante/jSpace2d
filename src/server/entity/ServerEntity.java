@@ -9,4 +9,10 @@ public class ServerEntity extends Entity {
 		super(id, blueprint, player);
 	}
 
+	@Override
+	public void translate(boolean[] spostamento) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import base.game.entity.Entity;
+import base.game.entity.physics.common.Collidable;
 import base.worker.Worker;
 
 public class Player {
@@ -60,6 +61,20 @@ public class Player {
 
 	public Collection<Entity> getEntities() {
 		return myEntities.values();
+	}
+
+	public void translate(boolean[] spostamento) {
+		currentEntity.translate(spostamento); //fine
+	}
+
+	public void rotate(boolean[] spostamento) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void shoot(boolean[] sparo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
