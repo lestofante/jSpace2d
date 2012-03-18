@@ -3,10 +3,10 @@ package server.net.worker;
 import java.util.ArrayList;
 
 import server.ServerGameHandler;
+import server.worker.ServerWorker;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.UpdateMapPacket;
 import base.game.player.NetworkPlayer;
-import base.worker.ServerWorker;
 
 public class UpdateMap extends ServerWorker {
 	NetworkPlayer receiver;

@@ -1,9 +1,9 @@
 package server.net.worker;
 
 import server.ServerGameHandler;
+import server.worker.ServerWorker;
 import base.game.player.NetworkPlayer;
 import base.game.player.Player;
-import base.worker.ServerWorker;
 
 public class UpdateNetworkPlayers extends ServerWorker {
 

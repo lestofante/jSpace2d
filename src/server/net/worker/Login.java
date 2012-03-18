@@ -5,8 +5,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import server.ServerGameHandler;
+import server.worker.ServerWorker;
 import base.game.network.packets.TCP.LoginPacket;
-import base.worker.ServerWorker;
 
 public class Login extends ServerWorker {
 
