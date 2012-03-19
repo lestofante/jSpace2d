@@ -17,4 +17,10 @@ public class Radar extends PhysicalObject {
 		return aabb;
 	}
 
+	@Override
+	public void applyForce(Vec2 translation) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

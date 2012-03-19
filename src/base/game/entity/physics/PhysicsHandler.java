@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import base.game.entity.physics.common.BodyBlueprint;
 import base.game.entity.physics.common.Collidable;
-import base.game.entity.physics.common.CollidableAction;
 import base.game.entity.physics.common.PhysicalObject;
 import base.game.entity.physics.common.Radar;
 import base.worker.Worker;
@@ -142,7 +141,7 @@ public class PhysicsHandler {
 					try {
 						long timePhysics = System.nanoTime();
 
-						applyCollidableActions();
+						applyActions();
 
 						step();
 
@@ -157,7 +156,7 @@ public class PhysicsHandler {
 
 				}
 
-				clearCollidableActions();
+				clearActions();
 
 			} else {
 				try {
@@ -171,18 +170,14 @@ public class PhysicsHandler {
 		}
 	}
 
-	private void applyCollidableActions() {
-		for (Collidable collidable : collidables) {
-			for (CollidableAction action : collidable.getCollidableActions()) {
-				action.apply(collidable.getBody());
-			}
-		}
+	private void clearActions() {
+		for (Collidable collidable : collidables)
+			collidable.clearActions();
 	}
 
-	private void clearCollidableActions() {
-		for (Collidable collidable : collidables) {
-			collidable.clearCollidableActions();
-		}
+	private void applyActions() {
+		for (Collidable collidable : collidables)
+			collidable.applyActions();
 	}
 
 	private void updatePPS() {

@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 
-import client.worker.StateEntity;
-
 import base.game.network.packets.TCP.ClientState.Gun;
 import base.game.network.packets.TCP.ClientState.Rotation;
 import base.game.network.packets.TCP.ClientState.Translation;
 import base.worker.Worker;
+import client.worker.StateEntity;
 
 public class InputHandler {
 
@@ -45,6 +44,7 @@ public class InputHandler {
 		while (Keyboard.next()) {
 
 			int eventKey = Keyboard.getEventKey();
+
 			if (WEST == eventKey) {
 				if (t == Translation.NORTH || t == Translation.NORTH_WEST)
 					t = Translation.NORTH_WEST;
@@ -83,13 +83,13 @@ public class InputHandler {
 				r = Rotation.COUNTERCLOCKWISE;
 				break;
 			} else if (PRIMARY_FIRE == eventKey) {
-				if(g.equals(Gun.SECONDARY_FIRE)){
+				if (g.equals(Gun.SECONDARY_FIRE)) {
 					g = Gun.TOGHEDER_FIRE;
 				} else
 					g = Gun.PRIMARY_FIRE;
 				break;
 			} else if (SECONDARY_FIRE == eventKey) {
-				if(g.equals(Gun.PRIMARY_FIRE)){
+				if (g.equals(Gun.PRIMARY_FIRE)) {
 					g = Gun.TOGHEDER_FIRE;
 				} else
 					g = Gun.SECONDARY_FIRE;

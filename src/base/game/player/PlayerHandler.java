@@ -72,7 +72,7 @@ public class PlayerHandler {
 	}
 
 	public void removePlayer(Player player) {
-		removeID(player.playerID);
+		removeID(player.getPlayerID());
 		players.remove(player.getPlayerName());
 		System.out.println("Removed player: " + player.getPlayerName());
 	}

@@ -6,17 +6,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jbox2d.common.Vec2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import base.common.AsyncActionBus;
 import base.game.entity.physics.PhysicsHandler;
 import base.game.entity.physics.common.BodyBlueprint;
-import base.game.entity.physics.common.Collidable;
-import base.game.entity.physics.common.ForceAction;
 import base.game.entity.physics.common.PhysicalObject;
-import base.game.entity.ships.EntityShip;
+import base.game.entity.ships.SpaceShip;
 import base.game.player.Player;
 import base.graphics.actions.G_CreateGameRenderableAction;
 import base.graphics.actions.G_FollowObjectWithCamera;
@@ -31,15 +28,15 @@ public class EntityHandler {
 	private final HashMap<Character, Entity> entityMap = new HashMap<>();
 
 	/* for physics */
-	protected final PhysicsHandler phisicsHandler;
+	protected final PhysicsHandler physicsHandler;
 
 	/* for graphics */
 	private final AsyncActionBus bus;
 
 	public EntityHandler(AsyncActionBus graphicBus, AtomicInteger step) {
-		phisicsHandler = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
+		physicsHandler = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
 		this.bus = graphicBus;
-		phisicsHandler.start();
+		physicsHandler.start();
 	}
 
 	public void setObserved(char entityID) {
@@ -49,7 +46,7 @@ public class EntityHandler {
 
 	public char createEntity(String graphicModelName, BodyBlueprint bodyBlueprint, Player player) {
 		char id = getFreeID();
-		Entity e = new EntityShip(id, bodyBlueprint.ID, player);
+		Entity e = new SpaceShip(id, bodyBlueprint.ID, player);
 		entityMap.put(id, e);
 
 		PhysicalObject infoBody = createPhisicalObject(bodyBlueprint);
@@ -70,11 +67,11 @@ public class EntityHandler {
 	}
 
 	private PhysicalObject createPhisicalObject(BodyBlueprint bodyBlueprint) {
-		return phisicsHandler.addPhysicalObject(bodyBlueprint);
+		return physicsHandler.addPhysicalObject(bodyBlueprint);
 	}
 
 	private void removePhysicalObject(PhysicalObject infoBody) {
-		phisicsHandler.removePhysicalObject(infoBody);
+		physicsHandler.removePhysicalObject(infoBody);
 	}
 
 	private void destroyGraphicalObject(int ID) {
@@ -89,11 +86,12 @@ public class EntityHandler {
 			return (char) (currentID - 2); // return
 		}
 	}
-/*
-	public void moveEntity(float newX, float newY, int entity) {
-		entityMap.get(entity).infoBody.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.getTransform()[2]);
-	}
-*/
+
+	/*
+		public void moveEntity(float newX, float newY, int entity) {
+			entityMap.get(entity).infoBody.setTransform(new Vec2(newX, newY), entityMap.get(entity).infoBody.getTransform()[2]);
+		}
+	*/
 	public void removeEntity(char id) {
 		removeID(id);
 		Entity e = entityMap.remove(id);
@@ -108,7 +106,7 @@ public class EntityHandler {
 	}
 
 	public void update(ArrayList<Worker> w) {
-		phisicsHandler.update(w);
+		physicsHandler.update(w);
 	}
 
 	public Entity getEntity(char ID) {
@@ -117,5 +115,10 @@ public class EntityHandler {
 
 	public Collection<Entity> getEntitys() {
 		return entityMap.values();
+	}
+
+	public static Entity buildEntity(char entityType, char bluePrintID, Player possessor) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

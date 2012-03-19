@@ -1,12 +1,10 @@
 package client.worker;
 
-import client.ClientGameHandler;
-import base.game.entity.Entity;
-import base.game.entity.physics.common.Collidable;
 import base.game.network.packets.TCP.ClientState.Gun;
 import base.game.network.packets.TCP.ClientState.Rotation;
 import base.game.network.packets.TCP.ClientState.Translation;
 import base.game.player.Player;
+import client.ClientGameHandler;
 
 public class StateEntity extends ClientWorker {
 
@@ -24,67 +22,67 @@ public class StateEntity extends ClientWorker {
 	@Override
 	protected int execute(ClientGameHandler g) {
 		Player target = g.playerHandler.getPlayer(player);
-		
-		boolean spostamento[] = new boolean[4];
+
+		boolean translationArray[] = new boolean[4];
 		switch (translation) {
 		case NORTH:
-			spostamento[0]=true;
+			translationArray[0] = true;
 			break;
 		case SOUTH:
-			spostamento[1]=true;
+			translationArray[1] = true;
 			break;
 		case WEST:
-			spostamento[2]=true;
+			translationArray[2] = true;
 			break;
 		case EAST:
-			spostamento[3]=true;
+			translationArray[3] = true;
 			break;
 		case NORTH_WEST:
-			spostamento[0]=true;
-			spostamento[2]=true;
+			translationArray[0] = true;
+			translationArray[2] = true;
 			break;
 		case NORTH_EAST:
-			spostamento[0]=true;
-			spostamento[3]=true;
+			translationArray[0] = true;
+			translationArray[3] = true;
 			break;
 		case SOUTH_WEST:
-			spostamento[1]=true;
-			spostamento[2]=true;
+			translationArray[1] = true;
+			translationArray[2] = true;
 			break;
 		case SOUTH_EAST:
-			spostamento[1]=true;
-			spostamento[3]=true;
+			translationArray[1] = true;
+			translationArray[3] = true;
 			break;
 		}
 		if (translation != Translation.STILL)
-			target.translate(spostamento);
-		
-		boolean rotazione[] = new boolean[2];
+			target.moveCurrentEntity(translationArray);
+
+		boolean rotationArray[] = new boolean[2];
 		switch (rotation) {
 		case CLOCKWISE:
-			rotazione[0] = true;
+			rotationArray[0] = true;
 			break;
 		case COUNTERCLOCKWISE:
-			rotazione[1] = true;
+			rotationArray[1] = true;
 			break;
 		}
 		if (rotation != Rotation.STILL)
-			target.rotate(spostamento);
+			target.rotateCurrentEntity(rotationArray);
 
-		boolean sparo[] = new boolean[2];
+		boolean gunArray[] = new boolean[2];
 		switch (gun) {
 		case PRIMARY_FIRE:
-			sparo[0] = true;
+			gunArray[0] = true;
 			break;
 		case SECONDARY_FIRE:
-			sparo[1] = true;
+			gunArray[1] = true;
 			break;
 		case TOGHEDER_FIRE:
-			sparo[0] = true;
-			sparo[1] = true;
+			gunArray[0] = true;
+			gunArray[1] = true;
 		}
 		if (gun != Gun.NO_FIRE)
-			target.shoot(sparo);
+			target.shoot(gunArray);
 
 		return 0;
 	}

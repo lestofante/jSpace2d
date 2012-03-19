@@ -10,8 +10,8 @@ import base.game.entity.Entity;
 public class Collidable extends PhysicalObject {
 
 	private final Body body;
-
-	private final LinkedList<CollidableAction> actions = new LinkedList<>();
+	private final LinkedList<Vec2[]> forces = new LinkedList<>();
+	private final LinkedList<Float> torques = new LinkedList<>();
 
 	public Collidable(Body body) {
 		this.body = body;
@@ -43,16 +43,29 @@ public class Collidable extends PhysicalObject {
 		}
 	}
 
-	public void applyAction(CollidableAction action) {
-		actions.add(action);
+	@Override
+	public void applyForce(Vec2 force) {
+		applyForce(force, new Vec2());
 	}
 
-	public LinkedList<CollidableAction> getCollidableActions() {
-		return actions;
+	public void applyForce(Vec2 force, Vec2 pOA) {
+		Vec2[] toAdd = new Vec2[2];
+		toAdd[0] = force;
+		toAdd[2] = pOA;
+		forces.add(toAdd);
 	}
 
-	public void clearCollidableActions() {
-		actions.clear();
+	public void applyActions() {
+		for (Vec2[] force : forces) {
+			body.applyForce(force[0], force[1]);
+		}
+		for (Float torque : torques) {
+			body.applyTorque(torque);
+		}
 	}
 
+	public void clearActions() {
+		forces.clear();
+		torques.clear();
+	}
 }

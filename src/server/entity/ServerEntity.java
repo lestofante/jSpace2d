@@ -10,7 +10,7 @@ public class ServerEntity extends Entity {
 	}
 
 	@Override
-	public void translate(boolean[] spostamento) {
+	public void move(boolean[] spostamento) {
 		// TODO Auto-generated method stub
 		
 	}

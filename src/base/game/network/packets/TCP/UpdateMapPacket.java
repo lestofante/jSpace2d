@@ -5,29 +5,32 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import base.game.entity.Entity;
 import base.game.network.packets.TCP_Packet;
+import base.game.network.packets.utils.EntityInfo;
+import base.game.network.packets.utils.PlayerInfo;
 import base.game.player.Player;
 
 public class UpdateMapPacket extends TCP_Packet {
 	private static final int dimensionPlayer = 32;
 	private static final int dimensionEntity = 4;
-	Collection<Entity> entities;
-	Collection<Player> players;
+	private final Collection<PlayerInfo> playersInfo = new ArrayList<>();
 
-	public UpdateMapPacket(Collection<Entity> entitys, Collection<Player> players) {
+	public UpdateMapPacket(Collection<Player> players) {
 		super(TCP_PacketType.UPDATE_MAP);
-		this.entities = entitys;
-		this.players = players;
+		extractInfo(players);
 		createBuffer();
 		setComplete(true); // we created it so it better be!
+	}
+
+	private void extractInfo(Collection<Player> players) {
+		for (Player p : players) {
+			playersInfo.add(new PlayerInfo(p.getEntities(), p.getPlayerName(), p.getPlayerID()));
+		}
 	}
 
 	public UpdateMapPacket(ByteBuffer buffer) {
 		super(TCP_PacketType.UPDATE_MAP);
 		this.buffer = buffer;
-		entities = new ArrayList<>();
-		players = new ArrayList<>();
 		setComplete(recognizePacket());
 	}
 
@@ -37,24 +40,24 @@ public class UpdateMapPacket extends TCP_Packet {
 		int dimension = 1; // tipo azione
 
 		dimension += 2; // numero player
-		for (Player p : players) {
+		for (PlayerInfo p : playersInfo) {
 			dimension += dimensionPlayer;
 			dimension += 2; // numero entity
-			dimension += dimensionEntity * p.getEntities().size();
+			dimension += dimensionEntity * p.getEntitiesInfo().size();
 		}
 
 		buffer = ByteBuffer.allocate(dimension);
 		buffer.clear();
 		buffer.put((byte) 3);
 
-		buffer.putChar((char) players.size());
-		log.debug("Player number: {} {}", players.size(), (((char) players.size()) & 0xFF));
+		buffer.putChar((char) playersInfo.size());
+		log.debug("Player number: {} {}", playersInfo.size(), (((char) playersInfo.size()) & 0xFF));
 
-		for (Player p : players) {
-			buffer.putChar((char) p.getEntities().size());
-			log.debug("Entity number: {} {}", p.getEntities().size(), (((char) p.getEntities().size()) & 0xFF));
+		for (PlayerInfo p : playersInfo) {
+			buffer.putChar((char) p.getEntitiesInfo().size());
+			log.debug("Entity number: {} {}", p.getEntitiesInfo().size(), (((char) p.getEntitiesInfo().size()) & 0xFF));
 
-			buffer.putChar(p.playerID); // 2 byte
+			buffer.putChar(p.getPlayerID()); // 2 byte
 			byte array[];
 			try {
 				array = p.getPlayerName().getBytes("ASCII");
@@ -66,7 +69,7 @@ public class UpdateMapPacket extends TCP_Packet {
 					buffer.put((byte) 32); // add "blank"
 				}
 
-				for (Entity e : p.getEntities()) {
+				for (EntityInfo e : p.getEntitiesInfo()) {
 					buffer.putChar(e.entityID); // 2 byte
 					buffer.putChar(e.blueprintID); // 2 byte
 				}
@@ -108,7 +111,7 @@ public class UpdateMapPacket extends TCP_Packet {
 
 		log.debug("Player number: {}", playerNumber);
 
-		Player lastPlayer = null;
+		PlayerInfo lastPlayer = null;
 		for (int i = 0; i < playerNumber; i++) {
 
 			if (buffer.remaining() < 2) {
@@ -119,30 +122,27 @@ public class UpdateMapPacket extends TCP_Packet {
 				log.debug("No entity number");
 				return false;
 			}
-			int entityNumber = buffer.getChar() & 0xFF;
 
-			log.debug("Entity number: " + entityNumber);
+			int numberOfEntities = buffer.getChar() & 0xFF;
+
+			log.debug("Entity number: " + numberOfEntities);
 
 			// now we know how many entity for this player we have. we have just
 			// to check if there are enough byte for this bunch read
-			if (buffer.remaining() >= dimensionPlayer + entityNumber * dimensionEntity) {
+			if (buffer.remaining() >= dimensionPlayer + numberOfEntities * dimensionEntity) {
 				// we have enough byte to read ONE player and all of its entity!
 				// read them all!!
-				lastPlayer = recognizePlayer(buffer);
-				players.add(lastPlayer);
+				playersInfo.add(new PlayerInfo(buffer, numberOfEntities));
 
-				for (int a = 0; a < entityNumber; a++) {
-					entities.add(recognizeEntity(buffer, lastPlayer));
-				}
 				log.debug("Added player and entity");
 			} else {
-				// no player+entitys data present, add back how many player are
+				// no player+entities data present, add back how many player are
 				// left, the number of entity for this player and return
 				// underflow error
 				buffer.position(buffer.position() - 2);
 				buffer.put((byte) (playerNumber - i));
-				buffer.put((byte) entityNumber);
-				log.debug("Not enough bytes: {} of {}", buffer.remaining(), dimensionPlayer + entityNumber * dimensionEntity);
+				buffer.put((byte) numberOfEntities);
+				log.debug("Not enough bytes: {} of {}", buffer.remaining(), dimensionPlayer + numberOfEntities * dimensionEntity);
 				return false;
 			}
 
@@ -151,37 +151,17 @@ public class UpdateMapPacket extends TCP_Packet {
 		return true;
 	}
 
-	private Player recognizePlayer(ByteBuffer buffer) {
-		return new Player(buffer.getChar(), getPlayerName());
-	}
-
-	private String getPlayerName() {
-		char[] tmp = new char[30];
-		for (int i = 0; i < 30; i++) {
-			tmp[i] = (char) buffer.get();
-		}
-		return String.copyValueOf(tmp).trim();
-	}
-
-	private Entity recognizeEntity(ByteBuffer buffer, Player possessor) {
-		char bluePrintID = buffer.getChar();
-
-		return new Entity(buffer.getChar(), bluePrintID, possessor);
-	}
-
 	@Override
 	public String toString() {
 		String out = new String();
 		out = out.concat("\n");
-		for (Player player : players) {
+		for (PlayerInfo player : playersInfo) {
 			out = out.concat("Player: " + player.getPlayerName());
-			out = out.concat("\nplayer ID: " + String.valueOf((int) player.playerID) + "\n");
-		}
-		out = out.concat("\n");
-		for (Entity entity : entities) {
-			out = out.concat("Entity ID: " + String.valueOf((int) entity.entityID));
-			out = out.concat("\nEntity owner's id: " + String.valueOf((int) entity.owner.playerID));
-			out = out.concat("\nEntity blueprint's id: " + String.valueOf((int) entity.blueprintID) + "\n");
+			out = out.concat("\nplayer ID: " + String.valueOf((int) player.getPlayerID()) + "\n");
+			for (EntityInfo eI : player.getEntitiesInfo()) {
+				out = out.concat("\n\tEntity ID: " + eI.entityID);
+				out = out.concat("\n\tentity type: " + eI.blueprintID);
+			}
 		}
 
 		return out;

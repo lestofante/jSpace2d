@@ -18,5 +18,5 @@ public abstract class Entity {
 		this.blueprintID = blueprint;
 	}
 
-	public abstract void translate(boolean[] spostamento);
+	public abstract void move(boolean[] movement);
 }

@@ -17,7 +17,7 @@ public class UpdateMap extends ServerWorker {
 
 	@Override
 	protected int execute(ServerGameHandler g) {
-		UpdateMapPacket map = new UpdateMapPacket(g.entityHandler.getEntitys(), g.playerHandler.getPlayers());
+		UpdateMapPacket map = new UpdateMapPacket(g.playerHandler.getPlayers());
 		ArrayList<TCP_Packet> pL = g.wOUT.get(receiver);
 		if (pL != null)
 			pL.add(map);
