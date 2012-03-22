@@ -10,13 +10,13 @@ import base.game.network.packets.utils.EntityInfo;
 import base.game.network.packets.utils.PlayerInfo;
 import base.game.player.Player;
 
-public class UpdateMapPacket extends TCP_Packet {
+public class SynchronizeMapPacket extends TCP_Packet {
 	private static final int dimensionPlayer = 32;
 	private static final int dimensionEntity = 4;
-	private final Collection<PlayerInfo> playersInfo = new ArrayList<>();
+	public final Collection<PlayerInfo> playersInfo = new ArrayList<>();
 
-	public UpdateMapPacket(Collection<Player> players) {
-		super(TCP_PacketType.UPDATE_MAP);
+	public SynchronizeMapPacket(Collection<Player> players) {
+		super(TCP_PacketType.SYNC_MAP);
 		extractInfo(players);
 		createBuffer();
 		setComplete(true); // we created it so it better be!
@@ -28,8 +28,8 @@ public class UpdateMapPacket extends TCP_Packet {
 		}
 	}
 
-	public UpdateMapPacket(ByteBuffer buffer) {
-		super(TCP_PacketType.UPDATE_MAP);
+	public SynchronizeMapPacket(ByteBuffer buffer) {
+		super(TCP_PacketType.SYNC_MAP);
 		this.buffer = buffer;
 		setComplete(recognizePacket());
 	}
@@ -91,7 +91,7 @@ public class UpdateMapPacket extends TCP_Packet {
 		/*
 		
 		*/
-		log.debug("Packet UpdateMapPacket read, size: {}", buffer.remaining());
+		log.debug("Packet SynchronizeMapPacket read, size: {}", buffer.remaining());
 		log.debug("In buffer: {}", buffer);
 		if (!mapPacket()) {
 			log.debug("Input buffer underflow");
@@ -111,7 +111,6 @@ public class UpdateMapPacket extends TCP_Packet {
 
 		log.debug("Player number: {}", playerNumber);
 
-		PlayerInfo lastPlayer = null;
 		for (int i = 0; i < playerNumber; i++) {
 
 			if (buffer.remaining() < 2) {

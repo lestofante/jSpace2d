@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import base.game.network.packets.TCP.ClientActionPacket;
 import base.game.network.packets.TCP.LoginPacket;
 import base.game.network.packets.TCP.PlayRequestPacket;
-import base.game.network.packets.TCP.UpdateMapPacket;
+import base.game.network.packets.TCP.SynchronizeMapPacket;
 
 public class PacketHandler {
 
@@ -37,7 +37,7 @@ public class PacketHandler {
 				break;
 			case 3:
 				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
-				pOut = createUpdateMapPacket(in);
+				pOut = createSynchronizeMapPacket(in);
 				break;
 			default:
 				/*
@@ -81,8 +81,8 @@ public class PacketHandler {
 		return out;
 	}
 
-	private static UpdateMapPacket createUpdateMapPacket(ByteBuffer in) {
-		return new UpdateMapPacket(in);
+	private static SynchronizeMapPacket createSynchronizeMapPacket(ByteBuffer in) {
+		return new SynchronizeMapPacket(in);
 	}
 
 	private static ClientActionPacket createClientActionPacket(ByteBuffer in) {

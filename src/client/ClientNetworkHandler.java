@@ -1,31 +1,44 @@
 package client;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
-import base.game.network.NetworkHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
-import base.game.player.NetworkPlayer;
-import base.worker.Worker;
+import base.game.network.packets.TCP.SynchronizeMapPacket;
+import client.worker.ClientWorker;
 
-public class ClientNetworkHandler extends NetworkHandler {
+public class ClientNetworkHandler {
+	final NetworkStream toServer;
 
-	public ClientNetworkHandler() throws IOException {
-		super();
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+	public ClientNetworkHandler(NetworkStream toServer) {
+		this.toServer = toServer;
 	}
 
-	@Override
-	public void read(ArrayList<Worker> w) {
-		// TODO Auto-generated method stub
+	public void read(List<ClientWorker> wIN) {
 
+		toServer.update();
+
+		while (!toServer.available.isEmpty()) {
+			TCP_Packet packet = toServer.available.remove();
+			switch (packet.PacketType) {
+			case SYNC_MAP:
+				wIN.add(new SynchronizeMap((SynchronizeMapPacket) packet));
+				break;
+			default:// poi
+				log.error("Client shouldn't receive this type of packet");
+				System.exit(-1);
+				break;
+			}
+		}
 	}
 
-	@Override
-	public void write(HashMap<NetworkPlayer, ArrayList<TCP_Packet>> wOUT,
-			ArrayList<Worker> wIN) {
-		// TODO Auto-generated method stub
-		
+	public void write(List<TCP_Packet> wOUT, List<ClientWorker> wIN) {
+
 	}
 
 }

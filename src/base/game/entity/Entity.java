@@ -1,7 +1,5 @@
 package base.game.entity;
 
-import org.jbox2d.common.Vec2;
-
 import base.game.entity.physics.common.PhysicalObject;
 import base.game.player.Player;
 

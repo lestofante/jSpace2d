@@ -1,11 +1,9 @@
 package base.game.player;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 import base.game.entity.Entity;
-import base.worker.Worker;
 
 public class Player {
 
@@ -18,9 +16,6 @@ public class Player {
 	public Player(char id, String playerName) {
 		this.playerName = playerName;
 		playerID = id;
-	}
-
-	public void update(ArrayList<Worker> toUpdate) {
 	}
 
 	public String getPlayerName() {
@@ -82,6 +77,11 @@ public class Player {
 
 	public char getPlayerID() {
 		return playerID;
+	}
+
+	public void update() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

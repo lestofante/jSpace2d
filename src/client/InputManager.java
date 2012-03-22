@@ -1,16 +1,16 @@
 package client;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
 import base.game.network.packets.TCP.ClientState.Gun;
 import base.game.network.packets.TCP.ClientState.Rotation;
 import base.game.network.packets.TCP.ClientState.Translation;
-import base.worker.Worker;
+import client.worker.ClientWorker;
 import client.worker.StateEntity;
 
-public class InputHandler {
+public class InputManager {
 
 	String myName;
 
@@ -32,11 +32,11 @@ public class InputHandler {
 	private final int PRIMARY_FIRE = Keyboard.KEY_SPACE;
 	private final int SECONDARY_FIRE = Keyboard.KEY_LMENU;
 
-	public InputHandler(String myName) {
+	public InputManager(String myName) {
 		this.myName = myName;
 	}
 
-	public void update(ArrayList<Worker> in) {
+	public void update(List<ClientWorker> wIN) {
 		t = Translation.STILL;
 		r = Rotation.STILL;
 		g = Gun.NO_FIRE;
@@ -97,7 +97,7 @@ public class InputHandler {
 			}
 
 		}
-		in.add(new StateEntity(myName, t, r, g));
+		wIN.add(new StateEntity(myName, t, r, g));
 
 	}
 

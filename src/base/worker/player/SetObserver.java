@@ -1,14 +1,12 @@
 package base.worker.player;
 
-import base.game.GameHandler;
 import base.game.entity.Entity;
 import base.game.player.Player;
-import base.game.resources.BodyBluePrints;
-import base.worker.Worker;
 
 public class SetObserver extends Worker {
 
 	private final String username;
+	int observerBluePrintID = 0;
 
 	public SetObserver(String username) {
 		this.username = username;
@@ -21,8 +19,15 @@ public class SetObserver extends Worker {
 		Entity currentEntity = player.getCurrentEntity();
 		if (currentEntity != null)
 			g.entityHandler.removeEntity(currentEntity.entityID);
-		// create new observer entity
-		char entityID = g.entityHandler.createEntity("observer.obj", BodyBluePrints.requestObserver(), player);
+		// create new observer entity //qua è tutto da bruciare
+		// questo worker non viene creato
+
+		// più da nessuuno e non funzionerebbe neanche
+		// mauro non esiste più questo worker, è da cancellare
+		// ok
+		// lascialo come reference per ora no?
+		// cmq è recuperabile adattandolo
+		char entityID = g.entityHandler.createEntity(observerBluePrintID, player);
 		// set the new entity to the player
 		player.setAsObserver(g.entityHandler.getEntity(entityID));
 		// tell graphics to follow the player's entity

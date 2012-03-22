@@ -1,6 +1,5 @@
 package base.game.entity.physics;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +15,6 @@ import base.game.entity.physics.common.BodyBlueprint;
 import base.game.entity.physics.common.Collidable;
 import base.game.entity.physics.common.PhysicalObject;
 import base.game.entity.physics.common.Radar;
-import base.worker.Worker;
 
 /**
  * 
@@ -28,7 +26,7 @@ public class PhysicsHandler {
 
 	private final float TIMESTEP;
 
-	private final AtomicInteger step;
+	private final AtomicInteger turn;
 	private final World physicWorld;
 	private final LinkedList<Collidable> collidables = new LinkedList<>();
 	private final LinkedList<Radar> radars = new LinkedList<>();
@@ -42,13 +40,13 @@ public class PhysicsHandler {
 
 	private final ReentrantReadWriteLock sharedLock;
 
-	public PhysicsHandler(long timestepNanos, ReentrantReadWriteLock sharedLock, AtomicInteger step) {
+	public PhysicsHandler(long timestepNanos, ReentrantReadWriteLock sharedLock, AtomicInteger turn) {
 		this.TIMESTEP = timestepNanos / 1000000000f;
 		this.physicsStep = timestepNanos;
 		Vec2 worldGravity = new Vec2(0.0f, -10.0f);
 		this.physicWorld = new World(worldGravity, true);
 		this.sharedLock = sharedLock;
-		this.step = step;
+		this.turn = turn;
 	}
 
 	public Collidable addPhysicalObject(BodyBlueprint t) {
@@ -68,33 +66,9 @@ public class PhysicsHandler {
 		return out;
 	}
 
-	private Radar createRadar(Vec2 extensions) {
-		Radar out = new Radar(extensions.x, extensions.y);
-		radars.add(out);
-		return out;
-	}
-
 	private long getDelta() {
 		return (System.nanoTime() - delta);
 	}
-
-	/*
-		private Integer getNewBodyID() {
-			int potentialID = 0;
-
-			while (collidables.containsKey(new Integer(potentialID)))
-				potentialID++;
-			return new Integer(potentialID);
-		}
-
-		private Integer getNewRadarID() {
-			int potentialID = 0;
-
-			while (radars.containsKey(new Integer(potentialID)))
-				potentialID++;
-			return new Integer(potentialID);
-		}
-	*/
 
 	public void removePhysicalObject(PhysicalObject toRemove) {
 		if (toRemove instanceof Collidable) {
@@ -122,7 +96,7 @@ public class PhysicsHandler {
 		}
 		sharedLock.writeLock().unlock();
 
-		step.addAndGet(1);
+		turn.addAndGet(1);
 
 		physicWorld.step(TIMESTEP, 10, 10);
 	}
@@ -131,7 +105,7 @@ public class PhysicsHandler {
 		running.set(false);
 	}
 
-	public void update(ArrayList<Worker> w) {
+	public void update() {
 		if (running.get()) {
 			if (getDelta() + timeBuffer > physicsStep) {
 				timeBuffer += getDelta();
@@ -160,7 +134,7 @@ public class PhysicsHandler {
 
 			} else {
 				try {
-					int milliseconds = (int) ((physicsStep - getDelta()) / 1000000);
+					int milliseconds = (int) ((physicsStep - getDelta()) / 500000);
 					if (milliseconds > 0)
 						Thread.sleep(milliseconds);
 				} catch (InterruptedException e) {

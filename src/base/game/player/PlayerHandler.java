@@ -2,15 +2,12 @@ package base.game.player;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import base.worker.Worker;
 
 public class PlayerHandler {
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -19,7 +16,10 @@ public class PlayerHandler {
 	private final LinkedList<Character> unusedIDs = new LinkedList<>();
 	private char currentID = 0;
 
-	public PlayerHandler() throws IOException {
+	private final PlayerHandlerListener listener;
+
+	public PlayerHandler(PlayerHandlerListener listener) throws IOException {
+		this.listener = listener;
 	}
 
 	public NetworkPlayer createNetworkPlayer(String name, SelectionKey key) throws Exception {
@@ -27,6 +27,7 @@ public class PlayerHandler {
 			throw new Exception("Player already present!");
 		NetworkPlayer out = new NetworkPlayer(getFreeID(), name, key);
 		players.put(name, out);
+		listener.playerAdded(out);
 		log.info("Created player: {}", name);
 		return out;
 	}
@@ -50,12 +51,10 @@ public class PlayerHandler {
 		return players.get(playerName);
 	}
 
-	public void update(ArrayList<Worker> w) throws IOException {
-
+	public void update() throws IOException {
 		for (Player p : players.values()) {
-			p.update(w);
+			p.update();
 		}
-
 	}
 
 	public String listPlayers() {
@@ -74,7 +73,8 @@ public class PlayerHandler {
 	public void removePlayer(Player player) {
 		removeID(player.getPlayerID());
 		players.remove(player.getPlayerName());
-		System.out.println("Removed player: " + player.getPlayerName());
+		listener.playerAdded(player);
+		log.info("Removed player: {}", player.getPlayerName());
 	}
 
 }

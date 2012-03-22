@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import server.ServerGameHandler;
 import server.worker.ServerWorker;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP.UpdateMapPacket;
+import base.game.network.packets.TCP.SynchronizeMapPacket;
 import base.game.player.NetworkPlayer;
 
 public class UpdateMap extends ServerWorker {
@@ -17,7 +17,7 @@ public class UpdateMap extends ServerWorker {
 
 	@Override
 	protected int execute(ServerGameHandler g) {
-		UpdateMapPacket map = new UpdateMapPacket(g.playerHandler.getPlayers());
+		SynchronizeMapPacket map = new SynchronizeMapPacket(g.playerHandler.getPlayers());
 		ArrayList<TCP_Packet> pL = g.wOUT.get(receiver);
 		if (pL != null)
 			pL.add(map);

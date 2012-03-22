@@ -2,9 +2,6 @@ package base.worker.player;
 
 import java.nio.channels.SelectionKey;
 
-import base.game.GameHandler;
-import base.worker.Worker;
-
 public class CreateNetworkPlayer extends Worker {
 
 	protected String username;
@@ -17,6 +14,7 @@ public class CreateNetworkPlayer extends Worker {
 
 	@Override
 	public int execute(GameHandler g) {
+
 		try {
 			key.attach(g.playerHandler.createNetworkPlayer(username, key));
 			// set as Observer

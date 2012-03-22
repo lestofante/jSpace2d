@@ -6,7 +6,7 @@ import base.game.network.packets.TCP.ClientState.Translation;
 import base.game.player.Player;
 import client.ClientGameHandler;
 
-public class StateEntity extends ClientWorker {
+public class StateEntity implements ClientWorker {
 
 	private final Translation translation;
 	private final Rotation rotation;
@@ -20,8 +20,9 @@ public class StateEntity extends ClientWorker {
 	}
 
 	@Override
-	protected int execute(ClientGameHandler g) {
-		Player target = g.playerHandler.getPlayer(player);
+	public int execute(ClientGameHandler g) {
+
+		Player target = g.playerHandlerClientWrapper.getPlayer(player);
 
 		boolean translationArray[] = new boolean[4];
 		switch (translation) {
@@ -86,5 +87,4 @@ public class StateEntity extends ClientWorker {
 
 		return 0;
 	}
-
 }

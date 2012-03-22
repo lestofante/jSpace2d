@@ -20,7 +20,7 @@ public abstract class TCP_Packet {
 	}
 
 	public enum TCP_PacketType {
-		LOGIN, PLAY_REQUEST, CLIENT_ACTION, UPDATE_MAP
+		LOGIN, PLAY_REQUEST, CLIENT_ACTION, SYNC_MAP
 	}
 
 	public final TCP_PacketType PacketType;
