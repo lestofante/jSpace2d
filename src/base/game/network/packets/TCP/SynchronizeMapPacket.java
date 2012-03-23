@@ -49,7 +49,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 
 		buffer = ByteBuffer.allocate(dimension);
 		buffer.clear();
-		buffer.put((byte) 3);
+		buffer.put((byte) 2);
 
 		buffer.putChar((char) playersInfo.size());
 		log.debug("Player number: {} {}", playersInfo.size(), (((char) playersInfo.size()) & 0xFF));
@@ -96,8 +96,9 @@ public class SynchronizeMapPacket extends TCP_Packet {
 		log.debug("In buffer: {}", buffer);
 		if (!mapPacket()) {
 			log.debug("Input buffer underflow");
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	protected boolean mapPacket() {

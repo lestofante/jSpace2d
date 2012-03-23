@@ -65,10 +65,7 @@ public class PacketHandler {
 
 				// shift remaining bytes to the beginning of the buffer (putting
 				// the read byte back in)
-				int currentPosition = in.position();
-				in.rewind();
-				in.put(read);
-				in.put(in.array(), currentPosition, in.limit() - currentPosition);
+				in.compact();
 
 				enoughtByteToRead = false;
 				pOut = null; // useless, but it makes me feel safe

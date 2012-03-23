@@ -27,7 +27,7 @@ public class ClientActionPacket extends TCP_Packet {
 	public void createBuffer() {
 		buffer = ByteBuffer.allocate(dimension + 1);
 		buffer.clear();
-		buffer.put((byte) 2);
+		buffer.put((byte) 1);
 		buffer.put(clientState.getState());
 		buffer.rewind();
 	}

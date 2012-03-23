@@ -3,7 +3,6 @@ package server.network;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -106,13 +105,6 @@ public class LoginHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			ByteBuffer src = ByteBuffer.allocate(40);
-			src.clear();
-			src.putInt(50);
-			src.flip();
-			// stream.getChannel().write(src);
-			accept.write(src);
 
 			pendingConnections.put(stream, System.currentTimeMillis());
 		}

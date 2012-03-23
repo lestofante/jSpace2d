@@ -33,6 +33,7 @@ public class NetworkStream {
 		if (!in.isBlocking()) {
 			this.in = in;
 			buffer = ByteBuffer.allocate(BUFFER_CAPACITY);
+			buffer.clear();
 			available = new ConcurrentLinkedQueue<>();
 		} else {
 			throw new Exception("Non-blocking stream required");
@@ -43,10 +44,9 @@ public class NetworkStream {
 	 * Updates available packets with contents from the stream
 	 */
 	public void update() {
+		buffer.limit(buffer.capacity());
 		try {
 			int read = getChannel().read(buffer);
-			if (read != 0)
-				log.debug("read {} bytes from {}", read, getChannel().getRemoteAddress());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
