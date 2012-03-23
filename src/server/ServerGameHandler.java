@@ -1,54 +1,57 @@
 package server;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import server.entity.ServerEntityHandler;
-import server.net.ServerNetworkHandler;
-import server.player.ServerPlayerHandler;
+import server.entity.ServerEntityHandlerWrapper;
+import server.network.ServerNetworkHandler;
+import server.player.ServerPlayerHandlerWrapper;
+import server.worker.ServerWorker;
 import base.common.AsyncActionBus;
-import base.game.GameHandler;
-import base.worker.Worker;
+import base.game.network.packets.TCP_Packet;
 
-public class ServerGameHandler extends GameHandler {
+public class ServerGameHandler {
 
-	public ServerGameHandler(AsyncActionBus asyncActionBus) {
-		this.entityHandler = new ServerEntityHandler(asyncActionBus, step);
+	private final AtomicInteger turn = new AtomicInteger();
 
-		try {
-			this.playerHandler = new ServerPlayerHandler();
-			this.networkHandler = new ServerNetworkHandler();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
-		}
+	public final ServerEntityHandlerWrapper entityHandlerWrapper;
+	public final ServerPlayerHandlerWrapper playerHandlerWrapper;
+	public final ServerNetworkHandler networkHandler;
+
+	private final AsyncActionBus bus;
+	private final List<ServerWorker> wIN = new LinkedList<>();
+	public final List<TCP_Packet> outgoingPackets = new LinkedList<>();
+
+	public ServerGameHandler(AsyncActionBus asyncActionBus) throws IOException {
+		this.bus = asyncActionBus;
+
+		this.entityHandlerWrapper = new ServerEntityHandlerWrapper(asyncActionBus, turn);
+		this.playerHandlerWrapper = new ServerPlayerHandlerWrapper();
+
+		this.networkHandler = new ServerNetworkHandler();
+
 	}
 
-	@Override
 	public void update() {
 
-		try {
-			networkHandler.read(wIN);
+		networkHandler.read(wIN);
 
-			for (Worker wTmp : wIN) {
-				wTmp.execute(this);
-			}
-
-			wIN.clear();
-			playerHandler.update(wIN);
-			entityHandler.update(wIN);
-
-			for (Worker wTmp : wIN) {
-				wTmp.execute(this);
-			}
-			wIN.clear();
-
-			networkHandler.write(wOUT, wIN);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
+		for (ServerWorker wTmp : wIN) {
+			wTmp.execute(this);
 		}
+
+		wIN.clear();
+		playerHandlerWrapper.update(wIN);
+		entityHandlerWrapper.update(wIN);
+
+		for (ServerWorker wTmp : wIN) {
+			wTmp.execute(this);
+		}
+		wIN.clear();
+
+		networkHandler.write(outgoingPackets, wIN);
 	}
 
 }

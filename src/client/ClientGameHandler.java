@@ -9,6 +9,7 @@ import base.common.AsyncActionBus;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import client.entity.EntityHandlerClientWrapper;
+import client.network.ClientNetworkHandler;
 import client.player.PlayerHandlerClientWrapper;
 import client.worker.ClientWorker;
 

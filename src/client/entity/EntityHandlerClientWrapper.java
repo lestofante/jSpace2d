@@ -7,6 +7,7 @@ import base.common.AsyncActionBus;
 import base.game.entity.Entity;
 import base.game.entity.EntityHandlerWrapper;
 import base.game.network.packets.utils.EntityInfo;
+import base.game.player.Player;
 import client.worker.ClientWorker;
 
 public class EntityHandlerClientWrapper extends EntityHandlerWrapper {
@@ -29,9 +30,9 @@ public class EntityHandlerClientWrapper extends EntityHandlerWrapper {
 		// TODO Auto-generated method stub
 	}
 
-	public Entity addEntity(EntityInfo e, int playerID) {
+	public Entity addEntity(EntityInfo e, Player player) {
 		// e p
-		core.createEntity(e.entityID, e.blueprintID, playerID);
+		core.createEntity(e.entityID, e.blueprintID, player);
 		return null;
 	}
 }

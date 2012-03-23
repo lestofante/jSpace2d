@@ -88,7 +88,7 @@ public class ClientTest implements Runnable {
 			stream = new NetworkStream(channel);
 
 			try {
-				channel.write(new LoginPacket(playerName).getDataBuffer());
+				channel.write(new LoginPacket(playerName, stream).getDataBuffer());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

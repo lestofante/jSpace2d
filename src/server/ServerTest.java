@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+
 import org.lwjgl.opengl.DisplayMode;
 
 import base.common.AsyncActionBus;
@@ -12,7 +14,7 @@ public class ServerTest {
 	 */
 
 	AsyncActionBus bus = new AsyncActionBus();
-	ServerGameHandler g = new ServerGameHandler(bus);
+	private ServerGameHandler g;
 	GraphicsManager gr = new GraphicsManager(new DisplayMode(800, 800), true, true, bus);
 
 	public static void main(String[] args) {
@@ -21,6 +23,16 @@ public class ServerTest {
 	}
 
 	public ServerTest() {
+		g = null;
+
+		try {
+			g = new ServerGameHandler(bus);
+		} catch (IOException e) {
+
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
 		Thread graphicsThread = new Thread(gr);
 		graphicsThread.setName("Server Graphics");
 		graphicsThread.start();

@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.utils.EntityInfo;
 import base.game.network.packets.utils.PlayerInfo;
@@ -15,8 +16,8 @@ public class SynchronizeMapPacket extends TCP_Packet {
 	private static final int dimensionEntity = 4;
 	public final Collection<PlayerInfo> playersInfo = new ArrayList<>();
 
-	public SynchronizeMapPacket(Collection<Player> players) {
-		super(TCP_PacketType.SYNC_MAP);
+	public SynchronizeMapPacket(Collection<Player> players, NetworkStream stream) {
+		super(TCP_PacketType.SYNC_MAP, stream);
 		extractInfo(players);
 		createBuffer();
 		setComplete(true); // we created it so it better be!
@@ -28,8 +29,8 @@ public class SynchronizeMapPacket extends TCP_Packet {
 		}
 	}
 
-	public SynchronizeMapPacket(ByteBuffer buffer) {
-		super(TCP_PacketType.SYNC_MAP);
+	public SynchronizeMapPacket(ByteBuffer buffer, NetworkStream stream) {
+		super(TCP_PacketType.SYNC_MAP, stream);
 		this.buffer = buffer;
 		setComplete(recognizePacket());
 	}

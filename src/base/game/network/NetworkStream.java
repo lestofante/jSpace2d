@@ -11,17 +11,17 @@ import base.game.network.packets.TCP_Packet;
 public class NetworkStream {
 
 	private static final int BUFFER_CAPACITY = 65000;
-	private final SocketChannel in;
+	public final SocketChannel in;
 	private final ByteBuffer buffer;
 
 	public final ConcurrentLinkedQueue<TCP_Packet> available;
 
 	/**
 	 * Class that makes our packets available to the game. You must assure the
-	 * channel is in non-blocking mode, or the construction will fail
+	 * stream is in non-blocking mode, or the construction will fail
 	 * 
 	 * @param in
-	 *            socket channel to monitor (must be in non blocking mode)
+	 *            socket stream to monitor (must be in non blocking mode)
 	 * @throws Exception
 	 */
 	public NetworkStream(SocketChannel in) throws Exception {
@@ -30,12 +30,12 @@ public class NetworkStream {
 			buffer = ByteBuffer.allocate(BUFFER_CAPACITY);
 			available = new ConcurrentLinkedQueue<>();
 		} else {
-			throw new Exception("Non-blocking channel required");
+			throw new Exception("Non-blocking stream required");
 		}
 	}
 
 	/**
-	 * Updates available packets with contents from the channel
+	 * Updates available packets with contents from the stream
 	 */
 	public void update() {
 		try {
@@ -46,7 +46,7 @@ public class NetworkStream {
 		}
 		buffer.flip();
 		try {
-			available.addAll(PacketHandler.getTCP(buffer));
+			available.addAll(PacketHandler.getTCP(buffer, this));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,6 +1,7 @@
 package base.game.player;
 
 import java.io.IOException;
+import java.util.Collection;
 
 public abstract class PlayerHandlerWrapper implements PlayerHandlerListener {
 
@@ -17,6 +18,18 @@ public abstract class PlayerHandlerWrapper implements PlayerHandlerListener {
 
 	public Player getPlayer(String name) {
 		return core.getPlayer(name);
+	}
+
+	public Player addPlayer(char ID, String username) {
+		return core.addPlayer(ID, username);
+	}
+
+	public Player removePlayer(Player connected) {
+		return core.removePlayer(connected);
+	}
+
+	public Collection<Player> getPlayers() {
+		return core.getPlayers();
 	}
 
 }

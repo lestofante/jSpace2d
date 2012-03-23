@@ -6,16 +6,16 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.game.network.NetworkStream;
 import base.game.network.packets.TCP.ClientActionPacket;
 import base.game.network.packets.TCP.LoginPacket;
-import base.game.network.packets.TCP.PlayRequestPacket;
 import base.game.network.packets.TCP.SynchronizeMapPacket;
 
 public class PacketHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(base.game.network.packets.PacketHandler.class);
 
-	public static ArrayList<TCP_Packet> getTCP(ByteBuffer in) throws Exception {
+	public static ArrayList<TCP_Packet> getTCP(ByteBuffer in, NetworkStream stream) throws Exception {
 		ArrayList<TCP_Packet> out = new ArrayList<>();
 		TCP_Packet pOut = null;
 		boolean enoughtByteToRead = in.hasRemaining();
@@ -25,19 +25,15 @@ public class PacketHandler {
 			switch (read) {
 			case 0:
 				log.debug("Possible login packet read: {} {}", read, (read & 0xFF));
-				pOut = createLoginPacket(in);
+				pOut = createLoginPacket(in, stream);
 				break;
 			case 1:
-				log.debug("Possible player request packet read: {} {}", read, (read & 0xFF));
-				pOut = createPlayRequestPacket(in);
+				log.debug("Possible client action packet read: {} {}", read, (read & 0xFF));
+				pOut = createClientActionPacket(in, stream);
 				break;
 			case 2:
-				log.debug("Possible client action packet read: {} {}", read, (read & 0xFF));
-				pOut = createClientActionPacket(in);
-				break;
-			case 3:
 				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
-				pOut = createSynchronizeMapPacket(in);
+				pOut = createSynchronizeMapPacket(in, stream);
 				break;
 			default:
 				/*
@@ -81,20 +77,16 @@ public class PacketHandler {
 		return out;
 	}
 
-	private static SynchronizeMapPacket createSynchronizeMapPacket(ByteBuffer in) {
-		return new SynchronizeMapPacket(in);
+	private static SynchronizeMapPacket createSynchronizeMapPacket(ByteBuffer in, NetworkStream stream) {
+		return new SynchronizeMapPacket(in, stream);
 	}
 
-	private static ClientActionPacket createClientActionPacket(ByteBuffer in) {
-		return new ClientActionPacket(in);
+	private static ClientActionPacket createClientActionPacket(ByteBuffer in, NetworkStream stream) {
+		return new ClientActionPacket(in, stream);
 	}
 
-	private static PlayRequestPacket createPlayRequestPacket(ByteBuffer in) {
-		return new PlayRequestPacket(in);
-	}
-
-	private static LoginPacket createLoginPacket(ByteBuffer in) {
-		return new LoginPacket(in);
+	private static LoginPacket createLoginPacket(ByteBuffer in, NetworkStream stream) {
+		return new LoginPacket(in, stream);
 	}
 
 	/**
@@ -106,13 +98,13 @@ public class PacketHandler {
 	 * @return the received LoginPacket or null if none
 	 */
 
-	public static LoginPacket getLogin(ByteBuffer in) {
+	public static LoginPacket getLogin(ByteBuffer in, NetworkStream stream) {
 		int read = in.get() & 0xFF;
 		log.debug("Should be login type (0). Read: {}", read);
 
 		if (read == 0) {
 			log.debug("OK");
-			LoginPacket pOut = createLoginPacket(in);
+			LoginPacket pOut = createLoginPacket(in, stream);
 
 			if (pOut.isComplete()) {
 				return pOut;

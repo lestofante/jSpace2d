@@ -23,9 +23,9 @@ public class SynchronizeMap implements ClientWorker {
 		for (PlayerInfo p : packet.playersInfo) {
 			g.playerHandlerClientWrapper.addPlayer(p);
 			for (EntityInfo e : p.getEntitiesInfo()) {
-				risE.add(g.entityHandlerClientWrapper.addEntity(e, p.getPlayerID()));
+				risE.add(g.entityHandlerClientWrapper.addEntity(e, g.playerHandlerClientWrapper.getPlayer(p.getPlayerName())));
 			}
-			g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()).addAllEntities(risE);
+			g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()).addEntities(risE);
 		}
 		return 0;
 	}

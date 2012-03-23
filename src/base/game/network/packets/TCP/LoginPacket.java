@@ -3,6 +3,7 @@ package base.game.network.packets.TCP;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
+import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 
 public class LoginPacket extends TCP_Packet {
@@ -14,8 +15,8 @@ public class LoginPacket extends TCP_Packet {
 		return username;
 	}
 
-	public LoginPacket(String userName) {
-		super(TCP_PacketType.LOGIN);
+	public LoginPacket(String userName, NetworkStream stream) {
+		super(TCP_PacketType.LOGIN, stream);
 		if (userName.length() > 30)
 			userName = userName.substring(0, 30);
 		this.username = userName;
@@ -23,15 +24,15 @@ public class LoginPacket extends TCP_Packet {
 		setComplete(true); // we created it so it better be!
 	}
 
-	public LoginPacket(ByteBuffer buffer) {
-		super(TCP_PacketType.LOGIN);
+	public LoginPacket(ByteBuffer buffer, NetworkStream stream) {
+		super(TCP_PacketType.LOGIN, stream);
 		this.buffer = buffer;
 		setComplete(recognizePacket());
 	}
 
 	@Override
 	public void createBuffer() {
-		buffer = ByteBuffer.allocate(dimension+1);
+		buffer = ByteBuffer.allocate(dimension + 1);
 		buffer.clear();
 		buffer.put((byte) 0);
 
@@ -52,8 +53,8 @@ public class LoginPacket extends TCP_Packet {
 	protected boolean recognizePacket() {
 		if (buffer.remaining() < dimension)
 			return false;
-		
-		//TODO: check that input are valid values
+
+		// TODO: check that input are valid values
 		char[] tmp = new char[30];
 		for (int i = 0; i < 30; i++)
 			tmp[i] = (char) buffer.get();

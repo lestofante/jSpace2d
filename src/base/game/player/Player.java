@@ -2,6 +2,7 @@ package base.game.player;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import base.game.entity.Entity;
 
@@ -82,6 +83,11 @@ public class Player {
 	public void update() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void addEntities(List<Entity> entities) {
+		for (Entity e : entities)
+			addEntity(e);
 	}
 
 }

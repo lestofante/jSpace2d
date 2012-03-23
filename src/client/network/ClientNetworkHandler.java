@@ -1,4 +1,4 @@
-package client;
+package client.network;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.SynchronizeMapPacket;
+import client.SynchronizeMap;
 import client.worker.ClientWorker;
 
 public class ClientNetworkHandler {
