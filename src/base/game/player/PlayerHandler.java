@@ -47,10 +47,13 @@ public class PlayerHandler {
 		return player;
 	}
 
-	public Player addPlayer(char ID, String username) {
-		if (!players.containsKey(username)) {
-			Player toAdd = new Player(ID, username);
-			players.put(username, toAdd);
+	public Player addPlayer(char ID, Player toAdd) {
+		if (toAdd.getPlayerID() != ID) {
+			log.error("Player to be add has different ID from the one provided");
+			return null;
+		}
+		if (!players.containsKey(toAdd.getPlayerName())) {
+			players.put(toAdd.getPlayerName(), toAdd);
 			return toAdd;
 		} else {
 			log.error("Player name already present");

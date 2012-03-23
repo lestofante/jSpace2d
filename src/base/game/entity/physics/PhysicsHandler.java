@@ -134,9 +134,16 @@ public class PhysicsHandler {
 
 			} else {
 				try {
-					int milliseconds = (int) ((physicsStep - getDelta()) / 500000);
-					if (milliseconds > 0)
-						Thread.sleep(milliseconds);
+					int milliseconds = (int) (((physicsStep - getDelta())) / 1000000);
+					if (milliseconds > 0) {
+						// long timer = System.nanoTime();
+						// log.debug("Sleeping {} milliseconds", milliseconds);
+						// log.debug("delta: {} nanoseconds", getDelta());
+						Thread.sleep(milliseconds / 2);
+						// log.debug("Actually slept: {}", System.nanoTime() -
+						// timer);
+
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

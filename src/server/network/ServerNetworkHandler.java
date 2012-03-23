@@ -35,6 +35,7 @@ public class ServerNetworkHandler {
 			clientHandler.read(wIN);
 		} catch (Exception e) {
 			log.error("Error reading from network", e);
+			System.exit(-1);
 		}
 	}
 

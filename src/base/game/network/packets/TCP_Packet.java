@@ -38,7 +38,14 @@ public abstract class TCP_Packet {
 		return buffer;
 	}
 
-	public abstract void createBuffer();
+	public void createBuffer() {
+		log.debug("Creating buffer for {} ", PacketType.name());
+	}
+
+	@Override
+	public String toString() {
+		return PacketType.name();
+	}
 
 	protected abstract boolean recognizePacket();
 

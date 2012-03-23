@@ -57,9 +57,9 @@ public class ClientHandler {
 	}
 
 	public SelectionKey addConnectedClient(ServerNetworkStream stream) throws ClosedChannelException {
-		SelectionKey key = stream.in.register(reader, SelectionKey.OP_READ, stream);
+		SelectionKey key = stream.getChannel().register(reader, SelectionKey.OP_READ, stream);
 		try {
-			log.info("New client connected: {}", stream.in.getRemoteAddress());
+			log.info("New client connected: {}", stream.getChannel().getRemoteAddress());
 		} catch (IOException e) {
 			log.error("Error adding client", e);
 		}
@@ -101,13 +101,18 @@ public class ClientHandler {
 	}
 
 	public void write(List<TCP_Packet> wOUT, List<ServerWorker> wIN) {
+		int size = wOUT.size();
+		if (size != 0)
+			log.debug("Writing {} packets", wOUT.size());
 		for (TCP_Packet packet : wOUT) {
 			try {
-				packet.getNetworkStream().in.write(packet.getDataBuffer());
+				int wrote = packet.getNetworkStream().getChannel().write(packet.getDataBuffer());
+				log.debug("Wrote {} bytes to: {}", wrote, packet.getNetworkStream().getChannel().getRemoteAddress());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+
 	}
 }

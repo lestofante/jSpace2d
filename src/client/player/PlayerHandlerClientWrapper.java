@@ -39,6 +39,6 @@ public class PlayerHandlerClientWrapper extends PlayerHandlerWrapper {
 	}
 
 	public void addPlayer(PlayerInfo p) {
-		core.addPlayer(p.getPlayerID(), p.getPlayerName());
+		core.addPlayer(p.getPlayerID(), new Player(p.getPlayerID(), p.getPlayerName()));
 	}
 }

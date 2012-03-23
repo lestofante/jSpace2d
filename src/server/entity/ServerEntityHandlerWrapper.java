@@ -28,8 +28,7 @@ public class ServerEntityHandlerWrapper extends EntityHandlerWrapper {
 	}
 
 	public void update(List<ServerWorker> wIN) {
-		// TODO Auto-generated method stub
-
+		core.update();
 	}
 
 }

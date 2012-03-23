@@ -23,7 +23,7 @@ public class Login implements ServerWorker {
 		ServerPlayer newPlayer = g.playerHandlerWrapper.addPlayer(packet.getUsername());
 		if (newPlayer != null) {
 			try {
-				ServerNetworkStream newStream = new ServerNetworkStream(stream.in, newPlayer);
+				ServerNetworkStream newStream = new ServerNetworkStream(stream.getChannel(), newPlayer);
 				newPlayer.setStream(newStream);
 				g.networkHandler.addConnectedClient(newStream);
 				SyncPlayers sync = new SyncPlayers();

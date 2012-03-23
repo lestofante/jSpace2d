@@ -3,6 +3,7 @@ package server.network;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -41,27 +42,26 @@ public class LoginHandler {
 
 			while (entrySetIterator.hasNext()) {
 				Entry<NetworkStream, Long> entry = entrySetIterator.next();
-				NetworkStream current = entry.getKey();
-				SocketAddress address = current.in.getRemoteAddress();
+				NetworkStream stream = entry.getKey();
+				SocketAddress address = stream.getChannel().getRemoteAddress();
 				if (System.currentTimeMillis() - entry.getValue() > connectionTimeout) {
 					try {
 						throw new Exception();
 					} catch (Exception e) {
 						log.error("No login arrived before timeout from {}", address, e);
 					}
-					current.in.close();
-					pendingConnections.remove(current);
+					ditchPendingConnection(entry);
 					log.debug("Removed pending connection: {}", address);
 					continue;
 				}
 
-				current.update();
+				stream.update();
 
-				TCP_Packet packet = current.available.poll();
+				TCP_Packet packet = stream.available.poll();
 
 				if (packet != null) {
 					if (packet.PacketType == TCP_PacketType.LOGIN) {
-						if (!current.available.isEmpty()) {
+						if (!stream.available.isEmpty()) {
 							// Are you trying to inject? NO PACKETS BEFORE
 							// LOGIN! Son I am disappoint...
 							ditchPendingConnection(entry);
@@ -71,10 +71,11 @@ public class LoginHandler {
 								log.error("Packet arrived before login was acknowledged", e);
 							}
 						}
-						wLogin = new Login((LoginPacket) packet, entry.getKey());
-						log.debug("Received a login from address: {} with username: {}", entry.getKey().in.getRemoteAddress(), ((LoginPacket) packet).getUsername());
+						wLogin = new Login((LoginPacket) packet, stream);
+						log.debug("Received a login from address: {} with username: {}", address, ((LoginPacket) packet).getUsername());
+
 						w.add(wLogin);
-						pendingConnections.remove(entry.getKey());
+						pendingConnections.remove(stream);
 					} else {
 						ditchPendingConnection(entry);
 						try {
@@ -89,7 +90,7 @@ public class LoginHandler {
 	}
 
 	private void ditchPendingConnection(Entry<NetworkStream, Long> entry) throws IOException {
-		entry.getKey().in.close();
+		entry.getKey().getChannel().close();
 		pendingConnections.remove(entry.getKey());
 	}
 
@@ -105,6 +106,14 @@ public class LoginHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+			ByteBuffer src = ByteBuffer.allocate(40);
+			src.clear();
+			src.putInt(50);
+			src.flip();
+			// stream.getChannel().write(src);
+			accept.write(src);
+
 			pendingConnections.put(stream, System.currentTimeMillis());
 		}
 	}

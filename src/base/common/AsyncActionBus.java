@@ -12,7 +12,7 @@ import base.graphics.actions.GraphicAction;
  */
 public class AsyncActionBus {
 
-	public ReentrantReadWriteLock sharedLock;
+	public ReentrantReadWriteLock sharedLock = new ReentrantReadWriteLock(false);
 
 	/*
 	 * GRAPHICS

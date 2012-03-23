@@ -20,8 +20,8 @@ public abstract class PlayerHandlerWrapper implements PlayerHandlerListener {
 		return core.getPlayer(name);
 	}
 
-	public Player addPlayer(char ID, String username) {
-		return core.addPlayer(ID, username);
+	public Player addPlayer(char ID, Player toAdd) {
+		return core.addPlayer(ID, toAdd);
 	}
 
 	public Player removePlayer(Player connected) {

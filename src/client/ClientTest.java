@@ -84,15 +84,17 @@ public class ClientTest implements Runnable {
 		NetworkStream stream = null;
 
 		if (channel != null) {
-
+			channel.configureBlocking(false);
 			stream = new NetworkStream(channel);
-
 			try {
 				channel.write(new LoginPacket(playerName, stream).getDataBuffer());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			log.error("Error opening channel");
+			System.exit(-1);
 		}
 
 		TCP_Packet shouldBeUpdateMapPacket = null;
@@ -107,6 +109,7 @@ public class ClientTest implements Runnable {
 		if (shouldBeUpdateMapPacket != null)
 			if (shouldBeUpdateMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP))
 				return stream;
+
 		return null;
 	}
 }

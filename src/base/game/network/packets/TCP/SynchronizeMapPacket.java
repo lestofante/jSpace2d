@@ -37,7 +37,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 
 	@Override
 	public void createBuffer() {
-		log.debug("Writing map update");
+		super.createBuffer();
 		int dimension = 1; // tipo azione
 
 		dimension += 2; // numero player

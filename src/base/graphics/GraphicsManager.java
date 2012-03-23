@@ -238,6 +238,7 @@ public class GraphicsManager implements Runnable {
 		while (!Display.isCloseRequested()) {
 
 			update();
+			Display.sync(60);
 
 		}
 

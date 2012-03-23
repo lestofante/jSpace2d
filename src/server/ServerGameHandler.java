@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import server.entity.ServerEntityHandlerWrapper;
 import server.network.ServerNetworkHandler;
 import server.player.ServerPlayerHandlerWrapper;
@@ -15,6 +18,8 @@ import base.game.network.packets.TCP_Packet;
 public class ServerGameHandler {
 
 	private final AtomicInteger turn = new AtomicInteger();
+
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public final ServerEntityHandlerWrapper entityHandlerWrapper;
 	public final ServerPlayerHandlerWrapper playerHandlerWrapper;
@@ -39,7 +44,7 @@ public class ServerGameHandler {
 		networkHandler.read(wIN);
 
 		for (ServerWorker wTmp : wIN) {
-			wTmp.execute(this);
+			log.debug("Executed worker {}", wTmp.execute(this));
 		}
 
 		wIN.clear();
@@ -52,6 +57,7 @@ public class ServerGameHandler {
 		wIN.clear();
 
 		networkHandler.write(outgoingPackets, wIN);
-	}
 
+		outgoingPackets.clear();
+	}
 }
