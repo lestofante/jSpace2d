@@ -24,14 +24,14 @@ public abstract class TCP_Packet {
 	}
 
 	public enum TCP_PacketType {
-		LOGIN, CLIENT_ACTION, SYNC_MAP
+		LOGIN, CLIENT_ACTION, SYNC_MAP, UPDATE_MAP
 	}
 
 	public final TCP_PacketType PacketType;
 
-	public TCP_Packet(TCP_PacketType PacketType, NetworkStream stream) {
+	public TCP_Packet(TCP_PacketType packetType, NetworkStream stream) {
 		this.networkStream = stream;
-		this.PacketType = PacketType;
+		this.PacketType = packetType;
 	}
 
 	public ByteBuffer getDataBuffer() {
@@ -47,7 +47,7 @@ public abstract class TCP_Packet {
 		return PacketType.name();
 	}
 
-	protected abstract boolean recognizePacket();
+	protected abstract boolean validateComplete();
 
 	public NetworkStream getNetworkStream() {
 		return networkStream;

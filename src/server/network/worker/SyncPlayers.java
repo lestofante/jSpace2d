@@ -1,11 +1,11 @@
-package server.network;
+package server.network.worker;
 
 import java.util.Collection;
 
 import server.ServerGameHandler;
 import server.player.ServerPlayer;
 import server.worker.ServerWorker;
-import base.game.network.packets.TCP.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.player.Player;
 
 public class SyncPlayers implements ServerWorker {

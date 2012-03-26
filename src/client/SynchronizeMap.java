@@ -3,7 +3,7 @@ package client;
 import java.util.ArrayList;
 
 import base.game.entity.Entity;
-import base.game.network.packets.TCP.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.network.packets.utils.EntityInfo;
 import base.game.network.packets.utils.PlayerInfo;
 import client.worker.ClientWorker;

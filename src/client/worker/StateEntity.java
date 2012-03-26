@@ -1,8 +1,8 @@
 package client.worker;
 
-import base.game.network.packets.TCP.ClientState.Gun;
-import base.game.network.packets.TCP.ClientState.Rotation;
-import base.game.network.packets.TCP.ClientState.Translation;
+import base.game.network.packets.utils.ClientState.Gun;
+import base.game.network.packets.utils.ClientState.Rotation;
+import base.game.network.packets.utils.ClientState.Translation;
 import base.game.player.Player;
 import client.ClientGameHandler;
 

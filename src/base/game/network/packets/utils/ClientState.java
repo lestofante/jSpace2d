@@ -1,4 +1,4 @@
-package base.game.network.packets.TCP;
+package base.game.network.packets.utils;
 
 public class ClientState {
 

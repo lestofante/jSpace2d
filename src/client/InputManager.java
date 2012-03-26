@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
-import base.game.network.packets.TCP.ClientState.Gun;
-import base.game.network.packets.TCP.ClientState.Rotation;
-import base.game.network.packets.TCP.ClientState.Translation;
+import base.game.network.packets.utils.ClientState.Gun;
+import base.game.network.packets.utils.ClientState.Rotation;
+import base.game.network.packets.utils.ClientState.Translation;
 import client.worker.ClientWorker;
 import client.worker.StateEntity;
 

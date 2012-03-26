@@ -12,7 +12,7 @@ import base.common.AsyncActionBus;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
-import base.game.network.packets.TCP.LoginPacket;
+import base.game.network.packets.TCP.toServer.LoginPacket;
 import base.graphics.GraphicsManager;
 
 public class ClientTest implements Runnable {

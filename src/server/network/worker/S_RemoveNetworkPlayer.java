@@ -15,7 +15,8 @@ public class S_RemoveNetworkPlayer implements ServerWorker {
 	@Override
 	public int execute(ServerGameHandler g) {
 		g.playerHandlerWrapper.removePlayer(stream.getConnectedPlayer());
-		return 0;
+		SyncPlayers sP = new SyncPlayers();
+		return sP.execute(g);
 	}
 
 }

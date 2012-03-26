@@ -1,9 +1,10 @@
-package base.game.network.packets.TCP;
+package base.game.network.packets.TCP.toServer;
 
 import java.nio.ByteBuffer;
 
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
+import base.game.network.packets.utils.ClientState;
 
 public class ClientActionPacket extends TCP_Packet {
 
@@ -20,7 +21,7 @@ public class ClientActionPacket extends TCP_Packet {
 	public ClientActionPacket(ByteBuffer buffer, NetworkStream stream) {
 		super(TCP_PacketType.CLIENT_ACTION, stream);
 		this.buffer = buffer;
-		setComplete(recognizePacket());
+		setComplete(validateComplete());
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class ClientActionPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected boolean recognizePacket() {
+	protected boolean validateComplete() {
 		if (buffer.remaining() < dimension)
 			return false;
 

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import client.SynchronizeMap;
 import client.worker.ClientWorker;
 

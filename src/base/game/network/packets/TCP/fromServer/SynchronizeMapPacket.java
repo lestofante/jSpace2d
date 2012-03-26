@@ -1,9 +1,9 @@
-package base.game.network.packets.TCP;
+package base.game.network.packets.TCP.fromServer;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
@@ -14,7 +14,7 @@ import base.game.player.Player;
 public class SynchronizeMapPacket extends TCP_Packet {
 	private static final int dimensionPlayer = 32;
 	private static final int dimensionEntity = 4;
-	public final Collection<PlayerInfo> playersInfo = new ArrayList<>();
+	public final Collection<PlayerInfo> playersInfo = new LinkedList<>();
 
 	public SynchronizeMapPacket(Collection<Player> players, NetworkStream stream) {
 		super(TCP_PacketType.SYNC_MAP, stream);
@@ -32,7 +32,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 	public SynchronizeMapPacket(ByteBuffer buffer, NetworkStream stream) {
 		super(TCP_PacketType.SYNC_MAP, stream);
 		this.buffer = buffer;
-		setComplete(recognizePacket());
+		setComplete(validateComplete());
 	}
 
 	@Override
@@ -88,10 +88,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected boolean recognizePacket() {
-		/*
-		
-		*/
+	protected boolean validateComplete() {
 		log.debug("Packet SynchronizeMapPacket read, size: {}", buffer.remaining());
 		log.debug("In buffer: {}", buffer);
 		if (!mapPacket()) {

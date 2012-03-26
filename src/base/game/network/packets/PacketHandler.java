@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import base.game.network.NetworkStream;
-import base.game.network.packets.TCP.ClientActionPacket;
-import base.game.network.packets.TCP.LoginPacket;
-import base.game.network.packets.TCP.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
+import base.game.network.packets.TCP.toServer.ClientActionPacket;
+import base.game.network.packets.TCP.toServer.LoginPacket;
 
 public class PacketHandler {
 

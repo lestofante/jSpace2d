@@ -1,4 +1,4 @@
-package base.game.network.packets.TCP;
+package base.game.network.packets.TCP.toServer;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -27,7 +27,7 @@ public class LoginPacket extends TCP_Packet {
 	public LoginPacket(ByteBuffer buffer, NetworkStream stream) {
 		super(TCP_PacketType.LOGIN, stream);
 		this.buffer = buffer;
-		setComplete(recognizePacket());
+		setComplete(validateComplete());
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class LoginPacket extends TCP_Packet {
 	}
 
 	@Override
-	protected boolean recognizePacket() {
+	protected boolean validateComplete() {
 		if (buffer.remaining() < dimension)
 			return false;
 
