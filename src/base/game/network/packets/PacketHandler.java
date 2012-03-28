@@ -7,9 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import base.game.network.NetworkStream;
+import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
 import base.game.network.packets.TCP.toServer.ClientActionPacket;
 import base.game.network.packets.TCP.toServer.LoginPacket;
+import base.game.network.packets.TCP.toServer.RequestEntity;
 
 public class PacketHandler {
 
@@ -19,21 +22,34 @@ public class PacketHandler {
 		ArrayList<TCP_Packet> out = new ArrayList<>();
 		TCP_Packet pOut = null;
 		boolean enoughtByteToRead = in.hasRemaining();
-
+		
+		TCP_PacketType[] TCPvalues = TCP_PacketType.values();
+		int lastBufferPosition = in.position();
 		while (enoughtByteToRead) {
 			byte read = in.get();
-			switch (read) {
-			case 0:
+			if (read > TCPvalues.length){
+				throw new Exception("Corrupted input buffer!");
+			}
+			switch (TCPvalues[read]) {
+			case LOGIN:
 				log.debug("Possible login packet read: {} {}", read, (read & 0xFF));
 				pOut = createLoginPacket(in, stream);
 				break;
-			case 1:
+			case CLIENT_ACTION:
 				log.debug("Possible client action packet read: {} {}", read, (read & 0xFF));
 				pOut = createClientActionPacket(in, stream);
 				break;
-			case 2:
-				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
+			case SYNC_MAP:
+				log.debug("Possible syncronize map packet read: {} {}", read, (read & 0xFF));
 				pOut = createSynchronizeMapPacket(in, stream);
+				break;
+			case UPDATE_MAP:
+				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
+				pOut = createUpdateMapPacket(in, stream);
+				break;
+			case REQUEST:
+				log.debug("Possible request packet read: {} {}", read, (read & 0xFF));
+				pOut = createRequesPacket(in, stream);
 				break;
 			default:
 				/*
@@ -55,6 +71,7 @@ public class PacketHandler {
 			 */
 			if (pOut.isComplete()) {
 				out.add(pOut);
+				lastBufferPosition = in.position();
 				if (!in.hasRemaining()) {
 					enoughtByteToRead = false;
 					in.clear();
@@ -62,16 +79,28 @@ public class PacketHandler {
 			} else {
 				// underflow error, add back packet type, and terminate
 				// reading cycle because we don't have enough data
+				in.position(lastBufferPosition);
 
-				// shift remaining bytes to the beginning of the buffer (putting
-				// the read byte back in)
+				//eliminate not needed data
 				in.compact();
+				//set position to the beginning of the buffer (compact does not do it)
+				in.rewind();
 
 				enoughtByteToRead = false;
-				pOut = null; // useless, but it makes me feel safe
+				pOut = null; //si sposta ilitioè la poll; // useless, but it makes me feel safe
 			}
 		}
 		return out;
+	}
+
+	private static TCP_Packet createRequesPacket(ByteBuffer in,
+			NetworkStream stream) {
+		return new RequestEntity(in, stream);
+	}
+
+	private static TCP_Packet createUpdateMapPacket(ByteBuffer in,
+			NetworkStream stream) {
+		return new UpdateMapPacket(in, stream);
 	}
 
 	private static SynchronizeMapPacket createSynchronizeMapPacket(ByteBuffer in, NetworkStream stream) {
@@ -85,33 +114,5 @@ public class PacketHandler {
 	private static LoginPacket createLoginPacket(ByteBuffer in, NetworkStream stream) {
 		return new LoginPacket(in, stream);
 	}
-
-	/**
-	 * This method checks whether we had a login attempt. If the login packet is
-	 * successfully created, we return the packet. Else we return null
-	 * 
-	 * @param in
-	 *            the ByteBuffer to check
-	 * @return the received LoginPacket or null if none
-	 */
-
-	public static LoginPacket getLogin(ByteBuffer in, NetworkStream stream) {
-		int read = in.get() & 0xFF;
-		log.debug("Should be login type (0). Read: {}", read);
-
-		if (read == 0) {
-			log.debug("OK");
-			LoginPacket pOut = createLoginPacket(in, stream);
-
-			if (pOut.isComplete()) {
-				return pOut;
-			} else {
-				log.debug("Login packet not complete");
-			}
-		} else {
-			log.debug("NOPE");
-			log.error("Uknown packet type");
-		}
-		return null;
-	}
+	
 }

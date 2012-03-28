@@ -23,8 +23,8 @@ public abstract class TCP_Packet {
 		this.complete = valid;
 	}
 
-	public enum TCP_PacketType {
-		LOGIN, CLIENT_ACTION, SYNC_MAP, UPDATE_MAP
+	public static enum TCP_PacketType {
+		LOGIN, CLIENT_ACTION, SYNC_MAP, UPDATE_MAP, REQUEST
 	}
 
 	public final TCP_PacketType PacketType;
@@ -38,9 +38,16 @@ public abstract class TCP_Packet {
 		return buffer;
 	}
 
-	public void createBuffer() {
+	public void createBuffer(int dimension) {
 		log.debug("Creating buffer for {} ", PacketType.name());
+		buffer = ByteBuffer.allocate(dimension + 1);
+		buffer.clear();
+		buffer.put((byte) PacketType.ordinal());
+		populateBuffer();
+		buffer.rewind();
 	}
+
+	protected abstract void populateBuffer();
 
 	@Override
 	public String toString() {

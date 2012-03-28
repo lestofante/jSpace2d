@@ -14,7 +14,7 @@ public class ClientActionPacket extends TCP_Packet {
 	public ClientActionPacket(ClientState clientState, NetworkStream stream) {
 		super(TCP_PacketType.CLIENT_ACTION, stream);
 		this.clientState = clientState;
-		createBuffer();
+		createBuffer(dimension);
 		setComplete(true); // we created it so it'd better be!
 	}
 
@@ -25,21 +25,17 @@ public class ClientActionPacket extends TCP_Packet {
 	}
 
 	@Override
-	public void createBuffer() {
-		buffer = ByteBuffer.allocate(dimension + 1);
-		buffer.clear();
-		buffer.put((byte) 1);
-		buffer.put(clientState.getState());
-		buffer.rewind();
-	}
-
-	@Override
 	protected boolean validateComplete() {
 		if (buffer.remaining() < dimension)
 			return false;
 
 		clientState = new ClientState(buffer.get());
 		return true;
+	}
+
+	@Override
+	protected void populateBuffer() {
+		buffer.put(clientState.getState());
 	}
 
 }

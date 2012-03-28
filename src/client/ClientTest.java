@@ -13,6 +13,7 @@ import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.network.packets.TCP.toServer.LoginPacket;
+import base.game.network.packets.TCP.toServer.RequestEntity;
 import base.graphics.GraphicsManager;
 
 public class ClientTest implements Runnable {
@@ -52,6 +53,10 @@ public class ClientTest implements Runnable {
 				log.error("no UpdateMap received in time, exiting");
 				System.exit(-1);
 			}
+			//TCP_Packet myself = null;
+			//request type of game
+			//myself = 
+			requestEntity(toServer);
 			g = new ClientGameHandler(bus, playerName, toServer);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -70,6 +75,30 @@ public class ClientTest implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private TCP_Packet requestEntity(NetworkStream toServer) {
+		try {
+			toServer.getChannel().write(new RequestEntity(toServer, 1).getDataBuffer());
+/*			TCP_Packet shouldBeUpdateMapPacket = null;
+
+			long start = System.currentTimeMillis();
+			while (System.currentTimeMillis() - start < 10000) {
+				toServer.update();
+				shouldBeUpdateMapPacket = toServer.available.poll();
+				if (shouldBeUpdateMapPacket != null)
+					break;
+			}
+
+			if (shouldBeUpdateMapPacket != null)
+				if (shouldBeUpdateMapPacket.PacketType.equals(TCP_PacketType.UPDATE_MAP))
+					return shouldBeUpdateMapPacket;
+*/
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private NetworkStream connect(long start) throws Exception {
@@ -97,17 +126,17 @@ public class ClientTest implements Runnable {
 			System.exit(-1);
 		}
 
-		TCP_Packet shouldBeUpdateMapPacket = null;
+		TCP_Packet shouldBeSyncMapPacket = null;
 
 		while (System.currentTimeMillis() - start < 10000) {
 			stream.update();
-			shouldBeUpdateMapPacket = stream.available.poll();
-			if (shouldBeUpdateMapPacket != null)
+			shouldBeSyncMapPacket = stream.available.poll();
+			if (shouldBeSyncMapPacket != null)
 				break;
 		}
 
-		if (shouldBeUpdateMapPacket != null)
-			if (shouldBeUpdateMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP))
+		if (shouldBeSyncMapPacket != null)
+			if (shouldBeSyncMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP))
 				return stream;
 
 		return null;

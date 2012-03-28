@@ -1,5 +1,6 @@
 package base.game.network.packets.TCP.fromServer;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,12 @@ public class UpdateMapPacket extends TCP_Packet {
 		extractInfo(entities);
 	}
 
+	public UpdateMapPacket(ByteBuffer buffer, NetworkStream stream) {
+		super(TCP_PacketType.UPDATE_MAP, stream);
+		this.buffer = buffer;
+		setComplete(validateComplete());
+	}
+
 	private void extractInfo(List<Entity> entities) {
 		// for(Entity entity: entities)
 
@@ -27,6 +34,12 @@ public class UpdateMapPacket extends TCP_Packet {
 	protected boolean validateComplete() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	protected void populateBuffer() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

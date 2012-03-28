@@ -19,7 +19,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 	public SynchronizeMapPacket(Collection<Player> players, NetworkStream stream) {
 		super(TCP_PacketType.SYNC_MAP, stream);
 		extractInfo(players);
-		createBuffer();
+		createBuffer( calculateDimension() );
 		setComplete(true); // we created it so it better be!
 	}
 
@@ -34,23 +34,19 @@ public class SynchronizeMapPacket extends TCP_Packet {
 		this.buffer = buffer;
 		setComplete(validateComplete());
 	}
-
-	@Override
-	public void createBuffer() {
-		super.createBuffer();
-		int dimension = 1; // tipo azione
-
-		dimension += 2; // numero player
+	
+	private int calculateDimension(){
+		int dimension = 2; // numero player
 		for (PlayerInfo p : playersInfo) {
 			dimension += dimensionPlayer;
 			dimension += 2; // numero entity
 			dimension += dimensionEntity * p.getEntitiesInfo().size();
 		}
+		return dimension;
+	}
 
-		buffer = ByteBuffer.allocate(dimension);
-		buffer.clear();
-		buffer.put((byte) 2);
-
+	@Override
+	public void populateBuffer() {
 		buffer.putChar((char) playersInfo.size());
 		log.debug("Player number: {} {}", playersInfo.size(), (((char) playersInfo.size()) & 0xFF));
 
@@ -80,11 +76,6 @@ public class SynchronizeMapPacket extends TCP_Packet {
 			}
 
 		}
-
-		buffer.flip();
-
-		log.debug("out buffer: " + buffer);
-
 	}
 
 	@Override
@@ -133,13 +124,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 				playersInfo.add(new PlayerInfo(buffer, numberOfEntities));
 
 				log.debug("Added player and entity");
-			} else {
-				// no player+entities data present, add back how many player are
-				// left, the number of entity for this player and return
-				// underflow error
-				buffer.position(buffer.position() - 2);
-				buffer.put((byte) (playerNumber - i));
-				buffer.put((byte) numberOfEntities);
+			} else {				
 				log.debug("Not enough bytes: {} of {}", buffer.remaining(), dimensionPlayer + numberOfEntities * dimensionEntity);
 				return false;
 			}
