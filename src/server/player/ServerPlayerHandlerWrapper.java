@@ -31,7 +31,7 @@ public class ServerPlayerHandlerWrapper extends PlayerHandlerWrapper {
 
 	public ServerPlayer addPlayer(String username) {
 		char ID = getFreeID();
-		ServerPlayer player = new ServerPlayer(ID, username);
+		Player player = new ServerPlayer(ID, username);
 		return (ServerPlayer) core.addPlayer(ID, player);
 	}
 

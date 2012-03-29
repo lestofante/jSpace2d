@@ -32,6 +32,15 @@ public class ClientGameHandler {
 		this.bus = bus;
 		this.myName = clientName;
 
+		while (!bus.graphicsStarted.get()) {
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		this.inputManager = new InputManager(myName);
 		this.networkHandler = new ClientNetworkHandler(toServer);
 		this.playerHandlerClientWrapper = new PlayerHandlerClientWrapper(myName);
@@ -62,4 +71,7 @@ public class ClientGameHandler {
 
 	}
 
+	public void sendToServer(TCP_Packet toSend) {
+		wOUT.add(toSend);
+	}
 }

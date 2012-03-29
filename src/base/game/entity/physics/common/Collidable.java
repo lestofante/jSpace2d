@@ -30,7 +30,7 @@ public class Collidable extends PhysicalObject {
 	@Override
 	public void setOwner(Entity e) {
 		super.setOwner(e);
-		body.setUserData(this);
+		body.setUserData(e);
 	}
 
 	@Override

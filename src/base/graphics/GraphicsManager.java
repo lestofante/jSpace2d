@@ -126,6 +126,8 @@ public class GraphicsManager implements Runnable {
 			System.exit(-1);
 		}
 
+		asyncActionBus.graphicsStarted.set(true);
+
 		this.camera = new Camera();
 
 		int width = Display.getDisplayMode().getWidth();
@@ -236,10 +238,8 @@ public class GraphicsManager implements Runnable {
 		init(mode, fullScreen, vSync);
 
 		while (!Display.isCloseRequested()) {
-
 			update();
 			Display.sync(60);
-
 		}
 
 		Display.destroy();
@@ -248,9 +248,7 @@ public class GraphicsManager implements Runnable {
 
 	public void update() {
 		processActions();
-
 		render();
-
 		Display.update();
 	}
 

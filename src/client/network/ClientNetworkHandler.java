@@ -1,5 +1,6 @@
 package client.network;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
-import client.SynchronizeMap;
 import client.worker.ClientWorker;
+import client.worker.SynchronizeMap;
 
 public class ClientNetworkHandler {
-	final NetworkStream toServer;
+	public final NetworkStream toServer;
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -30,6 +31,9 @@ public class ClientNetworkHandler {
 			case SYNC_MAP:
 				wIN.add(new SynchronizeMap((SynchronizeMapPacket) packet));
 				break;
+			case UPDATE_MAP:
+				log.debug("Read Update map packet");
+				break;
 			default:// poi
 				log.error("Client shouldn't receive this type of packet");
 				System.exit(-1);
@@ -39,7 +43,14 @@ public class ClientNetworkHandler {
 	}
 
 	public void write(List<TCP_Packet> wOUT, List<ClientWorker> wIN) {
-
+		for (TCP_Packet packet : wOUT) {
+			try {
+				packet.getNetworkStream().getChannel().write(packet.getDataBuffer());
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
 	}
 
 }

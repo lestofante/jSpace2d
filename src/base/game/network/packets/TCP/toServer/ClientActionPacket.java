@@ -28,7 +28,6 @@ public class ClientActionPacket extends TCP_Packet {
 	protected boolean validateComplete() {
 		if (buffer.remaining() < dimension)
 			return false;
-
 		clientState = new ClientState(buffer.get());
 		return true;
 	}

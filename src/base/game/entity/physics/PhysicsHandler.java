@@ -1,16 +1,21 @@
 package base.game.entity.physics;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.jbox2d.callbacks.QueryCallback;
+import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.game.entity.Entity;
 import base.game.entity.physics.common.BodyBlueprint;
 import base.game.entity.physics.common.Collidable;
 import base.game.entity.physics.common.PhysicalObject;
@@ -171,4 +176,19 @@ public class PhysicsHandler {
 		}
 	}
 
+	public HashSet<Entity> queryAABB(AABB aabb) {
+		final HashSet<Entity> entities = new HashSet<>();
+		QueryCallback callback = new QueryCallback() {
+
+			@Override
+			public boolean reportFixture(Fixture fixture) {
+				entities.add((Entity) fixture.getBody().getUserData());
+				return true;
+			}
+		};
+
+		physicWorld.queryAABB(callback, aabb);
+
+		return entities;
+	}
 }

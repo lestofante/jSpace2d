@@ -1,12 +1,10 @@
-package client;
-
-import java.util.ArrayList;
+package client.worker;
 
 import base.game.entity.Entity;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.network.packets.utils.EntityInfo;
 import base.game.network.packets.utils.PlayerInfo;
-import client.worker.ClientWorker;
+import client.ClientGameHandler;
 
 public class SynchronizeMap implements ClientWorker {
 
@@ -19,13 +17,12 @@ public class SynchronizeMap implements ClientWorker {
 	@Override
 	public int execute(ClientGameHandler g) {
 
-		ArrayList<Entity> risE = new ArrayList<Entity>();
 		for (PlayerInfo p : packet.playersInfo) {
 			g.playerHandlerClientWrapper.addPlayer(p);
 			for (EntityInfo e : p.getEntitiesInfo()) {
-				risE.add(g.entityHandlerClientWrapper.addEntity(e, g.playerHandlerClientWrapper.getPlayer(p.getPlayerName())));
+				Entity newlyCreated = g.entityHandlerClientWrapper.addEntity(e, g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()));
+				g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()).addEntity(newlyCreated);
 			}
-			g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()).addEntities(risE);
 		}
 		return 0;
 	}

@@ -22,33 +22,28 @@ public class PacketHandler {
 		ArrayList<TCP_Packet> out = new ArrayList<>();
 		TCP_Packet pOut = null;
 		boolean enoughtByteToRead = in.hasRemaining();
-		
+
 		TCP_PacketType[] TCPvalues = TCP_PacketType.values();
 		int lastBufferPosition = in.position();
 		while (enoughtByteToRead) {
 			byte read = in.get();
-			if (read > TCPvalues.length){
+			if (read > TCPvalues.length) {
 				throw new Exception("Corrupted input buffer!");
 			}
 			switch (TCPvalues[read]) {
 			case LOGIN:
-				log.debug("Possible login packet read: {} {}", read, (read & 0xFF));
 				pOut = createLoginPacket(in, stream);
 				break;
 			case CLIENT_ACTION:
-				log.debug("Possible client action packet read: {} {}", read, (read & 0xFF));
 				pOut = createClientActionPacket(in, stream);
 				break;
 			case SYNC_MAP:
-				log.debug("Possible syncronize map packet read: {} {}", read, (read & 0xFF));
 				pOut = createSynchronizeMapPacket(in, stream);
 				break;
 			case UPDATE_MAP:
-				log.debug("Possible update map packet read: {} {}", read, (read & 0xFF));
 				pOut = createUpdateMapPacket(in, stream);
 				break;
 			case REQUEST:
-				log.debug("Possible request packet read: {} {}", read, (read & 0xFF));
 				pOut = createRequesPacket(in, stream);
 				break;
 			default:
@@ -81,25 +76,24 @@ public class PacketHandler {
 				// reading cycle because we don't have enough data
 				in.position(lastBufferPosition);
 
-				//eliminate not needed data
+				// eliminate not needed data
 				in.compact();
-				//set position to the beginning of the buffer (compact does not do it)
+				// set position to the beginning of the buffer (compact does not
+				// do it)
 				in.rewind();
 
 				enoughtByteToRead = false;
-				pOut = null; //si sposta ilitioè la poll; // useless, but it makes me feel safe
+				pOut = null; // useless, but it makes me feel safe
 			}
 		}
 		return out;
 	}
 
-	private static TCP_Packet createRequesPacket(ByteBuffer in,
-			NetworkStream stream) {
+	private static TCP_Packet createRequesPacket(ByteBuffer in, NetworkStream stream) {
 		return new RequestEntity(in, stream);
 	}
 
-	private static TCP_Packet createUpdateMapPacket(ByteBuffer in,
-			NetworkStream stream) {
+	private static TCP_Packet createUpdateMapPacket(ByteBuffer in, NetworkStream stream) {
 		return new UpdateMapPacket(in, stream);
 	}
 
@@ -114,5 +108,5 @@ public class PacketHandler {
 	private static LoginPacket createLoginPacket(ByteBuffer in, NetworkStream stream) {
 		return new LoginPacket(in, stream);
 	}
-	
+
 }

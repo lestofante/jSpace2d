@@ -42,15 +42,20 @@ public class NetworkStream {
 
 	/**
 	 * Updates available packets with contents from the stream
+	 * 
+	 * @return
 	 */
-	public void update() {
+	public boolean update() {
 		buffer.limit(buffer.capacity());
+		int read = 0;
 		try {
-			int read = getChannel().read(buffer);
+			read = getChannel().read(buffer);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// if EOF reached
+		if (read == -1)
+			return false;
 		buffer.flip();
 		try {
 			available.addAll(PacketHandler.getTCP(buffer, this));
@@ -58,6 +63,7 @@ public class NetworkStream {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	public SocketChannel getChannel() {

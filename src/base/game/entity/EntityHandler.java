@@ -2,8 +2,10 @@ package base.game.entity;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jbox2d.collision.AABB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +53,14 @@ public class EntityHandler {
 		bus.addGraphicsAction(new G_RemoveGameRenderable(ID));
 	}
 
-	public void removeEntity(char id) {
+	public Entity removeEntity(char id) {
 		Entity e = entityMap.remove(id);
 		removePhysicalObject(e.infoBody);
 		destroyGraphicalObject(e.entityID);
 		// update listener
 		listener.entityDestroyed(e);
 		log.debug("Removed entity with ID: {}", (int) id);
+		return e;
 	}
 
 	public void update() {
@@ -70,11 +73,6 @@ public class EntityHandler {
 
 	public Collection<Entity> getEntitys() {
 		return entityMap.values();
-	}
-
-	public static Entity buildEntity(char entityType, char bluePrintID, Player possessor) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Entity createEntity(char id, int blueprintID, Player player) {
@@ -102,5 +100,9 @@ public class EntityHandler {
 		listener.entityCreated(e);
 		log.debug("Created entity with ID: {}", (int) id);
 		return e;
+	}
+
+	public HashSet<Entity> getVisibleEntities(AABB aabb) {
+		return physicsHandler.queryAABB(aabb);
 	}
 }

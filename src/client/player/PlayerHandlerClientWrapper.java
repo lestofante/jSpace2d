@@ -1,6 +1,5 @@
 package client.player;
 
-import java.io.IOException;
 import java.util.List;
 
 import base.game.network.packets.utils.PlayerInfo;
@@ -18,12 +17,7 @@ public class PlayerHandlerClientWrapper extends PlayerHandlerWrapper {
 	}
 
 	public void update(List<ClientWorker> wIN) {
-		try {
-			core.update();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// TODO
 	}
 
 	@Override

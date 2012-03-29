@@ -39,7 +39,6 @@ public abstract class TCP_Packet {
 	}
 
 	public void createBuffer(int dimension) {
-		log.debug("Creating buffer for {} ", PacketType.name());
 		buffer = ByteBuffer.allocate(dimension + 1);
 		buffer.clear();
 		buffer.put((byte) PacketType.ordinal());

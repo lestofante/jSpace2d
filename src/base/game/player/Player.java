@@ -2,7 +2,9 @@ package base.game.player;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+
+import org.jbox2d.collision.AABB;
+import org.jbox2d.common.Vec2;
 
 import base.game.entity.Entity;
 
@@ -13,6 +15,8 @@ public class Player {
 	private Entity currentEntity;
 	private boolean isObserver;
 	private final HashMap<Character, Entity> myEntities = new HashMap<>();
+
+	private final AABB aabb = new AABB(new Vec2(-100, -100), new Vec2(100, 100));
 
 	public Player(char id, String playerName) {
 		this.playerName = playerName;
@@ -30,19 +34,16 @@ public class Player {
 	/**
 	 * @param the
 	 *            entity to add to this player's possession
-	 * @return old entity if entity was already present
 	 */
 
-	public Entity addEntity(Entity entity) {
-		return myEntities.put(entity.entityID, entity);
+	public void addEntity(Entity entity) {
+		myEntities.put(entity.entityID, entity);
 	}
 
-	public void setCurrentEntity(Entity currentEntity) {
-		myEntities.put(currentEntity.entityID, currentEntity); // if not present
-																// in the
-																// possession
-																// list, add it
+	public Entity setCurrentEntity(Entity currentEntity) {
+		Entity previous = myEntities.put(currentEntity.entityID, currentEntity);
 		this.currentEntity = currentEntity;
+		return previous;
 	}
 
 	public void setAsObserver(Entity entity) {
@@ -80,14 +81,8 @@ public class Player {
 		return playerID;
 	}
 
-	public void update() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addEntities(List<Entity> entities) {
-		for (Entity e : entities)
-			addEntity(e);
+	public AABB getAabb() {
+		return aabb;
 	}
 
 }

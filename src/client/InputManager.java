@@ -3,20 +3,23 @@ package client;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.game.network.packets.utils.ClientState.Gun;
 import base.game.network.packets.utils.ClientState.Rotation;
 import base.game.network.packets.utils.ClientState.Translation;
 import client.worker.ClientWorker;
-import client.worker.StateEntity;
 
 public class InputManager {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	String myName;
 
-	Translation t;
-	Rotation r;
-	Gun g;
+	private final boolean[] wasdArray = new boolean[4];
+	private final boolean[] rotationArray = new boolean[2];
+	private final boolean[] gunArray = new boolean[2];
 
 	/*
 	 * binding for key
@@ -32,73 +35,178 @@ public class InputManager {
 	private final int PRIMARY_FIRE = Keyboard.KEY_SPACE;
 	private final int SECONDARY_FIRE = Keyboard.KEY_LMENU;
 
+	private Translation t = Translation.STILL;
+
+	private Rotation r = Rotation.STILL;
+
+	private Gun g = Gun.NO_FIRE;
+
 	public InputManager(String myName) {
 		this.myName = myName;
 	}
 
 	public void update(List<ClientWorker> wIN) {
-		t = Translation.STILL;
-		r = Rotation.STILL;
-		g = Gun.NO_FIRE;
 
 		while (Keyboard.next()) {
 
 			int eventKey = Keyboard.getEventKey();
 
-			if (WEST == eventKey) {
-				if (t == Translation.NORTH || t == Translation.NORTH_WEST)
-					t = Translation.NORTH_WEST;
-				else if (t == Translation.SOUTH || t == Translation.SOUTH_WEST)
-					t = Translation.SOUTH_WEST;
-				else
-					t = Translation.WEST;
-			} else if (EAST == eventKey) {
-				if (t == Translation.NORTH || t == Translation.NORTH_EAST)
-					t = Translation.NORTH_EAST;
-				else if (t == Translation.SOUTH || t == Translation.SOUTH_EAST)
-					t = Translation.SOUTH_EAST;
-				else
-					t = Translation.EAST;
-				break;
-			} else if (NORTH == eventKey) {
-				if (t == Translation.EAST || t == Translation.NORTH_EAST)
-					t = Translation.NORTH_EAST;
-				else if (t == Translation.WEST || t == Translation.NORTH_WEST)
-					t = Translation.NORTH_WEST;
-				else
-					t = Translation.NORTH;
-				break;
-			} else if (SOUTH == eventKey) {
-				if (t == Translation.EAST || t == Translation.SOUTH_EAST)
-					t = Translation.SOUTH_EAST;
-				else if (t == Translation.WEST || t == Translation.SOUTH_WEST)
-					t = Translation.SOUTH_WEST;
-				else
-					t = Translation.SOUTH;
-				break;
-			} else if (CLOCKWISE == eventKey) {
-				r = Rotation.CLOCKWISE;
-				break;
-			} else if (COUNTERCLOCKWISE == eventKey) {
-				r = Rotation.COUNTERCLOCKWISE;
-				break;
-			} else if (PRIMARY_FIRE == eventKey) {
-				if (g.equals(Gun.SECONDARY_FIRE)) {
-					g = Gun.TOGHEDER_FIRE;
-				} else
-					g = Gun.PRIMARY_FIRE;
-				break;
-			} else if (SECONDARY_FIRE == eventKey) {
-				if (g.equals(Gun.PRIMARY_FIRE)) {
-					g = Gun.TOGHEDER_FIRE;
-				} else
-					g = Gun.SECONDARY_FIRE;
-				break;
-			}
+			if (Keyboard.getEventKeyState())
+				keyPressed(eventKey);
+			else
+				keyReleased(eventKey);
 
 		}
-		wIN.add(new StateEntity(myName, t, r, g));
+		processTranlsation();
+		processRotation();
+		processGun();
 
+		// wIN.add(new StateEntity(myName, t, r, g));
+		wIN.add(new PlayerAction(t, r, g));
 	}
 
+	private void processTranlsation() {
+		int leftRight_contribute = 0;
+		int upDown_contribute = 0;
+
+		if (wasdArray[0])
+			leftRight_contribute += 1;
+		if (wasdArray[2])
+			leftRight_contribute -= 1;
+
+		if (wasdArray[1])
+			upDown_contribute += 1;
+		if (wasdArray[3])
+			upDown_contribute -= 1;
+
+		// so now these 2 helper variables are 0 in case none or both keys are
+		// pressed, and +1 or -1 if only one is pressed
+		if (leftRight_contribute == 0) {
+			if (upDown_contribute == 0) {
+				t = Translation.STILL;
+			} else if (upDown_contribute == 1) {
+				t = Translation.NORTH;
+			} else if (upDown_contribute == -1) {
+				t = Translation.SOUTH;
+			}
+		} else if (leftRight_contribute == 1) {
+			if (upDown_contribute == 0) {
+				t = Translation.WEST;
+			} else if (upDown_contribute == 1) {
+				t = Translation.NORTH_WEST;
+			} else if (upDown_contribute == -1) {
+				t = Translation.SOUTH_WEST;
+			}
+		} else if (leftRight_contribute == -1) {
+			if (upDown_contribute == 0) {
+				t = Translation.EAST;
+			} else if (upDown_contribute == 1) {
+				t = Translation.NORTH_EAST;
+			} else if (upDown_contribute == -1) {
+				t = Translation.SOUTH_EAST;
+			}
+		}
+	}
+
+	private void processRotation() {
+		if (rotationArray[0]) {
+			if (rotationArray[1]) {
+				r = Rotation.STILL;
+			} else {
+				r = Rotation.CLOCKWISE;
+			}
+		} else {
+			if (rotationArray[1]) {
+				r = Rotation.COUNTERCLOCKWISE;
+			} else {
+				r = Rotation.STILL;
+			}
+		}
+	}
+
+	private void processGun() {
+		if (gunArray[0]) {
+			if (gunArray[1]) {
+				g = Gun.SIMULTANEOUS_FIRE;
+			} else {
+				g = Gun.PRIMARY_FIRE;
+			}
+		} else {
+			if (gunArray[1]) {
+				g = Gun.SECONDARY_FIRE;
+			} else {
+				g = Gun.NO_FIRE;
+			}
+		}
+	}
+
+	private void keyPressed(int eventKey) {
+		if (WEST == eventKey) {
+			wasdArray[0] = true;
+			return;
+		}
+		if (EAST == eventKey) {
+			wasdArray[2] = true;
+			return;
+		}
+		if (NORTH == eventKey) {
+			wasdArray[1] = true;
+			return;
+		}
+		if (SOUTH == eventKey) {
+			wasdArray[3] = true;
+			return;
+		}
+		if (CLOCKWISE == eventKey) {
+			rotationArray[0] = true;
+			return;
+		}
+		if (COUNTERCLOCKWISE == eventKey) {
+			rotationArray[1] = true;
+			return;
+		}
+		if (PRIMARY_FIRE == eventKey) {
+			gunArray[0] = true;
+			return;
+		}
+		if (SECONDARY_FIRE == eventKey) {
+			gunArray[1] = true;
+			return;
+		}
+	}
+
+	private void keyReleased(int eventKey) {
+		if (WEST == eventKey) {
+			wasdArray[0] = false;
+			return;
+		}
+		if (EAST == eventKey) {
+			wasdArray[2] = false;
+			return;
+		}
+		if (NORTH == eventKey) {
+			wasdArray[1] = false;
+			return;
+		}
+		if (SOUTH == eventKey) {
+			wasdArray[3] = false;
+			return;
+		}
+		if (CLOCKWISE == eventKey) {
+			rotationArray[0] = false;
+			return;
+		}
+		if (COUNTERCLOCKWISE == eventKey) {
+			rotationArray[1] = false;
+			return;
+		}
+		if (PRIMARY_FIRE == eventKey) {
+			gunArray[0] = false;
+			return;
+		}
+		if (SECONDARY_FIRE == eventKey) {
+			gunArray[1] = false;
+			return;
+		}
+	}
 }

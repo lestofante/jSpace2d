@@ -78,7 +78,7 @@ public class StateEntity implements ClientWorker {
 		case SECONDARY_FIRE:
 			gunArray[1] = true;
 			break;
-		case TOGHEDER_FIRE:
+		case SIMULTANEOUS_FIRE:
 			gunArray[0] = true;
 			gunArray[1] = true;
 		}

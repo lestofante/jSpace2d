@@ -22,9 +22,7 @@ public class PlayerHandler {
 	}
 
 	public void update() throws IOException {
-		for (Player p : players.values()) {
-			p.update();
-		}
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	public String listPlayers() {

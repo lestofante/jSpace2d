@@ -2,6 +2,7 @@ package base.common;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import base.graphics.actions.GraphicAction;
@@ -18,6 +19,8 @@ public class AsyncActionBus {
 	 * GRAPHICS
 	 */
 	private final ConcurrentLinkedQueue<GraphicAction> graphicActions = new ConcurrentLinkedQueue<>();
+
+	public AtomicBoolean graphicsStarted = new AtomicBoolean(false);
 
 	public void addGraphicsAction(GraphicAction a) {
 		graphicActions.offer(a);

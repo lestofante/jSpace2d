@@ -11,13 +11,16 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import server.network.worker.EntityRequest;
 import server.network.worker.S_RemoveNetworkPlayer;
 import server.worker.ServerWorker;
-import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
-import base.game.network.packets.TCP_Packet.TCP_PacketType;
+import base.game.network.packets.TCP.toServer.ClientActionPacket;
+import base.game.network.packets.TCP.toServer.RequestEntity;
 
 public class ClientHandler {
+
+	private static final int MAX_PACKET_PER_TURN = 50;
 
 	Selector reader = null;
 
@@ -35,24 +38,46 @@ public class ClientHandler {
 	}
 
 	private S_RemoveNetworkPlayer disconnectAndRemove(ServerNetworkStream stream) {
+		try {
+			stream.getChannel().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new S_RemoveNetworkPlayer(stream);
 	}
 
-	private ServerWorker readWorker(SelectionKey key) throws Exception {
-		NetworkStream stream = (NetworkStream) key.attachment();
-		stream.update();
+	private int readWorker(SelectionKey key, List<ServerWorker> ris) throws Exception {
+		ServerNetworkStream stream = (ServerNetworkStream) key.attachment();
+		if (!stream.update()) {
+			// lost connection to client
+			return -1;
+		}
+
+		if (stream.available.size() > MAX_PACKET_PER_TURN) {
+			throw new Exception("Client is trying to flood. Detected: " + stream.available.size() + " packets");
+		}
+
+		log.debug("Read {} packets in one bott", stream.available.size());
 
 		while (!stream.available.isEmpty()) {
 			TCP_Packet packet = stream.available.remove();
 
-			if (!packet.PacketType.equals(TCP_PacketType.LOGIN)) {
-
-			} else {
+			switch (packet.PacketType) {
+			case CLIENT_ACTION:
+				ris.add(new PlayerAction((ClientActionPacket) packet));
+				break;
+			case REQUEST:
+				ris.add(new EntityRequest((RequestEntity) packet, stream.getConnectedPlayer()));
+				break;
+			case LOGIN:
 				throw new Exception("Address already logged in");
+			default:
+				throw new Exception("Unkonw requested action!");
 			}
 		}
 
-		return null;
+		return 0;
 
 	}
 
@@ -68,7 +93,8 @@ public class ClientHandler {
 
 	public void read(List<ServerWorker> w) {
 		try {
-			reader.selectNow();
+			if (reader.selectNow() == 0)
+				return;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -76,38 +102,41 @@ public class ClientHandler {
 
 		Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
-		ServerWorker input;
+		int input;
 		SelectionKey key;
 
 		while (keyIterator.hasNext()) {
 			key = keyIterator.next();
 			if (key.isReadable() && key.isValid()) {
 				try {
-					input = readWorker(key);
-					if (input != null)
-						w.add(input);
+					input = readWorker(key, w);
+					if (input != 0) {
+						log.error("EOF reached");
+						key.cancel();
+						w.add(disconnectAndRemove((ServerNetworkStream) key.attachment()));
+					}
 				} catch (IOException e) {
 					log.error("Error reading from stream", e);
 					key.cancel();
 					w.add(disconnectAndRemove((ServerNetworkStream) key.attachment()));
 				} catch (Exception e) {
 					log.error("Error reading from stream", e);
-					w.add(disconnectAndRemove((ServerNetworkStream) key.attachment()));
 					key.cancel();
+					w.add(disconnectAndRemove((ServerNetworkStream) key.attachment()));
 				}
+			} else {
+				log.error("Error with selectionkey");
+				key.cancel();
+				w.add(disconnectAndRemove((ServerNetworkStream) key.attachment()));
 			}
 			keyIterator.remove();
 		}
 	}
 
 	public void write(List<TCP_Packet> wOUT, List<ServerWorker> wIN) {
-		int size = wOUT.size();
-		if (size != 0)
-			log.debug("Writing {} packets", wOUT.size());
 		for (TCP_Packet packet : wOUT) {
 			try {
 				int wrote = packet.getNetworkStream().getChannel().write(packet.getDataBuffer());
-				log.debug("Wrote {} bytes to: {}", wrote, packet.getNetworkStream().getChannel().getRemoteAddress());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

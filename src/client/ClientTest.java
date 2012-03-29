@@ -12,12 +12,15 @@ import base.common.AsyncActionBus;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP_Packet.TCP_PacketType;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
 import base.game.network.packets.TCP.toServer.LoginPacket;
 import base.game.network.packets.TCP.toServer.RequestEntity;
 import base.graphics.GraphicsManager;
 
 public class ClientTest implements Runnable {
 
+	private static final long MAX_WAIT = 10000; // in milliseconds
 	/**
 	 * @param args
 	 */
@@ -31,6 +34,9 @@ public class ClientTest implements Runnable {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+	private SynchronizeMapPacket sP;
+	private UpdateMapPacket uP;
+
 	public ClientTest(String playerName, String serverAddress, int serverPort) {
 		this.playerName = playerName;
 		this.serverAddress = serverAddress;
@@ -41,23 +47,26 @@ public class ClientTest implements Runnable {
 	public void run() {
 		Thread.currentThread().setName("Client " + playerName);
 
-		Thread graphicsThread = new Thread(gr);
-		graphicsThread.setName("Client Graphics");
-		graphicsThread.start();
-
-		// da qui in poi la grafica e per conto suo
-
 		try {
 			NetworkStream toServer = connect(System.currentTimeMillis());
 			if (toServer == null) {
-				log.error("no UpdateMap received in time, exiting");
+				log.error("Couldn't connecto to server");
 				System.exit(-1);
 			}
-			//TCP_Packet myself = null;
-			//request type of game
-			//myself = 
-			requestEntity(toServer);
+
+			log.debug("Connection to server succeded");
+
+			if (!getGameInformation(toServer)) {
+				log.error("Could not retrieve game information from server");
+				System.exit(-1);
+			}
+
+			log.debug("Successful information from server gathered. Starting game");
+			Thread graphicsThread = new Thread(gr);
+			graphicsThread.setName("Client Graphics");
+			graphicsThread.start();
 			g = new ClientGameHandler(bus, playerName, toServer);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,28 +86,55 @@ public class ClientTest implements Runnable {
 		}
 	}
 
-	private TCP_Packet requestEntity(NetworkStream toServer) {
+	private boolean getGameInformation(NetworkStream toServer) {
 		try {
-			toServer.getChannel().write(new RequestEntity(toServer, 1).getDataBuffer());
-/*			TCP_Packet shouldBeUpdateMapPacket = null;
+			toServer.getChannel().write(new RequestEntity(toServer, 0).getDataBuffer());
+			TCP_Packet shouldBeSyncMapPacket = null;
 
 			long start = System.currentTimeMillis();
-			while (System.currentTimeMillis() - start < 10000) {
+
+			while (System.currentTimeMillis() - start < MAX_WAIT) {
+				toServer.update();
+				shouldBeSyncMapPacket = toServer.available.poll();
+				if (shouldBeSyncMapPacket != null)
+					break;
+			}
+
+			if (shouldBeSyncMapPacket == null)
+				return false;
+			if (!shouldBeSyncMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP))
+				return false;
+
+			sP = (SynchronizeMapPacket) shouldBeSyncMapPacket;
+
+			log.debug("Received first synchronization packet");
+
+			TCP_Packet shouldBeUpdateMapPacket = null;
+
+			while (System.currentTimeMillis() - start < MAX_WAIT) {
 				toServer.update();
 				shouldBeUpdateMapPacket = toServer.available.poll();
 				if (shouldBeUpdateMapPacket != null)
 					break;
 			}
 
-			if (shouldBeUpdateMapPacket != null)
-				if (shouldBeUpdateMapPacket.PacketType.equals(TCP_PacketType.UPDATE_MAP))
-					return shouldBeUpdateMapPacket;
-*/
+			if (shouldBeUpdateMapPacket == null)
+				return false;
+			if (!shouldBeUpdateMapPacket.PacketType.equals(TCP_PacketType.UPDATE_MAP))
+				return false;
+
+			log.debug("OK till here");
+
+			uP = (UpdateMapPacket) shouldBeUpdateMapPacket;
+
+			log.debug("Received first map update");
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+
+		return true;
 	}
 
 	private NetworkStream connect(long start) throws Exception {
@@ -114,6 +150,7 @@ public class ClientTest implements Runnable {
 
 		if (channel != null) {
 			channel.configureBlocking(false);
+			channel.socket().setTcpNoDelay(false);
 			stream = new NetworkStream(channel);
 			try {
 				channel.write(new LoginPacket(playerName, stream).getDataBuffer());
@@ -128,7 +165,7 @@ public class ClientTest implements Runnable {
 
 		TCP_Packet shouldBeSyncMapPacket = null;
 
-		while (System.currentTimeMillis() - start < 10000) {
+		while (System.currentTimeMillis() - start < MAX_WAIT) {
 			stream.update();
 			shouldBeSyncMapPacket = stream.available.poll();
 			if (shouldBeSyncMapPacket != null)
