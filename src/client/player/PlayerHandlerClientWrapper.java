@@ -32,7 +32,11 @@ public class PlayerHandlerClientWrapper extends PlayerHandlerWrapper {
 
 	}
 
-	public void addPlayer(PlayerInfo p) {
-		core.addPlayer(p.getPlayerID(), new Player(p.getPlayerID(), p.getPlayerName()));
+	public Player addPlayer(PlayerInfo p) {
+		return core.addPlayer(p.getPlayerID(), new Player(p.getPlayerID(), p.getPlayerName()));
+	}
+
+	public void removePlayer(String toRemove) {
+		core.removePlayer(toRemove);
 	}
 }

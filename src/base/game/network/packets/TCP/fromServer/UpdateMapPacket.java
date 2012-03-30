@@ -23,14 +23,19 @@ public class UpdateMapPacket extends TCP_Packet {
 	}
 
 	private int calculateDimension() {
-		return entitiesInfo.size() * (2 + 4 + 4 + 4) + 2; // 2 bytes for ID | 4
-															// for
-															// x position | 4
-															// for y
-															// position | 4 for
-															// angle
-															// number of
-															// entities
+		return 2 + entitiesInfo.size() * (2 + 4 + 4 + 4);
+		// 2byte
+		// number of
+		// entities
+		// +
+		// for every entity:
+		// 2 bytes for ID | 4
+		// for
+		// x position | 4
+		// for y
+		// position | 4 for
+		// angle
+
 	}
 
 	public UpdateMapPacket(ByteBuffer buffer, NetworkStream stream) {
@@ -60,8 +65,11 @@ public class UpdateMapPacket extends TCP_Packet {
 			log.debug("No player number");
 			return false;
 		}
-		int entityNumber = buffer.getChar() & 0xFF; // how many entity there are
-
+		log.debug("DECODING UPDATEMAP");
+		int entityNumber = buffer.getChar() & 0xFF; // how many entity there
+		// are
+		log.debug("Entity number: " + entityNumber);
+		log.debug("buffer: " + buffer.remaining());
 		for (int i = 0; i < entityNumber; i++) {
 
 			if (buffer.remaining() < 14) {
@@ -70,23 +78,30 @@ public class UpdateMapPacket extends TCP_Packet {
 			}
 
 			char entityID = buffer.getChar();
+			log.debug("ID: " + (int) entityID);
 
 			float x = buffer.getFloat();
+			log.debug("x: " + x);
 			float y = buffer.getFloat();
+			log.debug("y: " + y);
 			float angle = buffer.getFloat();
+			log.debug("a: " + angle);
 
 			entitiesInfo.add(new EntityInfo(entityID, new Vec2(x, y), angle));
 
 		}
+		log.debug("END: " + buffer.remaining());
 		// Everything went better than expected
 		return true;
 	}
 
 	@Override
 	protected void populateBuffer() {
+		log.debug("CREATING UPDATE MAP ");
 		buffer.putChar((char) entitiesInfo.size());
 		for (EntityInfo info : entitiesInfo) {
 			buffer.putChar(info.entityID);
+			log.debug("id: " + (int) info.entityID);
 			buffer.putFloat(info.position.x);
 			buffer.putFloat(info.position.y);
 			buffer.putFloat(info.angle);

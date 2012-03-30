@@ -19,7 +19,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 	public SynchronizeMapPacket(Collection<Player> players, NetworkStream stream) {
 		super(TCP_PacketType.SYNC_MAP, stream);
 		extractInfo(players);
-		createBuffer( calculateDimension() );
+		createBuffer(calculateDimension());
 		setComplete(true); // we created it so it better be!
 	}
 
@@ -34,8 +34,8 @@ public class SynchronizeMapPacket extends TCP_Packet {
 		this.buffer = buffer;
 		setComplete(validateComplete());
 	}
-	
-	private int calculateDimension(){
+
+	private int calculateDimension() {
 		int dimension = 2; // numero player
 		for (PlayerInfo p : playersInfo) {
 			dimension += dimensionPlayer;
@@ -124,7 +124,7 @@ public class SynchronizeMapPacket extends TCP_Packet {
 				playersInfo.add(new PlayerInfo(buffer, numberOfEntities));
 
 				log.debug("Added player and entity");
-			} else {				
+			} else {
 				log.debug("Not enough bytes: {} of {}", buffer.remaining(), dimensionPlayer + numberOfEntities * dimensionEntity);
 				return false;
 			}

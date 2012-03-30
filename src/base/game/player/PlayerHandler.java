@@ -63,4 +63,8 @@ public class PlayerHandler {
 		}
 	}
 
+	public Player removePlayer(String toRemove) {
+		return removePlayer(players.get(toRemove));
+	}
+
 }

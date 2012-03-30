@@ -21,6 +21,8 @@ public class UpdateMap implements ClientWorker {
 	public int execute(ClientGameHandler g) {
 		for (EntityInfo info : packet.getEntitiesInfo()) {
 			Entity toUpdate = g.entityHandlerClientWrapper.getEntity(info.entityID);
+			if (toUpdate == null)
+				log.debug("toUpdate is null: " + g.entityHandlerClientWrapper.getEntityMap().keySet());
 			toUpdate.infoBody.setTransform(info.position, info.angle);
 			log.debug("Position {}, angle {}", info.position, info.angle);
 		}

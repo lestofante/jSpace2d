@@ -31,7 +31,7 @@ public class BlueprintDB {
 		bodyDef.userData = new Vec2(1.0f, 1.0f);
 		FixtureDef fixtureDef = new FixtureDef();
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(5, 5);
+		shape.setAsBox(2, 2);
 		fixtureDef.shape = shape;
 		return new BodyBlueprint((char) 0, bodyDef, fixtureDef);
 	}
