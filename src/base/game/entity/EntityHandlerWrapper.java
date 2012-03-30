@@ -8,8 +8,8 @@ public abstract class EntityHandlerWrapper implements EntityHandlerListener {
 
 	protected EntityHandler core;
 
-	public EntityHandlerWrapper(AsyncActionBus bus, AtomicInteger turn) {
-		core = new EntityHandler(bus, turn, this);
+	public EntityHandlerWrapper(AsyncActionBus bus, AtomicInteger turn, long timeStep) {
+		core = new EntityHandler(bus, turn, this, timeStep);
 	}
 
 }

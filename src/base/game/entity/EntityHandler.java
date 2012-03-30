@@ -29,11 +29,10 @@ public class EntityHandler {
 	/* for graphics */
 	private final AsyncActionBus bus;
 
-	public EntityHandler(AsyncActionBus graphicBus, AtomicInteger step, EntityHandlerListener listener) {
+	public EntityHandler(AsyncActionBus graphicBus, AtomicInteger step, EntityHandlerListener listener, long timestep) {
 		this.listener = listener;
-		this.physicsHandler = new PhysicsHandler(12500000, graphicBus.sharedLock, step);
+		this.physicsHandler = new PhysicsHandler(timestep, graphicBus.sharedLock);
 		this.bus = graphicBus;
-		this.physicsHandler.start();
 	}
 
 	private void createGraphics(int ID, PhysicalObject infoBody, String graphicModelName) {

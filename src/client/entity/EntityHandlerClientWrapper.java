@@ -12,8 +12,8 @@ import client.worker.ClientWorker;
 
 public class EntityHandlerClientWrapper extends EntityHandlerWrapper {
 
-	public EntityHandlerClientWrapper(AsyncActionBus bus, AtomicInteger turn) {
-		super(bus, turn);
+	public EntityHandlerClientWrapper(AsyncActionBus bus, AtomicInteger turn, long timeStep) {
+		super(bus, turn, timeStep);
 	}
 
 	public void update(List<ClientWorker> wIN) {

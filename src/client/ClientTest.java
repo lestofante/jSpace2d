@@ -74,7 +74,7 @@ public class ClientTest implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		g.start();
 		// e qui c'e il loop di gioco (le varie wait sono dentro update)
 		while (true) {
 			try {
@@ -150,7 +150,7 @@ public class ClientTest implements Runnable {
 
 		if (channel != null) {
 			channel.configureBlocking(false);
-			channel.socket().setTcpNoDelay(false);
+			channel.socket().setTcpNoDelay(true);
 			stream = new NetworkStream(channel);
 			try {
 				channel.write(new LoginPacket(playerName, stream).getDataBuffer());

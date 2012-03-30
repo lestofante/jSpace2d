@@ -32,10 +32,10 @@ public class ClientNetworkHandler {
 				wIN.add(new SynchronizeMap((SynchronizeMapPacket) packet));
 				break;
 			case UPDATE_MAP:
-				log.debug("Read Update map packet");
+				// log.debug("Read Update map packet");
 				break;
 			default:// poi
-				log.error("Client shouldn't receive this type of packet");
+				log.error("Client shouldn't receive this type of packet {} ", packet.PacketType.name());
 				System.exit(-1);
 				break;
 			}
@@ -43,6 +43,7 @@ public class ClientNetworkHandler {
 	}
 
 	public void write(List<TCP_Packet> wOUT, List<ClientWorker> wIN) {
+		// log.debug("Sending: {} packets", wOUT.size());
 		for (TCP_Packet packet : wOUT) {
 			try {
 				packet.getNetworkStream().getChannel().write(packet.getDataBuffer());

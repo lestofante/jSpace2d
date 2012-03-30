@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import base.common.AsyncActionBus;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
@@ -27,6 +30,19 @@ public class ClientGameHandler {
 	private final AtomicInteger turn = new AtomicInteger();
 	private final List<ClientWorker> wIN = new LinkedList<>();
 	private final List<TCP_Packet> wOUT = new LinkedList<>();
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private final long timeStep = 12500000;
+
+	private long timeBuffer;
+
+	private long lastCheck;
+
+	private long pUpdates;
+
+	private long deltaStart;
+
+	private long sleepTime;
 
 	public ClientGameHandler(AsyncActionBus bus, String clientName, NetworkStream toServer) throws IOException {
 		this.bus = bus;
@@ -44,34 +60,74 @@ public class ClientGameHandler {
 		this.inputManager = new InputManager(myName);
 		this.networkHandler = new ClientNetworkHandler(toServer);
 		this.playerHandlerClientWrapper = new PlayerHandlerClientWrapper(myName);
-		this.entityHandlerClientWrapper = new EntityHandlerClientWrapper(bus, turn);
+		this.entityHandlerClientWrapper = new EntityHandlerClientWrapper(bus, turn, timeStep);
 	}
 
 	public void update() throws IOException {
+		if (getDelta() + timeBuffer > timeStep) {
+			timeBuffer += getDelta();
+			deltaStart = System.nanoTime();
 
-		networkHandler.read(wIN);
-		inputManager.update(wIN);
+			while (timeBuffer > timeStep) {
+				networkHandler.read(wIN);
+				inputManager.update(wIN);
 
-		for (ClientWorker wTmp : wIN) {
-			wTmp.execute(this);
+				for (ClientWorker wTmp : wIN) {
+					wTmp.execute(this);
+				}
+
+				wIN.clear();
+
+				playerHandlerClientWrapper.update(wIN);
+				entityHandlerClientWrapper.update(wIN);
+
+				for (ClientWorker wTmp : wIN) {
+					wTmp.execute(this);
+				}
+
+				wIN.clear();
+
+				networkHandler.write(wOUT, wIN);
+
+				wOUT.clear();
+				timeBuffer -= timeStep;
+				pUpdates++;
+				updatePPS();
+			}
+		} else {
+			long toNextUpdate = (timeStep - getDelta()) / 1000000;
+			if (toNextUpdate > 2)
+				try {
+					sleepTime += toNextUpdate;
+					Thread.sleep(toNextUpdate);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
+	}
 
-		wIN.clear();
+	private long getDelta() {
+		return System.nanoTime() - deltaStart;
+	}
 
-		playerHandlerClientWrapper.update(wIN);
-		entityHandlerClientWrapper.update(wIN);
-
-		for (ClientWorker wTmp : wIN) {
-			wTmp.execute(this);
+	private void updatePPS() {
+		long deltaPhysics = System.nanoTime() - lastCheck;
+		if (deltaPhysics > 1000000000) {
+			lastCheck = System.nanoTime();
+			deltaPhysics /= 1000000000;
+			log.info("pps: {}", pUpdates / deltaPhysics);
+			log.info("total sleep time: {} milliseconds", sleepTime);
+			sleepTime = 0;
+			pUpdates = 0;
 		}
-
-		wIN.clear();
-
-		networkHandler.write(wOUT, wIN);
-
 	}
 
 	public void sendToServer(TCP_Packet toSend) {
 		wOUT.add(toSend);
+	}
+
+	public void start() {
+		deltaStart = System.nanoTime();
 	}
 }

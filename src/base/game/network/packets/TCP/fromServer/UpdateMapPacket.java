@@ -47,8 +47,6 @@ public class UpdateMapPacket extends TCP_Packet {
 
 	@Override
 	protected boolean validateComplete() {
-		log.debug("Packet UpdateMapPacket read, size: {}", buffer.remaining());
-		log.debug("In buffer: {}", buffer);
 		if (!mapPacket()) {
 			log.debug("Input buffer underflow");
 			return false;

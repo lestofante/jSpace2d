@@ -23,9 +23,8 @@ public class ServerEntityHandlerWrapper extends EntityHandlerWrapper {
 	private char currentID = 0;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public ServerEntityHandlerWrapper(AsyncActionBus bus, AtomicInteger turn) {
-		super(bus, turn);
-		// TODO Auto-generated constructor stub
+	public ServerEntityHandlerWrapper(AsyncActionBus bus, AtomicInteger turn, long timeStep) {
+		super(bus, turn, timeStep);
 	}
 
 	@Override

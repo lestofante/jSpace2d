@@ -98,7 +98,7 @@ public class LoginHandler {
 		if (accept != null) {
 			log.info("Connection initiated by: {}", accept.getRemoteAddress());
 			accept.configureBlocking(false);
-			accept.socket().setTcpNoDelay(false);
+			accept.socket().setTcpNoDelay(true);
 			NetworkStream stream = null;
 			try {
 				stream = new NetworkStream(accept);

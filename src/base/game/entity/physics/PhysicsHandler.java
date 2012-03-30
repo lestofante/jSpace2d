@@ -2,8 +2,6 @@ package base.game.entity.physics;
 
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.jbox2d.callbacks.QueryCallback;
@@ -31,27 +29,17 @@ public class PhysicsHandler {
 
 	private final float TIMESTEP;
 
-	private final AtomicInteger turn;
 	private final World physicWorld;
 	private final LinkedList<Collidable> collidables = new LinkedList<>();
 	private final LinkedList<Radar> radars = new LinkedList<>();
 
-	private long delta;
-	private long timeBuffer = 0;
-	private int pUpdates = 0;
-	private long lastCheck;
-	private final AtomicBoolean running = new AtomicBoolean(false);
-	private final long physicsStep;
-
 	private final ReentrantReadWriteLock sharedLock;
 
-	public PhysicsHandler(long timestepNanos, ReentrantReadWriteLock sharedLock, AtomicInteger turn) {
-		this.TIMESTEP = timestepNanos / 1000000000f;
-		this.physicsStep = timestepNanos;
+	public PhysicsHandler(long timestep, ReentrantReadWriteLock sharedLock) {
+		this.TIMESTEP = timestep / 1000000000f;
 		Vec2 worldGravity = new Vec2(0.0f, -10.0f);
 		this.physicWorld = new World(worldGravity, true);
 		this.sharedLock = sharedLock;
-		this.turn = turn;
 	}
 
 	public Collidable addPhysicalObject(BodyBlueprint t) {
@@ -71,10 +59,6 @@ public class PhysicsHandler {
 		return out;
 	}
 
-	private long getDelta() {
-		return (System.nanoTime() - delta);
-	}
-
 	public void removePhysicalObject(PhysicalObject toRemove) {
 		if (toRemove instanceof Collidable) {
 			Collidable temp = (Collidable) toRemove;
@@ -86,14 +70,7 @@ public class PhysicsHandler {
 		}
 	}
 
-	public void start() {
-		delta = System.nanoTime();
-		lastCheck = delta;
-		timeBuffer = 0;
-		running.set(true);
-	}
-
-	private void step() throws Exception {
+	private void step() {
 
 		sharedLock.writeLock().lock();
 		for (Collidable info : collidables) {
@@ -101,59 +78,13 @@ public class PhysicsHandler {
 		}
 		sharedLock.writeLock().unlock();
 
-		turn.addAndGet(1);
-
 		physicWorld.step(TIMESTEP, 10, 10);
 	}
 
-	public void stop() {
-		running.set(false);
-	}
-
 	public void update() {
-		if (running.get()) {
-			if (getDelta() + timeBuffer > physicsStep) {
-				timeBuffer += getDelta();
-				delta = System.nanoTime();
-				while (timeBuffer > physicsStep) {
-
-					try {
-						long timePhysics = System.nanoTime();
-
-						applyActions();
-
-						step();
-
-						if (System.nanoTime() - timePhysics > physicsStep)
-							System.out.println("Warning! Computing physics is taking too long!");
-						timeBuffer -= physicsStep;
-						pUpdates++;
-						updatePPS();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-				}
-
-				clearActions();
-
-			} else {
-				try {
-					int milliseconds = (int) (((physicsStep - getDelta())) / 1000000);
-					if (milliseconds > 0) {
-						// long timer = System.nanoTime();
-						// log.debug("Sleeping {} milliseconds", milliseconds);
-						// log.debug("delta: {} nanoseconds", getDelta());
-						Thread.sleep(milliseconds / 2);
-						// log.debug("Actually slept: {}", System.nanoTime() -
-						// timer);
-
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		applyActions();
+		step();
+		clearActions();
 	}
 
 	private void clearActions() {
@@ -164,16 +95,6 @@ public class PhysicsHandler {
 	private void applyActions() {
 		for (Collidable collidable : collidables)
 			collidable.applyActions();
-	}
-
-	private void updatePPS() {
-		long deltaPhysics = System.nanoTime() - lastCheck;
-		if (deltaPhysics > 1000000000) {
-			lastCheck = System.nanoTime();
-			deltaPhysics /= 1000000000;
-			System.out.println("pps: " + pUpdates / deltaPhysics);
-			pUpdates = 0;
-		}
 	}
 
 	public HashSet<Entity> queryAABB(AABB aabb) {

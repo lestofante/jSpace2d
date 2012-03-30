@@ -20,7 +20,7 @@ import base.game.network.packets.TCP.toServer.RequestEntity;
 
 public class ClientHandler {
 
-	private static final int MAX_PACKET_PER_TURN = 50;
+	private static final int MAX_PACKET_PER_TURN = 50000;
 
 	Selector reader = null;
 
@@ -93,8 +93,10 @@ public class ClientHandler {
 
 	public void read(List<ServerWorker> w) {
 		try {
-			if (reader.selectNow() == 0)
+			if (reader.selectNow() == 0) {
+				// log.debug("Read nothing");
 				return;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

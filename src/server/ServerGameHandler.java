@@ -23,6 +23,8 @@ import base.game.player.Player;
 
 public class ServerGameHandler {
 
+	private static final long timeStep = 12500000;
+
 	private final AtomicInteger turn = new AtomicInteger();
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -37,44 +39,100 @@ public class ServerGameHandler {
 
 	private boolean haveToSensSyncPacket = true;
 
+	private long timeBuffer;
+
+	private long lastCheck;
+
+	private long pUpdates;
+
+	private long deltaStart;
+
+	private long sleepTime;
+
 	public ServerGameHandler(AsyncActionBus asyncActionBus) throws IOException {
 		this.bus = asyncActionBus;
 
-		this.entityHandlerWrapper = new ServerEntityHandlerWrapper(asyncActionBus, turn);
+		this.entityHandlerWrapper = new ServerEntityHandlerWrapper(bus, turn, timeStep);
 		this.playerHandlerWrapper = new ServerPlayerHandlerWrapper();
 
 		this.networkHandler = new ServerNetworkHandler();
+	}
+
+	public void update() {
+		if (getDelta() + timeBuffer > timeStep) {
+			timeBuffer += getDelta();
+			deltaStart = System.nanoTime();
+
+			while (timeBuffer > timeStep) {
+				networkHandler.read(wIN);
+
+				for (ServerWorker wTmp : wIN) {
+					wTmp.execute(this);
+				}
+
+				wIN.clear();
+				playerHandlerWrapper.update(wIN);
+				entityHandlerWrapper.update(wIN);
+
+				for (ServerWorker wTmp : wIN) {
+					wTmp.execute(this);
+				}
+				wIN.clear();
+
+				if (haveToSensSyncPacket) {
+					haveToSensSyncPacket = false;
+					SyncPlayers sP = new SyncPlayers();
+					sP.execute(this);
+				}
+
+				if (turn.get() % 30 == 0)
+					sendUpdatePacket();
+
+				networkHandler.write(outgoingPackets, wIN);
+
+				outgoingPackets.clear();
+
+				turn.getAndIncrement();
+				pUpdates++;
+				updatePPS();
+				timeBuffer -= timeStep;
+			}
+
+		} else {
+			long toNextUpdate = (timeStep - getDelta()) / 1000000;
+			if (toNextUpdate > 2)
+				try {
+					sleepTime += toNextUpdate;
+					Thread.sleep(toNextUpdate);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+
+	public void start() {
+		deltaStart = System.nanoTime();
+	}
+
+	public void stop() {
 
 	}
 
-	public synchronized void update() {
-		networkHandler.read(wIN);
-
-		for (ServerWorker wTmp : wIN) {
-			wTmp.execute(this);
+	private void updatePPS() {
+		long deltaPhysics = System.nanoTime() - lastCheck;
+		if (deltaPhysics > 1000000000) {
+			lastCheck = System.nanoTime();
+			deltaPhysics /= 1000000000;
+			log.info("pps: {}", pUpdates / deltaPhysics);
+			log.info("total sleep time: {} milliseconds", sleepTime);
+			sleepTime = 0;
+			pUpdates = 0;
 		}
+	}
 
-		wIN.clear();
-		playerHandlerWrapper.update(wIN);
-		entityHandlerWrapper.update(wIN);
-
-		for (ServerWorker wTmp : wIN) {
-			wTmp.execute(this);
-		}
-		wIN.clear();
-
-		if (haveToSensSyncPacket) {
-			haveToSensSyncPacket = false;
-			SyncPlayers sP = new SyncPlayers();
-			sP.execute(this);
-		}
-
-		if (turn.get() % 30 == 0)
-			sendUpdatePacket();
-
-		networkHandler.write(outgoingPackets, wIN);
-
-		outgoingPackets.clear();
+	private long getDelta() {
+		return System.nanoTime() - deltaStart;
 	}
 
 	private void sendUpdatePacket() {
