@@ -31,8 +31,6 @@ public class EntityHandlerClientWrapper extends EntityHandlerWrapper {
 	}
 
 	public Entity addEntity(EntityInfo e, Player player) {
-		// e p
-		core.createEntity(e.entityID, e.blueprintID, player);
-		return null;
+		return core.createEntity(e.entityID, e.blueprintID, player);
 	}
 }

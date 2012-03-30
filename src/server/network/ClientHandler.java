@@ -58,7 +58,7 @@ public class ClientHandler {
 			throw new Exception("Client is trying to flood. Detected: " + stream.available.size() + " packets");
 		}
 
-		log.debug("Read {} packets in one bott", stream.available.size());
+		// log.debug("Read {} packets in one bott", stream.available.size());
 
 		while (!stream.available.isEmpty()) {
 			TCP_Packet packet = stream.available.remove();

@@ -62,8 +62,6 @@ public class UpdateMapPacket extends TCP_Packet {
 		}
 		int entityNumber = buffer.getChar() & 0xFF; // how many entity there are
 
-		log.debug("Entity number: {}", entityNumber);
-
 		for (int i = 0; i < entityNumber; i++) {
 
 			if (buffer.remaining() < 14) {
@@ -93,5 +91,9 @@ public class UpdateMapPacket extends TCP_Packet {
 			buffer.putFloat(info.position.y);
 			buffer.putFloat(info.angle);
 		}
+	}
+
+	public Collection<EntityInfo> getEntitiesInfo() {
+		return entitiesInfo;
 	}
 }

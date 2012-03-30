@@ -34,8 +34,12 @@ public class PlayerHandler {
 
 	}
 
-	public Collection<Player> getPlayers() {
+	public Collection<Player> getPlayersValues() {
 		return players.values();
+	}
+
+	public HashMap<String, Player> getPlayerMap() {
+		return players;
 	}
 
 	public Player removePlayer(Player player) {

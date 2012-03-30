@@ -12,7 +12,7 @@ public class SyncPlayers implements ServerWorker {
 
 	@Override
 	public int execute(ServerGameHandler g) {
-		Collection<Player> players = g.playerHandlerWrapper.getPlayers();
+		Collection<Player> players = g.playerHandlerWrapper.getPlayersValues();
 		for (Player player : players) {
 			ServerPlayer fuckingfuckfuck = (ServerPlayer) player;
 			g.outgoingPackets.add(new SynchronizeMapPacket(players, fuckingfuckfuck.getStream()));

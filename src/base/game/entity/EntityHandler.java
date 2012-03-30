@@ -104,4 +104,8 @@ public class EntityHandler {
 	public HashSet<Entity> getVisibleEntities(AABB aabb) {
 		return physicsHandler.queryAABB(aabb);
 	}
+
+	public HashMap<Character, Entity> getEntityMap() {
+		return entityMap;
+	}
 }

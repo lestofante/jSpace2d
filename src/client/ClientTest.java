@@ -65,7 +65,7 @@ public class ClientTest implements Runnable {
 			Thread graphicsThread = new Thread(gr);
 			graphicsThread.setName("Client Graphics");
 			graphicsThread.start();
-			g = new ClientGameHandler(bus, playerName, toServer);
+			g = new ClientGameHandler(bus, playerName, toServer, sP);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

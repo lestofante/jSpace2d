@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory;
 import base.common.AsyncActionBus;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
+import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import client.entity.EntityHandlerClientWrapper;
 import client.network.ClientNetworkHandler;
 import client.player.PlayerHandlerClientWrapper;
 import client.worker.ClientWorker;
+import client.worker.SynchronizeMap;
 
 public class ClientGameHandler {
 	/*
@@ -44,7 +46,7 @@ public class ClientGameHandler {
 
 	private long sleepTime;
 
-	public ClientGameHandler(AsyncActionBus bus, String clientName, NetworkStream toServer) throws IOException {
+	public ClientGameHandler(AsyncActionBus bus, String clientName, NetworkStream toServer, SynchronizeMapPacket sP) throws IOException {
 		this.bus = bus;
 		this.myName = clientName;
 
@@ -61,6 +63,7 @@ public class ClientGameHandler {
 		this.networkHandler = new ClientNetworkHandler(toServer);
 		this.playerHandlerClientWrapper = new PlayerHandlerClientWrapper(myName);
 		this.entityHandlerClientWrapper = new EntityHandlerClientWrapper(bus, turn, timeStep);
+		wIN.add(new SynchronizeMap(sP));
 	}
 
 	public void update() throws IOException {

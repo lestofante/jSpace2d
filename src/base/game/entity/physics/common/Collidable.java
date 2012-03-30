@@ -35,12 +35,7 @@ public class Collidable extends PhysicalObject {
 
 	@Override
 	public void setTransform(Vec2 translation, float angle) {
-		// TODO Auto-generated method stub
-		try {
-			throw new Exception("Collidables cannot be moved liked this!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		body.setTransform(translation, angle);
 	}
 
 	@Override
@@ -51,7 +46,7 @@ public class Collidable extends PhysicalObject {
 	public void applyForce(Vec2 force, Vec2 pOA) {
 		Vec2[] toAdd = new Vec2[2];
 		toAdd[0] = force;
-		toAdd[2] = pOA;
+		toAdd[1] = pOA;
 		forces.add(toAdd);
 	}
 

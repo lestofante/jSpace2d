@@ -9,8 +9,10 @@ import org.slf4j.LoggerFactory;
 import base.game.network.NetworkStream;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
+import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
 import client.worker.ClientWorker;
 import client.worker.SynchronizeMap;
+import client.worker.UpdateMap;
 
 public class ClientNetworkHandler {
 	public final NetworkStream toServer;
@@ -32,7 +34,7 @@ public class ClientNetworkHandler {
 				wIN.add(new SynchronizeMap((SynchronizeMapPacket) packet));
 				break;
 			case UPDATE_MAP:
-				// log.debug("Read Update map packet");
+				wIN.add(new UpdateMap((UpdateMapPacket) packet));
 				break;
 			default:// poi
 				log.error("Client shouldn't receive this type of packet {} ", packet.PacketType.name());

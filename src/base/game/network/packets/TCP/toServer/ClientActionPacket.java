@@ -37,4 +37,8 @@ public class ClientActionPacket extends TCP_Packet {
 		buffer.put(clientState.getState());
 	}
 
+	public ClientState getClientState() {
+		return clientState;
+	}
+
 }

@@ -2,6 +2,7 @@ package base.game.player;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 
 public abstract class PlayerHandlerWrapper implements PlayerHandlerListener {
 
@@ -28,8 +29,11 @@ public abstract class PlayerHandlerWrapper implements PlayerHandlerListener {
 		return core.removePlayer(connected);
 	}
 
-	public Collection<Player> getPlayers() {
-		return core.getPlayers();
+	public Collection<Player> getPlayersValues() {
+		return core.getPlayersValues();
 	}
 
+	public HashMap<String, Player> getPlayerMap() {
+		return core.getPlayerMap();
+	}
 }

@@ -1,9 +1,12 @@
 package client.worker;
 
+import java.util.HashMap;
+
 import base.game.entity.Entity;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.network.packets.utils.EntityInfo;
 import base.game.network.packets.utils.PlayerInfo;
+import base.game.player.Player;
 import client.ClientGameHandler;
 
 public class SynchronizeMap implements ClientWorker {
@@ -17,13 +20,21 @@ public class SynchronizeMap implements ClientWorker {
 	@Override
 	public int execute(ClientGameHandler g) {
 
-		for (PlayerInfo p : packet.playersInfo) {
-			g.playerHandlerClientWrapper.addPlayer(p);
-			for (EntityInfo e : p.getEntitiesInfo()) {
-				Entity newlyCreated = g.entityHandlerClientWrapper.addEntity(e, g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()));
-				g.playerHandlerClientWrapper.getPlayer(p.getPlayerName()).addEntity(newlyCreated);
+		HashMap<String, Player> playersOnClient = g.playerHandlerClientWrapper.getPlayerMap();
+		HashMap<Character, Entity> entitiesOnClient = g.entityHandlerClientWrapper.getEntityMap();
+
+		for (PlayerInfo info : packet.playersInfo) {
+			if (playersOnClient.containsKey(info.getPlayerName())) {
+				Player current = g.playerHandlerClientWrapper.getPlayer(info.getPlayerName());
+				for (EntityInfo eInfo : info.getEntitiesInfo()) {
+					if (entitiesOnClient.containsKey(eInfo.entityID)) {
+						// TODO
+						toSave.add(g.entityHandlerClientWrapper.getEntity(eInfo.entityID));
+					}
+				}
 			}
 		}
+
 		return 0;
 	}
 }

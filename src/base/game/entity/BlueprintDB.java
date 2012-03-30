@@ -27,7 +27,7 @@ public class BlueprintDB {
 
 	public static BodyBlueprint requestObserver() {
 		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.KINEMATIC;
+		bodyDef.type = BodyType.DYNAMIC;
 		bodyDef.userData = new Vec2(1.0f, 1.0f);
 		FixtureDef fixtureDef = new FixtureDef();
 		PolygonShape shape = new PolygonShape();

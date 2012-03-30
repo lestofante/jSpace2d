@@ -37,7 +37,7 @@ public class PhysicsHandler {
 
 	public PhysicsHandler(long timestep, ReentrantReadWriteLock sharedLock) {
 		this.TIMESTEP = timestep / 1000000000f;
-		Vec2 worldGravity = new Vec2(0.0f, -10.0f);
+		Vec2 worldGravity = new Vec2(0.0f, 0.0f);
 		this.physicWorld = new World(worldGravity, true);
 		this.sharedLock = sharedLock;
 	}
