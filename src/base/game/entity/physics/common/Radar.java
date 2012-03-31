@@ -23,4 +23,10 @@ public class Radar extends PhysicalObject {
 
 	}
 
+	@Override
+	public void applyTorque(float torque) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

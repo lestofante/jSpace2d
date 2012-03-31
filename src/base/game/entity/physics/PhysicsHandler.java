@@ -73,8 +73,8 @@ public class PhysicsHandler {
 	private void step() {
 
 		sharedLock.writeLock().lock();
-		for (Collidable info : collidables) {
-			info.updateSharedPosition();
+		for (Collidable coll : collidables) {
+			coll.updateSharedPosition();
 		}
 		sharedLock.writeLock().unlock();
 

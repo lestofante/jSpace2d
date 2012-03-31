@@ -12,7 +12,8 @@ import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
 import base.game.network.packets.TCP.toServer.ClientActionPacket;
 import base.game.network.packets.TCP.toServer.LoginPacket;
-import base.game.network.packets.TCP.toServer.RequestEntity;
+import base.game.network.packets.TCP.toServer.PingResponsePacket;
+import base.game.network.packets.TCP.toServer.RequestEntityPacket;
 
 public class PacketHandler {
 
@@ -45,6 +46,9 @@ public class PacketHandler {
 				break;
 			case REQUEST:
 				pOut = createRequesPacket(in, stream);
+				break;
+			case PING_RESPONSE:
+				pOut = createPingResponsePacket(in, stream);
 				break;
 			default:
 				/*
@@ -89,8 +93,12 @@ public class PacketHandler {
 		return out;
 	}
 
+	private static TCP_Packet createPingResponsePacket(ByteBuffer in, NetworkStream stream) {
+		return new PingResponsePacket(in, stream);
+	}
+
 	private static TCP_Packet createRequesPacket(ByteBuffer in, NetworkStream stream) {
-		return new RequestEntity(in, stream);
+		return new RequestEntityPacket(in, stream);
 	}
 
 	private static TCP_Packet createUpdateMapPacket(ByteBuffer in, NetworkStream stream) {

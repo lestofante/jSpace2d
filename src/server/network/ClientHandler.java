@@ -12,11 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.network.worker.EntityRequest;
+import server.network.worker.PingUpdate;
+import server.network.worker.PlayerAction;
 import server.network.worker.S_RemoveNetworkPlayer;
 import server.worker.ServerWorker;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.toServer.ClientActionPacket;
-import base.game.network.packets.TCP.toServer.RequestEntity;
+import base.game.network.packets.TCP.toServer.PingResponsePacket;
+import base.game.network.packets.TCP.toServer.RequestEntityPacket;
 
 public class ClientHandler {
 
@@ -68,10 +71,13 @@ public class ClientHandler {
 				ris.add(new PlayerAction((ClientActionPacket) packet));
 				break;
 			case REQUEST:
-				ris.add(new EntityRequest((RequestEntity) packet, stream.getConnectedPlayer()));
+				ris.add(new EntityRequest((RequestEntityPacket) packet, stream.getConnectedPlayer()));
 				break;
 			case LOGIN:
 				throw new Exception("Address already logged in");
+			case PING_RESPONSE:
+				ris.add(new PingUpdate((PingResponsePacket) packet));
+				break;
 			default:
 				throw new Exception("Unkonw requested action!");
 			}

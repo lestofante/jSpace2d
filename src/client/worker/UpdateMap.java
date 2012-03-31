@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import base.game.entity.Entity;
 import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
+import base.game.network.packets.TCP.toServer.PingResponsePacket;
 import base.game.network.packets.utils.EntityInfo;
 import client.ClientGameHandler;
 
@@ -24,7 +25,9 @@ public class UpdateMap implements ClientWorker {
 			if (toUpdate == null)
 				log.debug("toUpdate is null: " + g.entityHandlerClientWrapper.getEntityMap().keySet());
 			toUpdate.infoBody.setTransform(info.position, info.angle);
-			log.debug("Position {}, angle {}", info.position, info.angle);
+
+			// ping back
+			g.sendToServer(new PingResponsePacket(packet.getNetworkStream(), packet.getTimeStamp()));
 		}
 		return 0;
 	}

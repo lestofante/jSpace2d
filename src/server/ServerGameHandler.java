@@ -85,7 +85,7 @@ public class ServerGameHandler {
 					sP.execute(this);
 				}
 
-				if (turn.get() % 40 == 0)
+				if (turn.get() % 10 == 0)
 					sendUpdatePacket();
 
 				networkHandler.write(outgoingPackets, wIN);
@@ -138,7 +138,7 @@ public class ServerGameHandler {
 	private void sendUpdatePacket() {
 		for (Player p : playerHandlerWrapper.getPlayersValues()) {
 			ServerPlayer player = (ServerPlayer) p;
-			UpdateMapPacket packet = new UpdateMapPacket(getVisibleEntities(player), player.getStream());
+			UpdateMapPacket packet = new UpdateMapPacket(getVisibleEntities(player), player.getStream(), System.nanoTime());
 			outgoingPackets.add(packet);
 		}
 	}

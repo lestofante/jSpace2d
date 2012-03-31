@@ -34,6 +34,8 @@ public abstract class PhysicalObject {
 		this.transform[2] = angle;
 	}
 
-	public abstract void applyForce(Vec2 translation);
+	public abstract void applyForce(Vec2 force);
+
+	public abstract void applyTorque(float torque);
 
 }

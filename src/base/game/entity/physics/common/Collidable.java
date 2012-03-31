@@ -40,7 +40,7 @@ public class Collidable extends PhysicalObject {
 
 	@Override
 	public void applyForce(Vec2 force) {
-		applyForce(force, new Vec2());
+		applyForce(force, body.getWorldCenter());
 	}
 
 	public void applyForce(Vec2 force, Vec2 pOA) {
@@ -62,5 +62,10 @@ public class Collidable extends PhysicalObject {
 	public void clearActions() {
 		forces.clear();
 		torques.clear();
+	}
+
+	@Override
+	public void applyTorque(float torque) {
+		torques.add(torque);
 	}
 }

@@ -1,5 +1,6 @@
 package base.game.network.packets.utils;
 
+
 public class ClientState {
 
 	public enum Translation {
@@ -72,5 +73,9 @@ public class ClientState {
 
 	public Translation getTranslation() {
 		return translation;
+	}
+
+	public Rotation getRotation() {
+		return rotation;
 	}
 }

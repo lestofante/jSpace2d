@@ -15,7 +15,7 @@ import base.game.network.packets.TCP_Packet.TCP_PacketType;
 import base.game.network.packets.TCP.fromServer.SynchronizeMapPacket;
 import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
 import base.game.network.packets.TCP.toServer.LoginPacket;
-import base.game.network.packets.TCP.toServer.RequestEntity;
+import base.game.network.packets.TCP.toServer.RequestEntityPacket;
 import base.graphics.GraphicsManager;
 
 public class ClientTest implements Runnable {
@@ -88,7 +88,7 @@ public class ClientTest implements Runnable {
 
 	private boolean getGameInformation(NetworkStream toServer) {
 		try {
-			toServer.getChannel().write(new RequestEntity(toServer, 0).getDataBuffer());
+			toServer.getChannel().write(new RequestEntityPacket(toServer, 0).getDataBuffer());
 			TCP_Packet shouldBeSyncMapPacket = null;
 
 			long start = System.currentTimeMillis();

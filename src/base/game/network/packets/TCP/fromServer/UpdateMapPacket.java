@@ -14,27 +14,28 @@ import base.game.network.packets.utils.EntityInfo;
 public class UpdateMapPacket extends TCP_Packet {
 
 	private final Collection<EntityInfo> entitiesInfo = new LinkedList<>();
+	private long timeStamp;
 
-	public UpdateMapPacket(Collection<Entity> collection, NetworkStream stream) {
+	public UpdateMapPacket(Collection<Entity> collection, NetworkStream stream, long timeStamp) {
 		super(TCP_PacketType.UPDATE_MAP, stream);
+		this.timeStamp = timeStamp;
 		extractInfo(collection);
 		createBuffer(calculateDimension());
 		setComplete(true); // we created it so it better be!
 	}
 
 	private int calculateDimension() {
-		return 2 + entitiesInfo.size() * (2 + 4 + 4 + 4);
-		// 2byte
-		// number of
-		// entities
-		// +
-		// for every entity:
-		// 2 bytes for ID | 4
-		// for
-		// x position | 4
-		// for y
-		// position | 4 for
-		// angle
+		return 8 + 2 + entitiesInfo.size() * (2 + 4 + 4 + 4);
+		/*
+		 * 8 bytes for long timestamp (for ping purpose)
+		 * 2 bytes for number of entities
+		 * 
+		 * for every entity:
+		 * 2 bytes for ID
+		 * 4 position x
+		 * 4 position y
+		 * 4 angle
+		 */
 
 	}
 
@@ -60,16 +61,17 @@ public class UpdateMapPacket extends TCP_Packet {
 	}
 
 	private boolean mapPacket() {
-		if (buffer.remaining() < 2) {
+		if (buffer.remaining() < 10) {
 			// no specific header present, return underflow error
-			log.debug("No player number");
+			log.debug("No header");
 			return false;
 		}
-		log.debug("DECODING UPDATEMAP");
+
+		timeStamp = buffer.getLong();
+
 		int entityNumber = buffer.getChar() & 0xFF; // how many entity there
 		// are
-		log.debug("Entity number: " + entityNumber);
-		log.debug("buffer: " + buffer.remaining());
+
 		for (int i = 0; i < entityNumber; i++) {
 
 			if (buffer.remaining() < 14) {
@@ -78,30 +80,24 @@ public class UpdateMapPacket extends TCP_Packet {
 			}
 
 			char entityID = buffer.getChar();
-			log.debug("ID: " + (int) entityID);
 
 			float x = buffer.getFloat();
-			log.debug("x: " + x);
 			float y = buffer.getFloat();
-			log.debug("y: " + y);
 			float angle = buffer.getFloat();
-			log.debug("a: " + angle);
 
 			entitiesInfo.add(new EntityInfo(entityID, new Vec2(x, y), angle));
 
 		}
-		log.debug("END: " + buffer.remaining());
 		// Everything went better than expected
 		return true;
 	}
 
 	@Override
 	protected void populateBuffer() {
-		log.debug("CREATING UPDATE MAP ");
+		buffer.putLong(timeStamp);
 		buffer.putChar((char) entitiesInfo.size());
 		for (EntityInfo info : entitiesInfo) {
 			buffer.putChar(info.entityID);
-			log.debug("id: " + (int) info.entityID);
 			buffer.putFloat(info.position.x);
 			buffer.putFloat(info.position.y);
 			buffer.putFloat(info.angle);
@@ -110,5 +106,9 @@ public class UpdateMapPacket extends TCP_Packet {
 
 	public Collection<EntityInfo> getEntitiesInfo() {
 		return entitiesInfo;
+	}
+
+	public long getTimeStamp() {
+		return timeStamp;
 	}
 }

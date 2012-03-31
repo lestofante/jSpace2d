@@ -24,51 +24,11 @@ public class StateEntity implements ClientWorker {
 
 		Player target = g.playerHandlerClientWrapper.getPlayer(player);
 
-		boolean translationArray[] = new boolean[4];
-		switch (translation) {
-		case NORTH:
-			translationArray[0] = true;
-			break;
-		case SOUTH:
-			translationArray[1] = true;
-			break;
-		case WEST:
-			translationArray[2] = true;
-			break;
-		case EAST:
-			translationArray[3] = true;
-			break;
-		case NORTH_WEST:
-			translationArray[0] = true;
-			translationArray[2] = true;
-			break;
-		case NORTH_EAST:
-			translationArray[0] = true;
-			translationArray[3] = true;
-			break;
-		case SOUTH_WEST:
-			translationArray[1] = true;
-			translationArray[2] = true;
-			break;
-		case SOUTH_EAST:
-			translationArray[1] = true;
-			translationArray[3] = true;
-			break;
-		}
 		if (translation != Translation.STILL)
-			target.moveCurrentEntity(translationArray);
+			target.moveCurrentEntity(translation);
 
-		boolean rotationArray[] = new boolean[2];
-		switch (rotation) {
-		case CLOCKWISE:
-			rotationArray[0] = true;
-			break;
-		case COUNTERCLOCKWISE:
-			rotationArray[1] = true;
-			break;
-		}
 		if (rotation != Rotation.STILL)
-			target.rotateCurrentEntity(rotationArray);
+			target.rotateCurrentEntity(rotation);
 
 		boolean gunArray[] = new boolean[2];
 		switch (gun) {

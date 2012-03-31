@@ -3,15 +3,15 @@ package server.network.worker;
 import server.ServerGameHandler;
 import server.worker.ServerWorker;
 import base.game.entity.Entity;
-import base.game.network.packets.TCP.toServer.RequestEntity;
+import base.game.network.packets.TCP.toServer.RequestEntityPacket;
 import base.game.player.Player;
 
 public class EntityRequest implements ServerWorker {
 
-	RequestEntity data;
+	RequestEntityPacket data;
 	Player player;
 
-	public EntityRequest(RequestEntity packet, Player player) {
+	public EntityRequest(RequestEntityPacket packet, Player player) {
 		data = packet;
 		this.player = player;
 	}

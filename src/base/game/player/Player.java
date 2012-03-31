@@ -7,6 +7,8 @@ import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Vec2;
 
 import base.game.entity.Entity;
+import base.game.network.packets.utils.ClientState.Rotation;
+import base.game.network.packets.utils.ClientState.Translation;
 
 public class Player {
 
@@ -63,13 +65,12 @@ public class Player {
 		return myEntities.values();
 	}
 
-	public void moveCurrentEntity(boolean[] movement) {
+	public void moveCurrentEntity(Translation movement) {
 		currentEntity.move(movement); // fine
 	}
 
-	public void rotateCurrentEntity(boolean[] rotation) {
-		// TODO Auto-generated method stub
-
+	public void rotateCurrentEntity(Rotation rotation) {
+		currentEntity.rotate(rotation);
 	}
 
 	public void shoot(boolean[] gun) {

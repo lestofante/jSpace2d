@@ -33,6 +33,7 @@ public class BlueprintDB {
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(2, 2);
 		fixtureDef.shape = shape;
+		fixtureDef.density = 1.0f;
 		return new BodyBlueprint((char) 0, bodyDef, fixtureDef);
 	}
 }
