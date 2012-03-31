@@ -25,7 +25,7 @@ public class UpdateMapPacket extends TCP_Packet {
 	}
 
 	private int calculateDimension() {
-		return 8 + 2 + entitiesInfo.size() * (2 + 4 + 4 + 4);
+		return 8 + 2 + entitiesInfo.size() * (2 + 4 + 4 + 4 + 4 + 4 + 4);
 		/*
 		 * 8 bytes for long timestamp (for ping purpose)
 		 * 2 bytes for number of entities
@@ -35,8 +35,10 @@ public class UpdateMapPacket extends TCP_Packet {
 		 * 4 position x
 		 * 4 position y
 		 * 4 angle
+		 * 4 velx
+		 * 4 vely
+		 * 4 angvel
 		 */
-
 	}
 
 	public UpdateMapPacket(ByteBuffer buffer, NetworkStream stream) {
@@ -47,7 +49,7 @@ public class UpdateMapPacket extends TCP_Packet {
 
 	private void extractInfo(Collection<Entity> entities) {
 		for (Entity entity : entities) {
-			entitiesInfo.add(new EntityInfo(entity.entityID, new Vec2(entity.infoBody.getTransform()[0], entity.infoBody.getTransform()[1]), entity.infoBody.getTransform()[2]));
+			entitiesInfo.add(entity.getInfo());
 		}
 	}
 
@@ -74,7 +76,7 @@ public class UpdateMapPacket extends TCP_Packet {
 
 		for (int i = 0; i < entityNumber; i++) {
 
-			if (buffer.remaining() < 14) {
+			if (buffer.remaining() < 26) {
 				log.debug("Unsufficient data to create entity");
 				return false;
 			}
@@ -84,9 +86,10 @@ public class UpdateMapPacket extends TCP_Packet {
 			float x = buffer.getFloat();
 			float y = buffer.getFloat();
 			float angle = buffer.getFloat();
-
-			entitiesInfo.add(new EntityInfo(entityID, new Vec2(x, y), angle));
-
+			float velX = buffer.getFloat();
+			float velY = buffer.getFloat();
+			float angleVel = buffer.getFloat();
+			entitiesInfo.add(new EntityInfo(entityID, new Vec2(x, y), angle, new Vec2(velX, velY), angleVel));
 		}
 		// Everything went better than expected
 		return true;
@@ -101,6 +104,9 @@ public class UpdateMapPacket extends TCP_Packet {
 			buffer.putFloat(info.position.x);
 			buffer.putFloat(info.position.y);
 			buffer.putFloat(info.angle);
+			buffer.putFloat(info.velocity.x);
+			buffer.putFloat(info.velocity.y);
+			buffer.putFloat(info.angleVelocity);
 		}
 	}
 

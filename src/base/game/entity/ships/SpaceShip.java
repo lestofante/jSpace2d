@@ -5,6 +5,7 @@ import org.jbox2d.common.Vec2;
 import base.game.entity.Entity;
 import base.game.network.packets.utils.ClientState.Rotation;
 import base.game.network.packets.utils.ClientState.Translation;
+import base.game.network.packets.utils.EntityInfo;
 import base.game.player.Player;
 
 public class SpaceShip extends Entity {
@@ -99,5 +100,14 @@ public class SpaceShip extends Entity {
 		}
 
 		infoBody.applyTorque(torque);
+	}
+
+	@Override
+	public EntityInfo getInfo() {
+		Vec2 position = new Vec2(infoBody.getTransform()[0], infoBody.getTransform()[1]);
+		float angle = infoBody.getTransform()[2];
+		Vec2 velocity = infoBody.getLinearVelocity();
+		float angleVelocity = infoBody.getAngularVelocity();
+		return new EntityInfo(entityID, position, angle, velocity, angleVelocity);
 	}
 }

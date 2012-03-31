@@ -29,4 +29,22 @@ public class Radar extends PhysicalObject {
 
 	}
 
+	@Override
+	public Vec2 getLinearVelocity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public float getAngularVelocity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setVelocity(Vec2 velocity, float angleVelocity) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

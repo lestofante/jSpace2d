@@ -68,4 +68,20 @@ public class Collidable extends PhysicalObject {
 	public void applyTorque(float torque) {
 		torques.add(torque);
 	}
+
+	@Override
+	public Vec2 getLinearVelocity() {
+		return body.getLinearVelocity();
+	}
+
+	@Override
+	public float getAngularVelocity() {
+		return body.getAngularVelocity();
+	}
+
+	@Override
+	public void setVelocity(Vec2 velocity, float angleVelocity) {
+		body.setLinearVelocity(velocity);
+		body.setAngularVelocity(angleVelocity);
+	}
 }

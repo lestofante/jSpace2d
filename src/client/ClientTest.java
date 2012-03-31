@@ -100,10 +100,14 @@ public class ClientTest implements Runnable {
 					break;
 			}
 
-			if (shouldBeSyncMapPacket == null)
+			if (shouldBeSyncMapPacket == null) {
+				log.error("Failed to retrieve syncPacket");
 				return false;
-			if (!shouldBeSyncMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP))
+			}
+			if (!shouldBeSyncMapPacket.PacketType.equals(TCP_PacketType.SYNC_MAP)) {
+				log.error("Received {} instead of SyncPacket", shouldBeSyncMapPacket.PacketType.name());
 				return false;
+			}
 
 			sP = (SynchronizeMapPacket) shouldBeSyncMapPacket;
 

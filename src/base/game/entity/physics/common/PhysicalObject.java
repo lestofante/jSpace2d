@@ -38,4 +38,10 @@ public abstract class PhysicalObject {
 
 	public abstract void applyTorque(float torque);
 
+	public abstract Vec2 getLinearVelocity();
+
+	public abstract float getAngularVelocity();
+
+	public abstract void setVelocity(Vec2 velocity, float angleVelocity);
+
 }

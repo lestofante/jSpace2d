@@ -25,7 +25,7 @@ public class UpdateMap implements ClientWorker {
 			if (toUpdate == null)
 				log.debug("toUpdate is null: " + g.entityHandlerClientWrapper.getEntityMap().keySet());
 			toUpdate.infoBody.setTransform(info.position, info.angle);
-
+			toUpdate.infoBody.setVelocity(info.velocity, info.angleVelocity);
 			// ping back
 			g.sendToServer(new PingResponsePacket(packet.getNetworkStream(), packet.getTimeStamp()));
 		}

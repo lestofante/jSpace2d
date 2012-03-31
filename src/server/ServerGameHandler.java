@@ -85,7 +85,7 @@ public class ServerGameHandler {
 					sP.execute(this);
 				}
 
-				if (turn.get() % 10 == 0)
+				if (turn.get() % 40 == 0)
 					sendUpdatePacket();
 
 				networkHandler.write(outgoingPackets, wIN);
