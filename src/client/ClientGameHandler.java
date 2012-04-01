@@ -25,6 +25,7 @@ public class ClientGameHandler {
 	public final PlayerHandlerClientWrapper playerHandlerClientWrapper;
 	public final EntityHandlerClientWrapper entityHandlerClientWrapper;
 	public final ClientNetworkHandler networkHandler;
+	public final UpdateManager updateManager;
 
 	private final String myName;
 	private final InputManager inputManager;
@@ -60,6 +61,7 @@ public class ClientGameHandler {
 		}
 
 		this.inputManager = new InputManager(myName);
+		this.updateManager = new UpdateManager();
 		this.networkHandler = new ClientNetworkHandler(toServer);
 		this.playerHandlerClientWrapper = new PlayerHandlerClientWrapper(myName);
 		this.entityHandlerClientWrapper = new EntityHandlerClientWrapper(bus, turn, timeStep);
@@ -74,6 +76,7 @@ public class ClientGameHandler {
 			while (timeBuffer > timeStep) {
 				networkHandler.read(wIN);
 				inputManager.update(wIN);
+				updateManager.update(this);
 
 				for (ClientWorker wTmp : wIN) {
 					wTmp.execute(this);

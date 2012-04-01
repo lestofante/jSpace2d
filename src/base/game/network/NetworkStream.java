@@ -53,6 +53,7 @@ public class NetworkStream {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		// log.debug("Read {} bytes", read);
 		// if EOF reached
 		if (read == -1)
 			return false;
@@ -60,8 +61,9 @@ public class NetworkStream {
 		try {
 			available.addAll(PacketHandler.getTCP(buffer, this));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
+			System.exit(-1);
 		}
 		return true;
 	}

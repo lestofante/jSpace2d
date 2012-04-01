@@ -7,6 +7,7 @@ public class ServerPlayer extends Player {
 
 	private ServerNetworkStream stream;
 	private int ping = 0;
+	private boolean playing = false;
 
 	public ServerPlayer(char id, String playerName) {
 		super(id, playerName);
@@ -22,6 +23,14 @@ public class ServerPlayer extends Player {
 
 	public void setPing(int ping) {
 		this.ping = ping;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setPlaying(boolean state) {
+		playing = state;
 	}
 
 }

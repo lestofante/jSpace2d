@@ -138,8 +138,10 @@ public class ServerGameHandler {
 	private void sendUpdatePacket() {
 		for (Player p : playerHandlerWrapper.getPlayersValues()) {
 			ServerPlayer player = (ServerPlayer) p;
-			UpdateMapPacket packet = new UpdateMapPacket(getVisibleEntities(player), player.getStream(), System.nanoTime());
-			outgoingPackets.add(packet);
+			if (player.isPlaying()) {
+				UpdateMapPacket packet = new UpdateMapPacket(getVisibleEntities(player), player.getStream(), System.nanoTime());
+				outgoingPackets.add(packet);
+			}
 		}
 	}
 

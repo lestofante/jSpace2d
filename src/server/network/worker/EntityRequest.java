@@ -1,17 +1,17 @@
 package server.network.worker;
 
 import server.ServerGameHandler;
+import server.player.ServerPlayer;
 import server.worker.ServerWorker;
 import base.game.entity.Entity;
 import base.game.network.packets.TCP.toServer.RequestEntityPacket;
-import base.game.player.Player;
 
 public class EntityRequest implements ServerWorker {
 
 	RequestEntityPacket data;
-	Player player;
+	ServerPlayer player;
 
-	public EntityRequest(RequestEntityPacket packet, Player player) {
+	public EntityRequest(RequestEntityPacket packet, ServerPlayer player) {
 		data = packet;
 		this.player = player;
 	}
@@ -25,7 +25,7 @@ public class EntityRequest implements ServerWorker {
 		player.addEntity(myself);
 
 		player.setCurrentEntity(myself);
-
+		player.setPlaying(true);
 		g.setSendSyncPaket(true);
 		return 0;
 	}

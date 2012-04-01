@@ -22,13 +22,17 @@ public class PacketHandler {
 	public static ArrayList<TCP_Packet> getTCP(ByteBuffer in, NetworkStream stream) throws Exception {
 		ArrayList<TCP_Packet> out = new ArrayList<>();
 		TCP_Packet pOut = null;
+		in.rewind();
 		boolean enoughtByteToRead = in.hasRemaining();
 
 		TCP_PacketType[] TCPvalues = TCP_PacketType.values();
-		int lastBufferPosition = in.position();
+		int lastBufferPosition = 0;
+		// log.debug("Buffer: {}", in);
 		while (enoughtByteToRead) {
 			byte read = in.get();
+			// log.debug("read packet type: {}", read);
 			if (read > TCPvalues.length) {
+				log.error("Unknown");
 				throw new Exception("Corrupted input buffer!");
 			}
 			switch (TCPvalues[read]) {
@@ -76,6 +80,7 @@ public class PacketHandler {
 					in.clear();
 				}
 			} else {
+				// log.debug("Underflow");
 				// underflow error, add back packet type, and terminate
 				// reading cycle because we don't have enough data
 				in.position(lastBufferPosition);
@@ -84,7 +89,8 @@ public class PacketHandler {
 				in.compact();
 				// set position to the beginning of the buffer (compact does not
 				// do it)
-				in.rewind();
+				// in.rewind();
+				// log.debug("Buffer: {}", in);
 
 				enoughtByteToRead = false;
 				pOut = null; // useless, but it makes me feel safe
