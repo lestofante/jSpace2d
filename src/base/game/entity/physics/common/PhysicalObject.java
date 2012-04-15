@@ -1,6 +1,8 @@
 package base.game.entity.physics.common;
 
 import org.jbox2d.common.Vec2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import base.game.entity.Entity;
 
@@ -15,6 +17,8 @@ public abstract class PhysicalObject {
 	protected float[] transform; // this represents the position and rotation of
 									// the object
 	protected Entity owner;
+
+	protected Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public PhysicalObject() {
 		this.transform = new float[3];

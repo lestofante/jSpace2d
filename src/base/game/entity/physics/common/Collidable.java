@@ -35,6 +35,10 @@ public class Collidable extends PhysicalObject {
 
 	@Override
 	public void setTransform(Vec2 translation, float angle) {
+		if (!translation.equals(body.getPosition()) || angle != body.getAngle()) {
+			log.debug("Old position: {}", body.getPosition());
+			log.debug("New position: {}", translation);
+		}
 		body.setTransform(translation, angle);
 	}
 
@@ -81,6 +85,10 @@ public class Collidable extends PhysicalObject {
 
 	@Override
 	public void setVelocity(Vec2 velocity, float angleVelocity) {
+		if (!velocity.equals(body.getLinearVelocity()) || angleVelocity != body.getAngularVelocity()) {
+			log.debug("Old velocity: {}", body.getLinearVelocity());
+			log.debug("New velocity: {}", velocity);
+		}
 		body.setLinearVelocity(velocity);
 		body.setAngularVelocity(angleVelocity);
 	}

@@ -16,6 +16,7 @@ import server.player.ServerPlayer;
 import server.player.ServerPlayerHandlerWrapper;
 import server.worker.ServerWorker;
 import base.common.AsyncActionBus;
+import base.common.Constants;
 import base.game.entity.Entity;
 import base.game.network.packets.TCP_Packet;
 import base.game.network.packets.TCP.fromServer.UpdateMapPacket;
@@ -85,7 +86,7 @@ public class ServerGameHandler {
 					sP.execute(this);
 				}
 
-				if (turn.get() % 40 == 0)
+				if (turn.get() % Constants.UPDATE_FREQ == 0)
 					sendUpdatePacket();
 
 				networkHandler.write(outgoingPackets, wIN);
