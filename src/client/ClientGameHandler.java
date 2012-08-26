@@ -60,7 +60,7 @@ public class ClientGameHandler {
 			}
 		}
 
-		this.inputManager = new InputManager(myName);
+		this.inputManager = new InputManager(bus);
 		this.updateManager = new UpdateManager();
 		this.networkHandler = new ClientNetworkHandler(toServer);
 		this.playerHandlerClientWrapper = new PlayerHandlerClientWrapper(myName);

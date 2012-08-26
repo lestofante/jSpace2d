@@ -36,4 +36,23 @@ public class AsyncActionBus {
 		return returnActions;
 	}
 
+	public AtomicBoolean[] getWasdArray() {
+		return wasdArray;
+	}
+
+	public AtomicBoolean[] getRotationArray() {
+		return rotationArray;
+	}
+
+	public AtomicBoolean[] getGunArray() {
+		return gunArray;
+	}
+
+	/*
+	 * INPUT
+	 */
+	private final AtomicBoolean[] wasdArray = new AtomicBoolean[4];
+	private final AtomicBoolean[] rotationArray = new AtomicBoolean[2];
+	private final AtomicBoolean[] gunArray = new AtomicBoolean[2];
+
 }

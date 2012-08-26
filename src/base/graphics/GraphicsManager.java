@@ -59,6 +59,7 @@ public class GraphicsManager implements Runnable {
 	private ObjectHandler oHandler;
 
 	private final AsyncActionBus asyncActionBus;
+	private InputKeyboard inputHandler;
 
 	/**
 	 * Manages graphics.
@@ -237,17 +238,27 @@ public class GraphicsManager implements Runnable {
 
 		init(mode, fullScreen, vSync);
 
+		inputHandler = new InputKeyboard(asyncActionBus);
+
 		while (!Display.isCloseRequested()) {
 			update();
 			Display.sync(60);
 		}
 
+		asyncActionBus.graphicsStarted.set(false);
+
 		Display.destroy();
+
+		// log.debug("Display closed");
+
+		System.out.println("Display closed");
+		System.out.flush();
 
 	}
 
 	public void update() {
 		processActions();
+		inputHandler.update();
 		render();
 		Display.update();
 	}

@@ -76,7 +76,7 @@ public class ClientTest implements Runnable {
 		}
 		g.start();
 		// e qui c'e il loop di gioco (le varie wait sono dentro update)
-		while (true) {
+		while (bus.graphicsStarted.get()) {
 			try {
 				g.update();
 			} catch (IOException e) {

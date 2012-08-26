@@ -51,6 +51,7 @@ public class NetworkStream {
 		try {
 			read = getChannel().read(buffer);
 		} catch (IOException e) {
+			read = -1;
 			e.printStackTrace();
 		}
 		// log.debug("Read {} bytes", read);

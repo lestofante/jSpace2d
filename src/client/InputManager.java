@@ -1,11 +1,13 @@
 package client;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import base.common.AsyncActionBus;
 import base.game.network.packets.utils.ClientState.Gun;
 import base.game.network.packets.utils.ClientState.Rotation;
 import base.game.network.packets.utils.ClientState.Translation;
@@ -14,12 +16,6 @@ import client.worker.ClientWorker;
 public class InputManager {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	String myName;
-
-	private final boolean[] wasdArray = new boolean[4];
-	private final boolean[] rotationArray = new boolean[2];
-	private final boolean[] gunArray = new boolean[2];
 
 	/*
 	 * binding for key
@@ -41,22 +37,14 @@ public class InputManager {
 
 	private Gun g = Gun.NO_FIRE;
 
-	public InputManager(String myName) {
-		this.myName = myName;
+	private final AsyncActionBus bus;
+
+	public InputManager(AsyncActionBus bus) {
+		this.bus = bus;
 	}
 
 	public void update(List<ClientWorker> wIN) {
 
-		while (Keyboard.next()) {
-
-			int eventKey = Keyboard.getEventKey();
-
-			if (Keyboard.getEventKeyState())
-				keyPressed(eventKey);
-			else
-				keyReleased(eventKey);
-
-		}
 		processTranlsation();
 		processRotation();
 		processGun();
@@ -66,17 +54,19 @@ public class InputManager {
 	}
 
 	private void processTranlsation() {
+		AtomicBoolean wasdArray[] = bus.getWasdArray();
+
 		int leftRight_contribute = 0;
 		int upDown_contribute = 0;
 
-		if (wasdArray[0])
+		if (wasdArray[0].get())
 			leftRight_contribute += 1;
-		if (wasdArray[2])
+		if (wasdArray[2].get())
 			leftRight_contribute -= 1;
 
-		if (wasdArray[1])
+		if (wasdArray[1].get())
 			upDown_contribute += 1;
-		if (wasdArray[3])
+		if (wasdArray[3].get())
 			upDown_contribute -= 1;
 
 		// so now these 2 helper variables are 0 in case none or both keys are
@@ -109,14 +99,15 @@ public class InputManager {
 	}
 
 	private void processRotation() {
-		if (rotationArray[0]) {
-			if (rotationArray[1]) {
+		AtomicBoolean rotationArray[] = bus.getRotationArray();
+		if (rotationArray[0].get()) {
+			if (rotationArray[1].get()) {
 				r = Rotation.STILL;
 			} else {
 				r = Rotation.CLOCKWISE;
 			}
 		} else {
-			if (rotationArray[1]) {
+			if (rotationArray[1].get()) {
 				r = Rotation.COUNTERCLOCKWISE;
 			} else {
 				r = Rotation.STILL;
@@ -125,88 +116,19 @@ public class InputManager {
 	}
 
 	private void processGun() {
-		if (gunArray[0]) {
-			if (gunArray[1]) {
+		AtomicBoolean gunArray[] = bus.getGunArray();
+		if (gunArray[0].get()) {
+			if (gunArray[1].get()) {
 				g = Gun.SIMULTANEOUS_FIRE;
 			} else {
 				g = Gun.PRIMARY_FIRE;
 			}
 		} else {
-			if (gunArray[1]) {
+			if (gunArray[1].get()) {
 				g = Gun.SECONDARY_FIRE;
 			} else {
 				g = Gun.NO_FIRE;
 			}
-		}
-	}
-
-	private void keyPressed(int eventKey) {
-		if (WEST == eventKey) {
-			wasdArray[0] = true;
-			return;
-		}
-		if (EAST == eventKey) {
-			wasdArray[2] = true;
-			return;
-		}
-		if (NORTH == eventKey) {
-			wasdArray[1] = true;
-			return;
-		}
-		if (SOUTH == eventKey) {
-			wasdArray[3] = true;
-			return;
-		}
-		if (CLOCKWISE == eventKey) {
-			rotationArray[0] = true;
-			return;
-		}
-		if (COUNTERCLOCKWISE == eventKey) {
-			rotationArray[1] = true;
-			return;
-		}
-		if (PRIMARY_FIRE == eventKey) {
-			gunArray[0] = true;
-			return;
-		}
-		if (SECONDARY_FIRE == eventKey) {
-			gunArray[1] = true;
-			return;
-		}
-	}
-
-	private void keyReleased(int eventKey) {
-		if (WEST == eventKey) {
-			wasdArray[0] = false;
-			return;
-		}
-		if (EAST == eventKey) {
-			wasdArray[2] = false;
-			return;
-		}
-		if (NORTH == eventKey) {
-			wasdArray[1] = false;
-			return;
-		}
-		if (SOUTH == eventKey) {
-			wasdArray[3] = false;
-			return;
-		}
-		if (CLOCKWISE == eventKey) {
-			rotationArray[0] = false;
-			return;
-		}
-		if (COUNTERCLOCKWISE == eventKey) {
-			rotationArray[1] = false;
-			return;
-		}
-		if (PRIMARY_FIRE == eventKey) {
-			gunArray[0] = false;
-			return;
-		}
-		if (SECONDARY_FIRE == eventKey) {
-			gunArray[1] = false;
-			return;
 		}
 	}
 }
