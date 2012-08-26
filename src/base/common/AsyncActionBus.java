@@ -51,8 +51,8 @@ public class AsyncActionBus {
 	/*
 	 * INPUT
 	 */
-	private final AtomicBoolean[] wasdArray = new AtomicBoolean[4];
-	private final AtomicBoolean[] rotationArray = new AtomicBoolean[2];
-	private final AtomicBoolean[] gunArray = new AtomicBoolean[2];
+	private final AtomicBoolean[] wasdArray = { new AtomicBoolean(), new AtomicBoolean(), new AtomicBoolean(), new AtomicBoolean() };
+	private final AtomicBoolean[] rotationArray = { new AtomicBoolean(), new AtomicBoolean() };
+	private final AtomicBoolean[] gunArray = { new AtomicBoolean(), new AtomicBoolean() };
 
 }
