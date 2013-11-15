@@ -1,6 +1,5 @@
 package base.graphics;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,24 +25,6 @@ import base.graphics.object.GameRenderable;
 public class GraphicsManager implements Runnable {
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	private static void loadNatives() {
-		Logger staticLog = LoggerFactory.getLogger("Natives Loader");
-		staticLog.debug("Loading natives");
-		try {
-			String osName = System.getProperty("os.name");
-
-			staticLog.info("Operating system name => {}", osName);
-
-			File path = new File("Libraries" + File.separator + "lwjgl-2.8.3" + File.separator + "native" + File.separator + osName.toLowerCase());
-
-			System.setProperty("org.lwjgl.librarypath", path.getAbsolutePath());
-
-		} catch (UnsatisfiedLinkError e) {
-			staticLog.error("Native code library failed to load", e);
-		}
-		staticLog.info("Loaded natives");
-	}
 
 	private int fps;
 	private final boolean fullScreen;
@@ -73,7 +54,6 @@ public class GraphicsManager implements Runnable {
 	 */
 
 	public GraphicsManager(DisplayMode mode, boolean fullScreen, boolean vSync, AsyncActionBus asyncActionBus) {
-		loadNatives();
 		this.asyncActionBus = asyncActionBus;
 		this.mode = mode;
 		this.fullScreen = fullScreen;
